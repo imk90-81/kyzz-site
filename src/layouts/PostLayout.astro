@@ -1,0 +1,120 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/TagList.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+  heroImage?: string;
+}
+
+const { title, description, pubDate, updatedDate, tags = [], heroImage } = Astro.props;
+
+const formattedPubDate = pubDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdatedDate = updatedDate
+  ? updatedDate.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : null;
+
+// Estimate reading time (rough: ~300 Chinese chars per minute)
+const content = await Astro.slots.render('default');
+const textOnly = content.replace(/<[^>]*>/g, '').trim();
+const charCount = textOnly.length;
+const readingTime = Math.max(1, Math.ceil(charCount / 300));
+---
+
+<BaseLayout title={title} description={description} ogImage={heroImage}>
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    {/* Article Header */}
+    <header class="mb-10 sm:mb-14">
+      {/* Hero Image */}
+      {heroImage && (
+        <div class="mb-8 rounded-xl overflow-hidden border border-space-500/30">
+          <img
+            src={heroImage}
+            alt={title}
+            class="w-full h-auto"
+            loading="eager"
+          />
+        </div>
+      )}
+
+      {/* Tags */}
+      {tags.length > 0 && (
+        <div class="mb-4">
+          <TagList tags={tags} />
+        </div>
+      )}
+
+      {/* Title */}
+      <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4 leading-tight">
+        {title}
+      </h1>
+
+      {/* Meta */}
+      <div class="flex flex-wrap items-center gap-4 text-sm text-zinc-500">
+        {/* Publish Date */}
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyber-500/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+          <time datetime={pubDate.toISOString()} class="font-mono">
+            {formattedPubDate}
+          </time>
+        </div>
+
+        {/* Updated Date */}
+        {formattedUpdatedDate && (
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cyber-500/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+            </svg>
+            <span class="font-mono">更新于 {formattedUpdatedDate}</span>
+          </div>
+        )}
+
+        {/* Reading Time */}
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-cyber-500/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="font-mono">{readingTime} 分钟</span>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div class="mt-6 h-px bg-gradient-to-r from-cyber-500/30 via-space-500 to-transparent"></div>
+    </header>
+
+    {/* Article Content */}
+    <div class="prose-kyzz">
+      <slot />
+    </div>
+
+    {/* Article Footer */}
+    <footer class="mt-12 pt-8 border-t border-space-500/50">
+      <div class="flex justify-center">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          返回文章列表
+        </a>
+      </div>
+    </footer>
+  </article>
+</BaseLayout>

@@ -1,0 +1,106 @@
+---
+const navLinks = [
+  { href: '/', text: '首页' },
+  { href: '/blog', text: '博客' },
+  { href: '/about', text: '关于' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 border-b border-space-500/50" id="site-header">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <nav class="flex h-16 items-center justify-between backdrop-blur-md bg-space-900/80">
+      <!-- Logo -->
+      <a href="/" class="group flex items-center gap-2 text-lg font-bold tracking-tight transition-colors">
+        <span class="text-cyber-500 group-hover:text-cyber-400 transition-colors">Kyzz</span>
+        <span class="text-zinc-400">空间站</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <ul class="hidden sm:flex items-center gap-8">
+        {navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                'relative text-sm font-medium transition-colors duration-200',
+                currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
+                  ? 'text-cyber-500'
+                  : 'text-zinc-400 hover:text-zinc-200',
+              ]}
+            >
+              {link.text}
+              {(currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))) && (
+                <span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-cyber-500 rounded-full" />
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        class="sm:hidden p-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+        aria-label="打开导航菜单"
+        aria-expanded="false"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" class="hidden" />
+        </svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="sm:hidden hidden border-t border-space-500/50 bg-space-900/95 backdrop-blur-md">
+    <ul class="px-4 py-3 space-y-1">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+              currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
+                ? 'text-cyber-500 bg-cyber-500/10'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-space-700',
+            ]}
+          >
+            {link.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<!-- Add spacer for fixed header -->
+<div class="h-16"></div>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  if (btn && menu && iconOpen && iconClose) {
+    btn.addEventListener('click', () => {
+      const isOpen = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+
+  // Header background opacity on scroll
+  const header = document.getElementById('site-header');
+  if (header) {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY > 20;
+      header.style.borderBottomColor = scrolled ? 'rgba(30, 30, 46, 0.8)' : 'rgba(30, 30, 46, 0.3)';
+    });
+  }
+</script>

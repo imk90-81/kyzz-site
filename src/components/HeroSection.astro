@@ -1,0 +1,150 @@
+---
+---
+
+<section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+  {/* Background Grid */}
+  <div class="absolute inset-0 grid-bg opacity-40"></div>
+
+  {/* Gradient Orbs */}
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-500/5 rounded-full blur-[120px] animate-pulse-slow"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+
+  {/* Geometric Decorations */}
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    {/* Top-left corner lines */}
+    <svg class="absolute top-20 left-8 sm:left-16 w-24 h-24 text-cyber-500/10" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+      <line x1="0" y1="0" x2="100" y2="0" />
+      <line x1="0" y1="0" x2="0" y2="100" />
+      <line x1="0" y1="30" x2="30" y2="30" />
+      <line x1="30" y1="0" x2="30" y2="30" />
+    </svg>
+
+    {/* Bottom-right corner lines */}
+    <svg class="absolute bottom-20 right-8 sm:right-16 w-24 h-24 text-cyber-500/10" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+      <line x1="100" y1="100" x2="0" y2="100" />
+      <line x1="100" y1="100" x2="100" y2="0" />
+      <line x1="100" y1="70" x2="70" y2="70" />
+      <line x1="70" y1="100" x2="70" y2="70" />
+    </svg>
+
+    {/* Floating hexagons */}
+    <svg class="absolute top-1/3 right-10 sm:right-20 w-16 h-16 text-cyber-500/8 animate-float" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+      <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+    </svg>
+
+    <svg class="absolute bottom-1/3 left-10 sm:left-20 w-12 h-12 text-indigo-500/8 animate-float" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1" style="animation-delay: 3s;">
+      <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+    </svg>
+  </div>
+
+  {/* Star Canvas */}
+  <canvas id="star-canvas" class="absolute inset-0 pointer-events-none"></canvas>
+
+  {/* Content */}
+  <div class="relative z-10 text-center px-4 sm:px-6 animate-fade-in">
+    {/* Pre-title */}
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-space-500/50 bg-space-700/30 backdrop-blur-sm mb-8">
+      <span class="w-2 h-2 rounded-full bg-cyber-500 animate-pulse"></span>
+      <span class="text-xs font-mono text-zinc-400 tracking-wider">STATION ONLINE</span>
+    </div>
+
+    {/* Main Title */}
+    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+      <span class="gradient-text">Kyzz</span>
+      <span class="text-zinc-300"> 空间站</span>
+    </h1>
+
+    {/* Subtitle */}
+    <p class="text-base sm:text-lg text-zinc-400 max-w-md mx-auto mb-8 leading-relaxed">
+      在技术宇宙中漂浮的前哨站<br class="sm:hidden" />
+      <span class="hidden sm:inline"> · </span>
+      记录探索与思考
+    </p>
+
+    {/* CTA Buttons */}
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a
+        href="/blog"
+        class="group inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-cyber-500/10 border border-cyber-500/30 text-cyber-400 text-sm font-medium hover:bg-cyber-500/20 hover:border-cyber-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,229,255,0.15)]"
+      >
+        探索文章
+        <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+      <a
+        href="/about"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-zinc-400 text-sm font-medium hover:text-zinc-200 transition-colors duration-200"
+      >
+        关于空间站
+      </a>
+    </div>
+  </div>
+
+  {/* Scroll indicator */}
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-pulse-slow">
+    <span class="text-xs text-zinc-600 font-mono">SCROLL</span>
+    <svg class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  </div>
+</section>
+
+<script>
+  const canvas = document.getElementById('star-canvas') as HTMLCanvasElement;
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      let animationId: number;
+      const stars: Array<{ x: number; y: number; size: number; opacity: number; speed: number }> = [];
+
+      const resize = () => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      };
+
+      const createStars = () => {
+        stars.length = 0;
+        const count = Math.floor((canvas.width * canvas.height) / 8000);
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.5 + 0.1,
+            speed: Math.random() * 0.3 + 0.05,
+          });
+        }
+      };
+
+      const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const star of stars) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 229, 255, ${star.opacity})`;
+          ctx.fill();
+
+          star.opacity += star.speed * 0.01;
+          if (star.opacity > 0.6) star.speed = -Math.abs(star.speed);
+          if (star.opacity < 0.1) star.speed = Math.abs(star.speed);
+        }
+        animationId = requestAnimationFrame(animate);
+      };
+
+      resize();
+      createStars();
+      animate();
+
+      window.addEventListener('resize', () => {
+        resize();
+        createStars();
+      });
+
+      // Cleanup on page navigation
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(animationId);
+      });
+    }
+  }
+</script>
