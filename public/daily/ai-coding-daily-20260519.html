@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Coding 每日动态 — 2026年5月19日</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .article-container {
+    max-width: 580px;
+    margin: 0 auto;
+    background: #ffffff;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* === Hero Header === */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    padding: 48px 28px 40px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(168, 85, 247, 0.12) 0%, transparent 50%);
+    animation: heroShift 20s ease-in-out infinite;
+  }
+
+  @keyframes heroShift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-3%, 3%); }
+  }
+
+  .hero-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    background: #34d399;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    position: relative;
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.35;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .hero-title .accent {
+    background: linear-gradient(90deg, #a78bfa, #818cf8, #6ee7b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-date {
+    position: relative;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+
+  .hero-stats {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .stat-item {
+    text-align: left;
+  }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #6ee7b7, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* === Content === */
+  .content {
+    padding: 28px 24px;
+  }
+
+  .section-intro {
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.9;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border-left: 3px solid #818cf8;
+  }
+
+  /* === News Cards === */
+  .news-card {
+    position: relative;
+    margin-bottom: 24px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+  }
+
+  .news-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 20px 0;
+  }
+
+  .card-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .card-num.n1 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .card-num.n2 { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+  .card-num.n3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .card-num.n4 { background: linear-gradient(135deg, #10b981, #059669); }
+  .card-num.n5 { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+
+  .card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .tag-cost { background: #ede9fe; color: #7c3aed; }
+  .tag-event { background: #fce7f3; color: #db2777; }
+  .tag-warning { background: #fef3c7; color: #d97706; }
+  .tag-tool { background: #d1fae5; color: #059669; }
+  .tag-speed { background: #dbeafe; color: #2563eb; }
+
+  .card-body {
+    padding: 16px 20px 20px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e1b4b;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.85;
+  }
+
+  .highlight-box {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .hl-purple {
+    background: #f5f3ff;
+    border-left: 3px solid #8b5cf6;
+    color: #5b21b6;
+  }
+
+  .hl-amber {
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    color: #92400e;
+  }
+
+  .hl-green {
+    background: #ecfdf5;
+    border-left: 3px solid #10b981;
+    color: #065f46;
+  }
+
+  .hl-blue {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+    color: #1e40af;
+  }
+
+  .hl-red {
+    background: #fef2f2;
+    border-left: 3px solid #ef4444;
+    color: #991b1b;
+  }
+
+  .key-data {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .kd-purple { background: #ede9fe; color: #6d28d9; }
+  .kd-red { background: #fee2e2; color: #dc2626; }
+  .kd-green { background: #d1fae5; color: #047857; }
+  .kd-blue { background: #dbeafe; color: #1d4ed8; }
+  .kd-amber { background: #fef3c7; color: #b45309; }
+
+  /* === Divider === */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0;
+    color: #9ca3af;
+    font-size: 12px;
+    letter-spacing: 3px;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d1d5db, transparent);
+  }
+
+  /* === Main Observation === */
+  .observation {
+    position: relative;
+    margin: 32px 0 24px;
+    padding: 28px 24px;
+    background: linear-gradient(135deg, #0f0c29, #302b63);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .observation::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #818cf8, #a78bfa, #6ee7b7, #818cf8);
+    background-size: 200% 100%;
+    animation: gradientSlide 4s linear infinite;
+  }
+
+  @keyframes gradientSlide {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  .obs-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .obs-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .obs-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .obs-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .oi-purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+  .oi-green { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
+  .oi-red { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+  .obs-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+  }
+
+  .obs-text strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .obs-footer {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* === Footer === */
+  .article-footer {
+    padding: 24px;
+    text-align: center;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 12px;
+  }
+
+  .footer-logo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #6366f1;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .footer-sub {
+    font-size: 11px;
+    color: #9ca3af;
+    letter-spacing: 1px;
+  }
+
+  .footer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .footer-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+</style>
+</head>
+<body>
+<div class="article-container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      DAILY DIGEST
+    </div>
+    <div class="hero-title">
+      AI Coding<br><span class="accent">每日动态</span>
+    </div>
+    <div class="hero-date">2026 . 05 . 19 — TUESDAY</div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">条精选动态</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3</div>
+        <div class="stat-label">条主线</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">个国产亮点</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <div class="section-intro">
+      今日从 AI Coding 领域筛选出 <strong>5 条</strong>值得关注的动态，涵盖模型性价比突破、行业大会前瞻、开源治理困境、架构哲学之争、推理加速等核心议题。
+    </div>
+
+    <!-- Card 1 -->
+    <div class="news-card">
+      <div class="card-header">
+        <div class="card-num n1">1</div>
+        <span class="card-tag tag-cost">成本坍缩</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Cursor 发布 Composer 2.5：性能追平 Opus 4.7，成本仅 1/10</div>
+        <div class="card-desc">
+          基于月之暗面 Kimi K2.5 开源权重深度后训练，使用 <span class="key-data kd-purple">25 倍</span>合成任务量，SWE-Bench 多语言得分 <span class="key-data kd-purple">79.8%</span> 追平 Opus 4.7。标准版定价 <span class="key-data kd-green">$0.50 / $2.50</span>（输入/输出），约为 Opus 的 <span class="key-data kd-red">1/10 ～ 1/30</span>。同步推出云端智能体环境、异步子智能体等重磅功能。
+        </div>
+        <div class="highlight-box hl-purple">
+          💡 意味着：顶级编码能力不再需要顶级价格，AI Coding 的"性价比拐点"已经到来。
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="news-card">
+      <div class="card-header">
+        <div class="card-num n2">2</div>
+        <span class="card-tag tag-event">大会前瞻</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Google I/O 2026 今日开幕：Gemini 4.0 千万级上下文 + Spark Agent 平台</div>
+        <div class="card-desc">
+          北京时间明日凌晨主题演讲，预期发布四大重点：Gemini 4.0（<span class="key-data kd-blue">1000 万+ token</span> 上下文窗口）、Gemini Spark 主动式 Agent 平台、Aluminium OS 系统级 AI 集成、Android XR 智能眼镜。
+        </div>
+        <div class="highlight-box hl-blue">
+          🔭 若落地，全代码库理解将成标配，Agent 不再是工具而是"同事"。
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="news-card">
+      <div class="card-header">
+        <div class="card-num n3">3</div>
+        <span class="card-tag tag-warning">治理困境</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Linus Torvalds 炮轰：AI 漏洞报告让 Linux 安全列表"几乎无法管理"</div>
+        <div class="card-desc">
+          多个研究者使用相同 AI 工具提交重复漏洞报告，AI 使发现成本趋零但审阅成本不降，开源社区治理首次遭遇 AI 规模副作用。
+        </div>
+        <div class="highlight-box hl-amber">
+          ⚠️ 核心矛盾：AI Coding 的治理困境比能力突破更紧迫。当生成成本趋近于零，过滤成本谁来承担？
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="news-card">
+      <div class="card-header">
+        <div class="card-num n4">4</div>
+        <span class="card-tag tag-tool">开源工具</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Zerostack：纯 Rust 开源编码 Agent（Unix 哲学，HN 480 分）</div>
+        <div class="card-desc">
+          轻量可组合架构，与"大而全"Agent 形成鲜明对比，HN 社区 <span class="key-data kd-green">480 分</span>热榜。开发者对"小工具 + 管道组合"的需求信号强烈。
+        </div>
+        <div class="highlight-box hl-green">
+          🧩 哲学之争：做大做全 vs. 小而美——编码 Agent 的"Unix 时刻"是否正在到来？
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="news-card">
+      <div class="card-header">
+        <div class="card-num n5">5</div>
+        <span class="card-tag tag-speed">推理加速</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Orthrus-Qwen3：Qwen3 模型推理无损加速 7.8 倍</div>
+        <div class="card-desc">
+          输出分布完全不变的纯推理优化，同等预算处理 <span class="key-data kd-blue">7.8 倍</span>编码任务，国产 AI Coding 工具链直接受益。
+        </div>
+        <div class="highlight-box hl-blue">
+          ⚡ 意味着：同样的钱，同样的模型，现在能多跑近 8 倍的编码任务。
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">◆ ◆ ◆</div>
+
+    <!-- Main Observation -->
+    <div class="observation">
+      <div class="obs-label">🔍 主线观察</div>
+      <div class="obs-title">今日三条清晰主线</div>
+
+      <div class="obs-item">
+        <div class="obs-icon oi-purple">📉</div>
+        <div class="obs-text"><strong>成本坍缩</strong>：Composer 1/10 价 + Orthrus 7.8 倍加速，顶级编码能力的边际成本正以数量级速度下降。</div>
+      </div>
+
+      <div class="obs-item">
+        <div class="obs-icon oi-green">🌐</div>
+        <div class="obs-text"><strong>Agent 民主化</strong>：Zerostack 开源轻量 Agent + Google Spark 全民 Agent 平台，Agent 能力从少数人特权走向人人可用。</div>
+      </div>
+
+      <div class="obs-item">
+        <div class="obs-icon oi-red">⚖️</div>
+        <div class="obs-text"><strong>治理困境</strong>：Linux 率先遭遇 AI 工具规模副作用，生成端与治理端的成本不对称正在撕裂开源协作模式。</div>
+      </div>
+
+      <div class="obs-footer">
+        成本问题接近解决，治理问题才刚开始。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="article-footer">
+    <div class="footer-logo">AI Coding Daily</div>
+    <div class="footer-sub">每日精选 · 值得关注的动态</div>
+    <div class="footer-tags">
+      <span class="footer-tag">#AI编程</span>
+      <span class="footer-tag">#Cursor</span>
+      <span class="footer-tag">#Gemini</span>
+      <span class="footer-tag">#开源治理</span>
+      <span class="footer-tag">#推理加速</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
