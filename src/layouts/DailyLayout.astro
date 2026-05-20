@@ -2,6 +2,7 @@
 import { ViewTransitions } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import TagList from '../components/TagList.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -9,15 +10,16 @@ interface Props {
   description?: string;
   pubDate: Date;
   source?: string;
+  tags?: string[];
 }
 
-const { title, description, pubDate, source } = Astro.props;
-const formattedDate = pubDate.toLocaleDateString('zh-CN', {
+const { title, description, pubDate, source, tags = [] } = Astro.props;
+const formattedPubDate = pubDate.toLocaleDateString('zh-CN', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
-  weekday: 'long'
 });
+const formattedWeekday = pubDate.toLocaleDateString('zh-CN', { weekday: 'long' });
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const siteTitle = `${title} | Kyzz空间站`;
@@ -65,49 +67,76 @@ const siteTitle = `${title} | Kyzz空间站`;
 <body class="min-h-screen bg-space-900 text-zinc-200 antialiased">
   <Header />
 
-  <main id="main-content" class="min-h-[calc(100vh-4rem)] pt-24 pb-16">
-    <article class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <!-- Article Header -->
-      <header class="mb-10 pb-8 border-b border-space-500/30">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyber-500 animate-pulse"></span>
-            DAILY
-          </span>
-          <span class="text-xs text-zinc-500 font-mono">{formattedDate}</span>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4">
+  <main id="main-content" class="min-h-[calc(100vh-4rem)]">
+    <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      {/* Article Header */}
+      <header class="mb-10 sm:mb-14">
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div class="mb-4">
+            <TagList tags={tags} baseUrl="/daily" />
+          </div>
+        )}
+
+        {/* Title */}
+        <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4 leading-tight">
           {title}
         </h1>
-        {description && (
-          <p class="text-zinc-400 text-sm leading-relaxed">{description}</p>
-        )}
-        {source && (
-          <p class="text-xs text-zinc-500 mt-4 font-mono">
-            数据来源：{source}
-          </p>
-        )}
+
+        {/* Meta */}
+        <div class="flex flex-wrap items-center gap-4 text-sm text-zinc-500">
+          {/* Publish Date */}
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cyber-500/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            <time datetime={pubDate.toISOString()} class="font-mono">
+              {formattedPubDate} {formattedWeekday}
+            </time>
+          </div>
+
+          {/* Source */}
+          {source && (
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-cyber-500/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+              <span class="font-mono text-xs">{source}</span>
+            </div>
+          )}
+
+          {/* Daily Badge */}
+          <div class="flex items-center gap-1.5">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
+              <span class="w-1 h-1 rounded-full bg-cyber-500 animate-pulse"></span>
+              DAILY
+            </span>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div class="mt-6 h-px bg-gradient-to-r from-cyber-500/30 via-space-500 to-transparent"></div>
       </header>
 
-      <!-- Article Content -->
-      <div class="prose prose-invert prose-zinc max-w-none
-        prose-headings:text-white prose-headings:font-bold
-        prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-space-500/30
-        prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
-        prose-p:text-zinc-300 prose-p:leading-relaxed
-        prose-a:text-cyber-400 prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-white
-        prose-blockquote:border-l-cyber-500 prose-blockquote:bg-space-700/20 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
-        prose-code:text-cyber-300 prose-code:bg-space-700/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-space-800 prose-pre:border prose-pre:border-space-500/30
-        prose-li:text-zinc-300 prose-li:marker:text-cyber-500
-        prose-table:border-collapse
-        prose-th:bg-space-700/30 prose-th:text-zinc-300 prose-th:font-semibold prose-th:px-4 prose-th:py-2 prose-th:border prose-th:border-space-500/30 prose-th:text-left
-        prose-td:text-zinc-300 prose-td:px-4 prose-td:py-2 prose-td:border prose-td:border-space-500/30
-        prose-hr:border-space-500/30
-      ">
+      {/* Article Content */}
+      <div class="prose-kyzz">
         <slot />
       </div>
+
+      {/* Article Footer */}
+      <footer class="mt-12 pt-8 border-t border-space-500/50">
+        <div class="flex justify-center">
+          <a
+            href="/daily"
+            class="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            返回每日动态列表
+          </a>
+        </div>
+      </footer>
     </article>
   </main>
 
