@@ -9,6 +9,14 @@ const allPosts = (await getCollection('blog', ({ data }) => !data.draft).catch((
 );
 const recentPosts = allPosts.slice(0, 5);
 
+const dailyEntries = (await getCollection('daily', ({ data }) => !data.draft).catch(() => []))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+};
+
 // Skill tags for display
 const skills = [
   'TypeScript', 'React', 'Vue', 'Node.js', 'Python',
@@ -40,57 +48,34 @@ const skills = [
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a href="/daily/ai-news-20260520.html" class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
-          <div class="p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
-                <span class="w-1 h-1 rounded-full bg-cyber-500 animate-pulse"></span>
-                DAILY
-              </span>
-              <span class="text-xs text-zinc-500 font-mono">2026-05-20</span>
+        {dailyEntries.map(entry => (
+          <a href={`/daily/${entry.slug}`} class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
+                  <span class="w-1 h-1 rounded-full bg-cyber-500 animate-pulse"></span>
+                  DAILY
+                </span>
+                <span class="text-xs text-zinc-500 font-mono">{formatDate(entry.data.pubDate)}</span>
+              </div>
+              <h3 class="text-base font-bold text-white group-hover:text-cyber-400 transition-colors mb-2">
+                {entry.data.title}
+              </h3>
+              <p class="text-xs text-zinc-500 line-clamp-2">
+                {entry.data.description}
+              </p>
+              {entry.data.tags && entry.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  {entry.data.tags.slice(0, 3).map(tag => (
+                    <span class="text-xs font-mono text-cyber-400/70 bg-cyber-500/5 border border-cyber-500/10 px-2 py-0.5 rounded">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <h3 class="text-base font-bold text-white group-hover:text-cyber-400 transition-colors mb-2">
-              AI Coding 每日简报 · 5月20日
-            </h3>
-            <p class="text-xs text-zinc-500 line-clamp-2">
-              谷歌 Antigravity 2.0 入场、Anthropic 收购 Stainless、xAI Grok Build 上线
-            </p>
-          </div>
-        </a>
-
-        <a href="/daily/ai-coding-daily-20260519.html" class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
-          <div class="p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
-                DAILY
-              </span>
-              <span class="text-xs text-zinc-500 font-mono">2026-05-19</span>
-            </div>
-            <h3 class="text-base font-bold text-white group-hover:text-cyber-400 transition-colors mb-2">
-              AI Coding 每日动态 · 5月19日
-            </h3>
-            <p class="text-xs text-zinc-500 line-clamp-2">
-              Cursor Composer 2.5 性能追平 Opus 4.7、Google I/O 前瞻、Linus 炮轰 AI 漏洞报告
-            </p>
-          </div>
-        </a>
-
-        <a href="/daily/ai-news-20260518.html" class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
-          <div class="p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
-                DAILY
-              </span>
-              <span class="text-xs text-zinc-500 font-mono">2026-05-18</span>
-            </div>
-            <h3 class="text-base font-bold text-white group-hover:text-cyber-400 transition-colors mb-2">
-              AI Coding 每日简报 · 5月18日
-            </h3>
-            <p class="text-xs text-zinc-500 line-clamp-2">
-              Google I/O 2026 明日开幕、Anthropic $900亿融资、GPT-5.6 测试曝光
-            </p>
-          </div>
-        </a>
+          </a>
+        ))}
       </div>
     </div>
   </section>

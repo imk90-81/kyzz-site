@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from 'astro:content';
+import DailyLayout from '../../layouts/DailyLayout.astro';
+
+export async function getStaticPaths() {
+  const dailyEntries = await getCollection('daily', ({ data }) => !data.draft);
+  return Promise.all(dailyEntries.map(async entry => {
+    const { Content } = await render(entry);
+    return {
+      params: { slug: entry.slug },
+      props: {
+        title: entry.data.title,
+        description: entry.data.description,
+        pubDate: entry.data.pubDate,
+        source: entry.data.source,
+        Content,
+      },
+    };
+  }));
+}
+
+const { title, description, pubDate, source, Content } = Astro.props;
+---
+
+<DailyLayout title={title} description={description} pubDate={pubDate} source={source}>
+  <Content />
+</DailyLayout>

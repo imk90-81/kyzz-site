@@ -1,0 +1,91 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  pubDate: Date;
+  source?: string;
+}
+
+const { title, description, pubDate, source } = Astro.props;
+const formattedDate = pubDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'long'
+});
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} | Kyzz空间站</title>
+  {description && <meta name="description" content={description}>}
+  <meta property="og:title" content={title}>
+  {description && <meta property="og:description" content={description}>}
+  <meta property="og:type" content="article">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "datePublished": pubDate.toISOString(),
+    "author": { "@type": "Organization", "name": "Kyzz空间站" }
+  })}></script>
+</head>
+<body class="bg-space-900 text-zinc-200 antialiased">
+  <Header />
+
+  <main class="min-h-screen pt-24 pb-16">
+    <article class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <!-- Article Header -->
+      <header class="mb-10 pb-8 border-b border-space-500/30">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyber-500 animate-pulse"></span>
+            DAILY
+          </span>
+          <span class="text-xs text-zinc-500 font-mono">{formattedDate}</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4">
+          {title}
+        </h1>
+        {description && (
+          <p class="text-zinc-400 text-sm leading-relaxed">{description}</p>
+        )}
+        {source && (
+          <p class="text-xs text-zinc-500 mt-4 font-mono">
+            数据来源：{source}
+          </p>
+        )}
+      </header>
+
+      <!-- Article Content -->
+      <div class="prose prose-invert prose-zinc max-w-none
+        prose-headings:text-white prose-headings:font-bold
+        prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-space-500/30
+        prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
+        prose-p:text-zinc-300 prose-p:leading-relaxed
+        prose-a:text-cyber-400 prose-a:no-underline hover:prose-a:underline
+        prose-strong:text-white
+        prose-blockquote:border-l-cyber-500 prose-blockquote:bg-space-700/20 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
+        prose-code:text-cyber-300 prose-code:bg-space-700/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-space-800 prose-pre:border prose-pre:border-space-500/30
+        prose-li:text-zinc-300 prose-li:marker:text-cyber-500
+        prose-table:border-collapse
+        prose-th:bg-space-700/30 prose-th:text-zinc-300 prose-th:font-semibold prose-th:px-4 prose-th:py-2 prose-th:border prose-th:border-space-500/30 prose-th:text-left
+        prose-td:text-zinc-300 prose-td:px-4 prose-td:py-2 prose-td:border prose-td:border-space-500/30
+        prose-hr:border-space-500/30
+      ">
+        <slot />
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</body>
+</html>
