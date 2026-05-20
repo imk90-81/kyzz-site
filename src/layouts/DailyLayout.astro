@@ -1,6 +1,8 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -16,18 +18,41 @@ const formattedDate = pubDate.toLocaleDateString('zh-CN', {
   day: 'numeric',
   weekday: 'long'
 });
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteTitle = `${title} | Kyzz空间站`;
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title} | Kyzz空间站</title>
+  <meta name="generator" content={Astro.generator} />
+  
+  <title>{siteTitle}</title>
+  <meta name="title" content={siteTitle} />
   {description && <meta name="description" content={description}>}
-  <meta property="og:title" content={title}>
+  <link rel="canonical" href={canonicalURL} />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={siteTitle} />
   {description && <meta property="og:description" content={description}>}
-  <meta property="og:type" content="article">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  
+  <!-- View Transitions -->
+  <ViewTransitions />
+  
+  <!-- JSON-LD Article -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
@@ -37,10 +62,10 @@ const formattedDate = pubDate.toLocaleDateString('zh-CN', {
     "author": { "@type": "Organization", "name": "Kyzz空间站" }
   })}></script>
 </head>
-<body class="bg-space-900 text-zinc-200 antialiased">
+<body class="min-h-screen bg-space-900 text-zinc-200 antialiased">
   <Header />
 
-  <main class="min-h-screen pt-24 pb-16">
+  <main id="main-content" class="min-h-[calc(100vh-4rem)] pt-24 pb-16">
     <article class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <!-- Article Header -->
       <header class="mb-10 pb-8 border-b border-space-500/30">
