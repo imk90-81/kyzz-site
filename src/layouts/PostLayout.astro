@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import TagList from '../components/TagList.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 
 interface Props {
   title: string;
@@ -27,14 +28,68 @@ const formattedUpdatedDate = updatedDate
     })
   : null;
 
-// Estimate reading time (rough: ~300 Chinese chars per minute)
+// Render content and extract headings for TOC
 const content = await Astro.slots.render('default');
 const textOnly = content.replace(/<[^>]*>/g, '').trim();
 const charCount = textOnly.length;
 const readingTime = Math.max(1, Math.ceil(charCount / 300));
+
+// Extract h2 and h3 headings for TOC
+const headingRegex = /<h([23])[^>]*id=["']([^"']+)["'][^>]*>(.*?)<\/h\1>/g;
+const tocItems: Array<{ id: string; text: string; level: number }> = [];
+let match;
+while ((match = headingRegex.exec(content)) !== null) {
+  const level = parseInt(match[1]);
+  const id = match[2];
+  const text = match[3].replace(/<[^>]*>/g, '').trim();
+  tocItems.push({ id, text, level });
+}
+
+// Build URL for JSON-LD
+const articleUrl = new URL(Astro.url.pathname, Astro.site);
+
+// Author info
+const author = {
+  name: 'Kyzz',
+  url: Astro.site?.toString() || 'https://kyzz.space'
+};
 ---
 
-<BaseLayout title={title} description={description} ogImage={heroImage}>
+<BaseLayout title={title} description={description} ogImage={heroImage} ogType="article">
+  <!-- Article meta tags -->
+  <meta property="article:published_time" content={pubDate.toISOString()} slot="head" />
+  {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} slot="head" />}
+  
+  <!-- JSON-LD Article Structured Data -->
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "image": heroImage,
+    "datePublished": pubDate.toISOString(),
+    "dateModified": (updatedDate || pubDate).toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": author.name,
+      "url": author.url
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Kyzz空间站",
+      "url": author.url,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${author.url}/favicon.svg`
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": articleUrl.toString()
+    },
+    "url": articleUrl.toString()
+  })} />
+
   <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
     {/* Article Header */}
     <header class="mb-10 sm:mb-14">
@@ -97,10 +152,11 @@ const readingTime = Math.max(1, Math.ceil(charCount / 300));
       <div class="mt-6 h-px bg-gradient-to-r from-cyber-500/30 via-space-500 to-transparent"></div>
     </header>
 
+    {/* TOC - Desktop */}
+    <TableOfContents items={tocItems} />
+
     {/* Article Content */}
-    <div class="prose-kyzz">
-      <slot />
-    </div>
+    <div class="prose-kyzz" set:html={content} />
 
     {/* Article Footer */}
     <footer class="mt-12 pt-8 border-t border-space-500/50">

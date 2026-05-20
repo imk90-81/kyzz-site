@@ -1,0 +1,116 @@
+---
+interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+interface Props {
+  items: TocItem[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <nav class="hidden lg:block fixed right-8 top-32 w-56" aria-label="文章目录">
+    <div class="bg-space-800/50 border border-space-500/30 rounded-lg p-4 backdrop-blur-sm">
+      <button
+        id="toc-toggle"
+        class="w-full flex items-center justify-between text-sm font-medium text-zinc-300 mb-3"
+        aria-expanded="true"
+        aria-controls="toc-list"
+      >
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          目录
+        </span>
+        <svg id="toc-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+      
+      <ul id="toc-list" class="space-y-1.5 text-sm overflow-y-auto max-h-[60vh]">
+        {items.map((item) => (
+          <li class={`toc-item ${item.level === 3 ? 'ml-3' : ''}`}>
+            <a
+              href={`#${item.id}`}
+              class="block py-1 px-2 rounded text-zinc-400 hover:text-cyber-400 hover:bg-cyber-500/5 transition-colors duration-200 truncate"
+              data-heading-id={item.id}
+            >
+              {item.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+)}
+
+<script>
+  // TOC toggle functionality
+  const tocToggle = document.getElementById('toc-toggle');
+  const tocList = document.getElementById('toc-list');
+  const tocChevron = document.getElementById('toc-chevron');
+  
+  if (tocToggle && tocList && tocChevron) {
+    tocToggle.addEventListener('click', () => {
+      const isExpanded = tocToggle.getAttribute('aria-expanded') === 'true';
+      tocToggle.setAttribute('aria-expanded', (!isExpanded).toString());
+      tocList.classList.toggle('hidden', isExpanded);
+      tocChevron.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+    });
+  }
+
+  // Active heading highlight on scroll
+  const tocLinks = document.querySelectorAll('[data-heading-id]');
+  const headings = Array.from(tocLinks).map(link => 
+    document.getElementById(link.getAttribute('data-heading-id') || '')
+  ).filter(Boolean);
+
+  const observerOptions = {
+    rootMargin: '-80px 0px -70% 0px',
+    threshold: 0
+  };
+
+  let currentActive: Element | null = null;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      const tocLink = document.querySelector(`[data-heading-id="${id}"]`);
+      
+      if (entry.isIntersecting) {
+        if (currentActive) {
+          currentActive.classList.remove('text-cyber-400', 'bg-cyber-500/10', 'font-medium');
+          currentActive.classList.add('text-zinc-400');
+        }
+        tocLink?.classList.remove('text-zinc-400');
+        tocLink?.classList.add('text-cyber-400', 'bg-cyber-500/10', 'font-medium');
+        currentActive = tocLink;
+      }
+    });
+  }, observerOptions);
+
+  headings.forEach(heading => {
+    if (heading) observer.observe(heading);
+  });
+
+  // Smooth scroll with offset for fixed header
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = link.getAttribute('href');
+      if (href) {
+        const target = document.querySelector(href);
+        if (target) {
+          const offset = 100;
+          const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+</script>
