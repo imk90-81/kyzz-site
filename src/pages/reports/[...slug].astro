@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const reports = await getCollection('reports', ({ data }) => !data.draft).catch(() => []);
+  return reports.map(report => ({
+    params: { slug: report.slug },
+    props: report,
+  }));
+}
+
+const report = Astro.props;
+const { Content } = await report.render();
+const { title, description, pubDate, tags = [] } = report.data;
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  });
+};
+---
+
+<BaseLayout title={`${title} | Kyzz空间站`} description={description}>
+  <main class="min-h-[calc(100vh-4rem)] pt-24 pb-16">
+    <article class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <header class="mb-10">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+            REPORT
+          </span>
+          <span class="text-xs text-zinc-500 font-mono">{formatDate(pubDate)}</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+          {title}
+        </h1>
+        {description && (
+          <p class="text-zinc-400">{description}</p>
+        )}
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {tags.map(tag => (
+              <span class="text-xs font-mono text-purple-400/70 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+        <div class="mt-6 h-px bg-gradient-to-r from-purple-500/30 via-space-500 to-transparent"></div>
+      </header>
+
+      {/* Report Content */}
+      <div class="report-content">
+        <Content />
+      </div>
+
+      {/* Footer */}
+      <footer class="mt-12 pt-8 border-t border-space-500/50">
+        <div class="flex justify-center">
+          <a
+            href="/reports"
+            class="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-purple-400 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            返回报告列表
+          </a>
+        </div>
+      </footer>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .report-content iframe {
+    width: 100%;
+    min-height: 600px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    background: #1a1a2e;
+  }
+</style>
