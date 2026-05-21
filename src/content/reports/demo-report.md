@@ -6,17 +6,35 @@ tags: ['示例', '测试']
 ---
 
 <iframe
+  id="report-iframe"
   src="/reports/demo.html"
-  class="w-full min-h-[600px] border-0 rounded-lg bg-white"
+  class="w-full border-0 rounded-lg"
   title="示例报告"
+  scrolling="no"
 ></iframe>
 
-<style>
-  iframe {
+<script>
+  function resizeIframe() {
+    const iframe = document.getElementById('report-iframe');
+    if (iframe) {
+      iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    }
+  }
+
+  // iframe load event
+  const iframe = document.getElementById('report-iframe');
+  if (iframe) {
+    iframe.addEventListener('load', resizeIframe);
+    // also handle window resize
+    window.addEventListener('resize', resizeIframe);
+  }
+</script>
+
+<style is:global>
+  #report-iframe {
     width: 100%;
-    min-height: 600px;
     border: none;
     border-radius: 0.5rem;
-    background: white;
+    background: #1a1a2e;
   }
 </style>
