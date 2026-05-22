@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Coding 动态日报 | 2026-05-22</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #1a2332;
+      --bg-card-hover: #1f2b3d;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #a78bfa;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: #1e293b;
+      --glow-blue: 0 0 20px rgba(59, 130, 246, 0.15);
+      --glow-red: 0 0 20px rgba(239, 68, 68, 0.15);
+      --glow-green: 0 0 20px rgba(16, 185, 129, 0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 200px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    }
+
+    .header-badge {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      background: rgba(6, 182, 212, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .header .date {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* News Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-danger::before { background: linear-gradient(90deg, var(--accent-red), #f97316); }
+    .card-danger { border-left: 3px solid var(--accent-red); }
+
+    .card-success::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+    .card-success { border-left: 3px solid var(--accent-green); }
+
+    .card-finance::before { background: linear-gradient(90deg, var(--accent-amber), #f97316); }
+    .card-finance { border-left: 3px solid var(--accent-amber); }
+
+    .card-model::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+    .card-model { border-left: 3px solid var(--accent-blue); }
+
+    .card-trend::before { background: linear-gradient(90deg, var(--accent-purple), #ec4899); }
+    .card-trend { border-left: 3px solid var(--accent-purple); }
+
+    .card-number {
+      position: absolute;
+      top: 16px; right: 24px;
+      font-size: 48px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.03);
+      line-height: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .card-danger .card-icon { background: rgba(239, 68, 68, 0.15); }
+    .card-success .card-icon { background: rgba(16, 185, 129, 0.15); }
+    .card-finance .card-icon { background: rgba(245, 158, 11, 0.15); }
+    .card-model .card-icon { background: rgba(59, 130, 246, 0.15); }
+    .card-trend .card-icon { background: rgba(167, 139, 250, 0.15); }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .tag-red { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+    .tag-green { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .tag-amber { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    .tag-blue { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+    .tag-purple { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; }
+
+    /* Reason Box */
+    .reason-box {
+      background: rgba(59, 130, 246, 0.06);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+
+    .reason-box.danger {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .reason-box.success {
+      background: rgba(16, 185, 129, 0.06);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .reason-box.finance {
+      background: rgba(245, 158, 11, 0.06);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .reason-box.model {
+      background: rgba(59, 130, 246, 0.06);
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .reason-box.trend {
+      background: rgba(167, 139, 250, 0.06);
+      border-color: rgba(167, 139, 250, 0.2);
+    }
+
+    .reason-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .reason-box.danger .reason-label { color: var(--accent-red); }
+    .reason-box.success .reason-label { color: var(--accent-green); }
+    .reason-box.finance .reason-label { color: var(--accent-amber); }
+    .reason-box.model .reason-label { color: var(--accent-blue); }
+    .reason-box.trend .reason-label { color: var(--accent-purple); }
+
+    .reason-box p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 0;
+      line-height: 1.8;
+    }
+
+    .reason-box p strong {
+      color: var(--text-primary);
+    }
+
+    /* Impact Table */
+    .impact-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    .impact-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .impact-table td {
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+    }
+
+    .impact-table tr:last-child td { border-bottom: none; }
+
+    .impact-table .highlight {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+
+    /* Summary Section */
+    .summary {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-top: 40px;
+    }
+
+    .summary h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .summary-emoji {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .summary-item .label {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .summary-item .desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    /* Metrics Bar */
+    .metrics {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 13px;
+    }
+
+    .metric .value {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric .label {
+      color: var(--text-muted);
+    }
+
+    .metric.up .value { color: var(--accent-green); }
+    .metric.down .value { color: var(--accent-red); }
+    .metric.neutral .value { color: var(--accent-amber); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px 60px; }
+      .header h1 { font-size: 1.5rem; }
+      .card { padding: 20px; }
+      .card h2 { font-size: 1rem; }
+      .card-number { font-size: 32px; top: 12px; right: 16px; }
+      .metrics { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-badge">Daily AI Coding Brief</div>
+      <h1>AI Coding 动态日报</h1>
+      <div class="date">2026 年 5 月 22 日 · 星期五</div>
+    </div>
+
+    <!-- Card 1: Security -->
+    <div class="card card-danger">
+      <div class="card-number">01</div>
+      <div class="card-header">
+        <div class="card-icon">&#9888;</div>
+        <div>
+          <span class="tag tag-red">安全预警</span>
+          <h2>VS Code 供应链攻击席卷 GitHub / OpenAI / Mistral，3,800 内部仓库泄露</h2>
+        </div>
+      </div>
+      <p>
+        代号 <strong>Mini Shai-Hulud</strong> 的供应链攻击由 TeamPCP 发起，通过污染 TanStack npm 生态（170+ 包）→ 劫持 Nx Console VS Code 扩展 → 窃取开发者凭证的三级链路，在 <strong>仅 18 分钟</strong>窗口期内造成大规模入侵。恶意命令伪装为 MCP 设置任务，Anthropic Claude 配置被列为优先窃取目标。
+      </p>
+      <table class="impact-table">
+        <thead>
+          <tr><th>受害方</th><th>影响范围</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>GitHub</strong></td>
+            <td>~3,800 个内部仓库被窃取，凭证穿越 CI/CD</td>
+          </tr>
+          <tr>
+            <td><strong>OpenAI</strong></td>
+            <td>2 台设备沦陷，部分内部源码外泄</td>
+          </tr>
+          <tr>
+            <td><strong>Mistral AI</strong></td>
+            <td>SDK 被植入木马，代码已在暗网出售</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="reason-box danger">
+        <div class="reason-label">关注理由</div>
+        <p>
+          这不是一次普通的 CVE，而是对 <strong>AI 编程工具链</strong> 的系统性攻击。你的 Claude Code / Cursor / Copilot 配置本身已成为高价值攻击面。建议立即检查 VS Code 扩展版本、审计 npm 依赖树，并关注后续安全披露。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 2: Anthropic Revenue -->
+    <div class="card card-success">
+      <div class="card-number">02</div>
+      <div class="card-header">
+        <div class="card-icon">&#9733;</div>
+        <div>
+          <span class="tag tag-green">商业化</span>
+          <h2>Anthropic Q2 预测营收 $109 亿，Claude Code 驱动首次季度盈利</h2>
+        </div>
+      </div>
+      <p>
+        Anthropic 披露 Q2 2026 财务预测：营收 <strong>$109 亿</strong>（环比 +130%），年花费超 $100 万的企业客户翻倍至 <strong>1,000+</strong>，预计运营利润约 $5.59 亿，为成立以来首次季度盈利。核心引擎：Claude Code 已成为企业软件团队最主流的 Agentic 编程工具。
+      </p>
+      <div class="metrics">
+        <div class="metric up">
+          <span class="value">$109亿</span>
+          <span class="label">Q2 营收</span>
+        </div>
+        <div class="metric up">
+          <span class="value">+130%</span>
+          <span class="label">环比增长</span>
+        </div>
+        <div class="metric up">
+          <span class="value">1000+</span>
+          <span class="label">百万级企业客户</span>
+        </div>
+        <div class="metric up">
+          <span class="value">$5.59亿</span>
+          <span class="label">预计利润</span>
+        </div>
+      </div>
+      <div class="reason-box success">
+        <div class="reason-label">关注理由</div>
+        <p>
+          Claude Code 不再只是技术展示品——它已是 Anthropic <strong>最大的商业化引擎</strong>。Agentic 编程工具已从"尝鲜玩具"正式进入企业 IT 采购预算。同时扩展至 SpaceX Colossus II（GB200 GPU），Claude Code 速率限制将持续改善，可用性和响应速度将大幅提升。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 3: OpenAI IPO -->
+    <div class="card card-finance">
+      <div class="card-number">03</div>
+      <div class="card-header">
+        <div class="card-icon">&#9879;</div>
+        <div>
+          <span class="tag tag-amber">资本市场</span>
+          <h2>OpenAI 今日秘密提交 IPO 申请，估值 $8,520 亿目标 9 月上市</h2>
+        </div>
+      </div>
+      <p>
+        OpenAI 最早于今日向 SEC 秘密提交 S-1 招股书，承销商为 Goldman Sachs 和 Morgan Stanley，目标上市时间 2026 年 9 月，估值 $8,520 亿 ~ $1 万亿。当前 ARR 为 $250 亿。三大 AI IPO 密集窗口（SpaceX 6月 / OpenAI 9月 / Anthropic 10月）即将开启。
+      </p>
+      <div class="metrics">
+        <div class="metric neutral">
+          <span class="value">$8520亿</span>
+          <span class="label">目标估值</span>
+        </div>
+        <div class="metric neutral">
+          <span class="value">2026.09</span>
+          <span class="label">目标上市</span>
+        </div>
+        <div class="metric neutral">
+          <span class="value">$250亿</span>
+          <span class="label">当前 ARR</span>
+        </div>
+      </div>
+      <div class="reason-box finance">
+        <div class="reason-label">关注理由</div>
+        <p>
+          AI 编程赛道的竞争正从技术维度延伸到 <strong>资本市场维度</strong>。IPO 压力下，OpenAI 的 Codex 产品线和开发者工具必须加速商业化，这意味着 GitHub Copilot 和 Codex 的 <strong>定价策略和功能节奏可能发生显著变化</strong>。关注 OpenAI 是否会在上市前推出更具进攻性的免费/低价策略来拉新。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 4: Gemini 3.5 Flash -->
+    <div class="card card-model">
+      <div class="card-number">04</div>
+      <div class="card-header">
+        <div class="card-icon">&#9889;</div>
+        <div>
+          <span class="tag tag-blue">新模型</span>
+          <h2>Gemini 3.5 Flash 稳定版上线：编程基准全面超越 Claude Opus 4.7 / GPT-5.5</h2>
+        </div>
+      </div>
+      <p>
+        Google 发布 Gemini 3.5 Flash 稳定版（<code>gemini-3.5-flash</code>），在 5 项编程与 Agentic 评测中领先所有竞品。推理速度公开 API <strong>4 倍加速</strong>，Antigravity 2.0 内部优化达 <strong>12 倍</strong>。定价 $1.50/$9（每百万 tokens），显著低于 Claude Sonnet 4.6（$3/$15）。
+      </p>
+      <div class="metrics">
+        <div class="metric up">
+          <span class="value">No.1</span>
+          <span class="label">编程基准</span>
+        </div>
+        <div class="metric up">
+          <span class="value">4x</span>
+          <span class="label">推理加速</span>
+        </div>
+        <div class="metric up">
+          <span class="value">$1.50</span>
+          <span class="label">输入价格/M tokens</span>
+        </div>
+      </div>
+      <div class="reason-box model">
+        <div class="reason-label">关注理由</div>
+        <p>
+          Google 策略清晰：<strong>用低价高速模型抢占开发者心智</strong>。$1.50 输入价格仅为 Claude 的 1/2，速度快 4 倍。结合 Antigravity 2.0，Google 正在构建"足够好 + 极致性价比"的编程 Agent 生态。建议将 Gemini 3.5 Flash 纳入备选模型池——尤其在高频 API 调用、成本敏感场景下可能成为最优解。
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 5: Chinese Models -->
+    <div class="card card-trend">
+      <div class="card-number">05</div>
+      <div class="card-header">
+        <div class="card-icon">&#127758;</div>
+        <div>
+          <span class="tag tag-purple">格局变化</span>
+          <h2>中国 AI 模型占 OpenRouter 60% 份额，"顾问模型"架构兴起重塑开发者选型</h2>
+        </div>
+      </div>
+      <p>
+        Databricks CEO 披露：中国模型在 OpenRouter 调用量从 2024 年约 <strong>1%</strong> 飙升至 2026 年 5 月 <strong>60%+</strong>。主力模型 DeepSeek V3.2（$0.28/$0.42）、Kimi K2.6（GPQA 90.5）、智谱 GLM-5.1。10 项标准评测总成本：Claude $4,811 vs DeepSeek $1,071 vs 智谱 GLM $544。
+      </p>
+      <div class="metrics">
+        <div class="metric up">
+          <span class="value">60%+</span>
+          <span class="label">中国模型份额</span>
+        </div>
+        <div class="metric up">
+          <span class="value">1% → 60%</span>
+          <span class="label">两年增长</span>
+        </div>
+        <div class="metric up">
+          <span class="value">1/9</span>
+          <span class="label">vs Claude 成本</span>
+        </div>
+      </div>
+      <div class="reason-box trend">
+        <div class="reason-label">关注理由</div>
+        <p>
+          这是 2026 年 AI 编程生态<strong>最被低估的结构性变化</strong>。60% 市场份额意味着中国模型已是主流选择而非平替。影响三方面：<strong>工具选型</strong>（Cursor 用 Kimi 基座、Claude Code 多模型支持）、<strong>成本结构</strong>（混合编排多模型成为新常态）、<strong>职业发展</strong>（掌握 DeepSeek/Kimi/GLM 的工程师将成为 2027 年 AI 基础设施决策核心）。
+        </p>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary">
+      <h3>&#128200; 今日主线观察</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-emoji">&#128308;</span>
+          <div>
+            <div class="label">安全危机</div>
+            <div class="desc">VS Code 供应链攻击暴露 AI 编程工具链系统性脆弱性</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <span class="summary-emoji">&#128176;</span>
+          <div>
+            <div class="label">商业化提速</div>
+            <div class="desc">Anthropic 盈利 + OpenAI IPO = AI 编程工具进入"烧钱换市场"最后阶段</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <span class="summary-emoji">&#9889;</span>
+          <div>
+            <div class="label">模型竞赛</div>
+            <div class="desc">Gemini 3.5 Flash 以 1/2 价格 + 4 倍速度挑战 Claude/GPT 编程王座</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <span class="summary-emoji">&#127758;</span>
+          <div>
+            <div class="label">格局重塑</div>
+            <div class="desc">中国模型 60% 份额，多模型混合编排将成为新常态</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      数据来源：BuildFastWithAI · CNBC · Notebookcheck · TLDL · Hacker News · OpenTools.ai<br>
+      生成时间：2026-05-22 10:00 GMT+8 · WorkBuddy Automation
+    </div>
+  </div>
+</body>
+</html>
