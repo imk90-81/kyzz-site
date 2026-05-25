@@ -1,4 +1,6 @@
 ---
+import ThemeSwitcher from './ThemeSwitcher.astro';
+
 const navLinks = [
   { href: '/', text: '首页' },
   { href: '/blog', text: '博客' },
@@ -40,6 +42,9 @@ const currentPath = Astro.url.pathname;
           </li>
         ))}
       </ul>
+
+      <!-- Theme Switcher -->
+      <ThemeSwitcher />
 
       <!-- Mobile Menu Button -->
       <button
