@@ -61,7 +61,7 @@ const author = {
   {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} slot="head" />}
   
   <!-- JSON-LD Article Structured Data -->
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": title,
