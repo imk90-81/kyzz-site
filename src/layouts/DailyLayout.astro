@@ -55,7 +55,7 @@ const siteTitle = `${title} | Kyzz空间站`;
   <ViewTransitions />
   
   <!-- JSON-LD Article -->
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": title,

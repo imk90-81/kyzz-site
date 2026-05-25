@@ -45,13 +45,13 @@ const themes = [
     const label = document.getElementById('theme-label');
     const options = document.querySelectorAll('.theme-option');
 
-    const themeMap: Record<string, { icon: string; label: string }> = {
+    const themeMap = {
       cosmos: { icon: '🌌', label: '宇宙' },
       day: { icon: '☀️', label: '白昼' },
       nebula: { icon: '🌠', label: '星云' },
     };
 
-    function applyTheme(key: string) {
+    function applyTheme(key) {
       if (key === 'cosmos') {
         document.documentElement.removeAttribute('data-theme');
       } else {
