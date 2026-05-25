@@ -87,7 +87,7 @@ const finalOgImage = ogImage || defaultOgImage;
       }
     })} />
   </head>
-  <body class="min-h-screen bg-space-900 text-zinc-200 antialiased">
+  <body class="min-h-screen bg-space-900 text-zinc-200 antialiased pb-10">
     <!-- Skip to content link for accessibility -->
     <a class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-cyber-500 focus:text-space-900 focus:font-bold" href="#main-content">跳转到内容</a>
     
@@ -97,10 +97,20 @@ const finalOgImage = ogImage || defaultOgImage;
     </main>
     <Footer />
 
+    <!-- AI 生成内容提示栏 -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-cyber-500/20 bg-space-900/95 backdrop-blur-sm">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-3 text-xs text-zinc-400">
+        <span class="text-cyber-500">🤖</span>
+        <span>本站所有内容均为 <span class="text-cyber-400 font-medium">AI 生成</span>，</span>
+        <span class="hidden sm:inline">仅供参考，请自主核实信息真实性。</span>
+        <span class="sm:hidden">请自主核实真实性。</span>
+      </div>
+    </div>
+
     <!-- Scroll to top button -->
     <button
       id="scroll-to-top"
-      class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-cyber-500/10 border border-cyber-500/30 text-cyber-400 opacity-0 pointer-events-none transition-all duration-300 hover:bg-cyber-500/20 hover:border-cyber-500/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.15)]"
+      class="fixed bottom-14 right-6 z-50 p-3 rounded-full bg-cyber-500/10 border border-cyber-500/30 text-cyber-400 opacity-0 pointer-events-none transition-all duration-300 hover:bg-cyber-500/20 hover:border-cyber-500/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.15)]"
       aria-label="回到顶部"
     >
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
