@@ -304,7 +304,7 @@
 [data-theme='day'] .fixed.bottom-0 .border-cyber-500\/20 { border-color: rgba(37, 99, 235, 0.2); }
 
 /* ===== Day Theme - Page Content Overrides ===== */
-[data-theme='day'] .text-white { color: #0f172a !important; }
+[data-theme='day'] .text-white:not(.logo-brand) { color: #0f172a !important; }
 [data-theme='day'] .text-zinc-500 { color: #94a3b8; }
 [data-theme='day'] .text-zinc-300 { color: #334155; }
 [data-theme='day'] .text-zinc-200 { color: #1e293b; }
@@ -519,6 +519,7 @@
 
 /* Logo brand colors */
 .logo-brand { color: var(--color-accent) !important; }
+.logo-brand-secondary { color: var(--color-text-secondary); }
 .group:hover .logo-brand-hover { opacity: 0.8; }
 
 /* ===== ThemeSwitcher component per theme ===== */
