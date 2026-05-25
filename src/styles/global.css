@@ -516,3 +516,7 @@
 [data-theme='nebula'] .ai-disclaimer-text { color: #b794d6; }
 [data-theme='nebula'] .ai-emoji { color: #ff6ec7; }
 [data-theme='nebula'] .ai-highlight { color: #ff8dd6; }
+
+/* Logo brand colors */
+.logo-brand { color: var(--color-accent) !important; }
+.group:hover .logo-brand-hover { opacity: 0.8; }
