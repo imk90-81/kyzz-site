@@ -39,13 +39,17 @@ const themes = [
 
 <script is:inline>
   (function() {
-    // Restore saved theme immediately (prevent flash)
-    var saved = localStorage.getItem('theme') || 'cosmos';
-    if (saved !== 'cosmos') {
-      document.documentElement.setAttribute('data-theme', saved);
-    }
-
     function setup() {
+      // Always read fresh from localStorage
+      var saved = localStorage.getItem('theme') || 'cosmos';
+
+      // Apply to <html> for CSS [data-theme] selectors
+      if (saved === 'cosmos') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+
       var btn = document.getElementById('theme-btn');
       var dropdown = document.getElementById('theme-dropdown');
       if (!btn || !dropdown) return;
@@ -55,9 +59,9 @@ const themes = [
       var options = dropdown.querySelectorAll('.theme-option');
 
       var themeMap = {
-        cosmos: { icon: '\uD83C\uDF0C', label: '宇宙' },
-        day:    { icon: '\u2600\uFE0F', label: '白昼' },
-        nebula: { icon: '\uD83C\uDF20', label: '星云' }
+        cosmos: { icon: '🌌', label: '宇宙' },
+        day:    { icon: '☀️', label: '白昼' },
+        nebula: { icon: '🌠', label: '星云' }
       };
 
       function applyTheme(key) {
@@ -82,16 +86,14 @@ const themes = [
         }
       }
 
-      // Restore saved theme UI
+      // Sync UI to current saved theme on page load
       applyTheme(saved);
 
-      // Toggle dropdown
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         dropdown.classList.toggle('hidden');
       });
 
-      // Select option
       for (var i = 0; i < options.length; i++) {
         options[i].addEventListener('click', function() {
           var key = this.getAttribute('data-theme-key') || 'cosmos';
@@ -100,19 +102,16 @@ const themes = [
         });
       }
 
-      // Close on outside click
       document.addEventListener('click', function() {
         dropdown.classList.add('hidden');
       });
     }
 
-    // Run when DOM is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', setup);
     } else {
       setup();
     }
-    // Re-run after Astro page transitions
     document.addEventListener('astro:page-load', setup);
   })();
 </script>
