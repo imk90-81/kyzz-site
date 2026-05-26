@@ -114,19 +114,18 @@
     var limit = Math.min(data.results.length, 10);
     for (var i = 0; i < limit; i++) {
       var r = data.results[i];
-      var title = r.meta && r.meta.title ? r.meta.title : r.url;
-      var excerpt = r.data ? r.data() : Promise.resolve('');
       (function (item, idx) {
-        item.data().then(function (content) {
-          var ex = content.substring(0, 120) + (content.length > 120 ? '...' : '');
+        item.data().then(function (d) {
           var el = document.getElementById('result-' + idx);
           if (el) {
-            var filtered = content.replace(/<[^>]+>/g, '');
-            var shortEx = filtered.substring(0, 120) + (filtered.length > 120 ? '...' : '');
+            var text = (d.content || '').toString().replace(/<[^>]+>/g, '');
+            var shortEx = text.substring(0, 120) + (text.length > 120 ? '...' : '');
+            var title = (d.meta && d.meta.title) ? d.meta.title : (d.url || '');
             el.innerHTML = '<div class="text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div><div class="text-xs" style="color: var(--color-text-secondary);">' + highlight(shortEx, term) + '</div>';
           }
         });
       })(r, i);
+      html += '<a href="' + r.url + '" id="result-' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
       var url = r.url;
       var displayUrl = url.replace(/^\//, '').substring(0, 50);
       html += '<a href="' + url + '" id="result-' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
