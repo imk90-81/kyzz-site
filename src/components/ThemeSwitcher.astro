@@ -1,7 +1,7 @@
 ---
 const themes = [
   { key: 'cosmos', label: '宇宙', icon: '🌌' },
-  { key: 'day', label: '白昼', icon: '☀️' },
+  { key: 'day',    label: '白昼', icon: '☀️' },
   { key: 'nebula', label: '星云', icon: '🌠' },
 ];
 ---
@@ -26,8 +26,6 @@ const themes = [
       <button
         class="theme-option w-full flex items-center gap-2.5 px-3 py-2 text-sm text-zinc-400 hover:text-zinc-200 hover:bg-space-600/50 transition-colors"
         data-theme-key={t.key}
-        data-icon={t.icon}
-        data-label={t.label}
       >
         <span class="text-base">{t.icon}</span>
         <span>{t.label}</span>
@@ -38,24 +36,30 @@ const themes = [
 </div>
 
 <script is:inline>
-  (function() {
-    var initialized = false;
-
-    function setup() {
-      // Remove old listeners by cloning and replacing elements
-      // Only run full init once; on astro:page-load just re-sync UI state
-      var btn = document.getElementById('theme-btn');
-      var dropdown = document.getElementById('theme-dropdown');
+  (function () {
+    function init() {
+      var btn       = document.getElementById('theme-btn');
+      var dropdown  = document.getElementById('theme-dropdown');
+      var icon      = document.getElementById('theme-icon');
+      var label     = document.getElementById('theme-label');
       if (!btn || !dropdown) return;
 
-      var icon = document.getElementById('theme-icon');
-      var label = document.getElementById('theme-label');
-      var options = dropdown.querySelectorAll('.theme-option');
+      // Remove old delegated listener (if any) by cloning
+      var newBtn      = btn.cloneNode(true);
+      var newDropdown = dropdown.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      dropdown.parentNode.replaceChild(newDropdown, dropdown);
+      // Re-query after replace
+      btn      = document.getElementById('theme-btn');
+      dropdown = document.getElementById('theme-dropdown');
+      icon     = document.getElementById('theme-icon');
+      label    = document.getElementById('theme-label');
 
+      var options = dropdown.querySelectorAll('.theme-option');
       var themeMap = {
-        cosmos: { icon: '🌌', label: '宇宙' },
-        day:    { icon: '☀️', label: '白昼' },
-        nebula: { icon: '🌠', label: '星云' }
+        cosmos:  { icon: '🌌', label: '宇宙' },
+        day:     { icon: '☀️', label: '白昼' },
+        nebula:  { icon: '🌠', label: '星云' },
       };
 
       function applyTheme(key) {
@@ -64,57 +68,59 @@ const themes = [
         } else {
           document.documentElement.setAttribute('data-theme', key);
         }
-        localStorage.setItem('theme', key);
-        var t = themeMap[key];
-        if (icon) icon.textContent = t.icon;
+        try { localStorage.setItem('theme', key); } catch (e) {}
+        var t = themeMap[key] || themeMap['cosmos'];
+        if (icon)  icon.textContent  = t.icon;
         if (label) label.textContent = t.label;
         for (var i = 0; i < options.length; i++) {
           var check = options[i].querySelector('.theme-check');
-          if (check) {
-            if (options[i].getAttribute('data-theme-key') === key) {
-              check.classList.remove('hidden');
-            } else {
-              check.classList.add('hidden');
-            }
-          }
+          if (!check) continue;
+          check.classList.toggle(
+            'hidden',
+            options[i].getAttribute('data-theme-key') !== key
+          );
         }
       }
 
-      // Always sync UI to saved theme (handles astro:page-load re-init)
-      var saved = localStorage.getItem('theme') || 'cosmos';
+      // Sync UI to saved theme
+      var saved = 'cosmos';
+      try { saved = localStorage.getItem('theme') || 'cosmos'; } catch (e) {}
       applyTheme(saved);
 
-      // Only bind events once
-      if (initialized) return;
-      initialized = true;
-
-      btn.addEventListener('click', function(e) {
+      // Bind events (on freshly-cloned nodes — no duplicates)
+      btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        var isOpen = !dropdown.classList.contains('hidden');
         dropdown.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!isOpen));
       });
 
       for (var i = 0; i < options.length; i++) {
-        options[i].addEventListener('click', function() {
-          var key = this.getAttribute('data-theme-key') || 'cosmos';
-          applyTheme(key);
-          dropdown.classList.add('hidden');
-        });
+        (function (opt) {
+          opt.addEventListener('click', function () {
+            var key = opt.getAttribute('data-theme-key') || 'cosmos';
+            applyTheme(key);
+            dropdown.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+          });
+        })(options[i]);
       }
 
-      document.addEventListener('click', function() {
-        dropdown.classList.add('hidden');
+      document.addEventListener('click', function (e) {
+        if (!dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+          dropdown.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        }
       });
     }
 
+    // Run now
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setup);
+      document.addEventListener('DOMContentLoaded', init);
     } else {
-      setup();
+      init();
     }
-    document.addEventListener('astro:page-load', function() {
-      // Re-sync theme on page transition (don't re-bind events)
-      initialized = false;
-      setup();
-    });
+    // Re-run on every Astro page transition
+    document.addEventListener('astro:page-load', init);
   })();
 </script>

@@ -86,28 +86,42 @@ const currentPath = Astro.url.pathname;
 <!-- Add spacer for fixed header -->
 <div class="h-16"></div>
 
-<script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
-  const iconOpen = document.getElementById('menu-icon-open');
-  const iconClose = document.getElementById('menu-icon-close');
+<script is:inline>
+  function initMobileMenu() {
+    var btn = document.getElementById('mobile-menu-btn');
+    var menu = document.getElementById('mobile-menu');
+    var iconOpen = document.getElementById('menu-icon-open');
+    var iconClose = document.getElementById('menu-icon-close');
+    if (!btn || !menu) return;
 
-  if (btn && menu && iconOpen && iconClose) {
-    btn.addEventListener('click', () => {
-      const isOpen = !menu.classList.contains('hidden');
+    // Remove old listeners by replacing elements
+    var newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    btn = document.getElementById('mobile-menu-btn');
+
+    btn.addEventListener('click', function () {
+      var isOpen = !menu.classList.contains('hidden');
       menu.classList.toggle('hidden');
-      iconOpen.classList.toggle('hidden');
-      iconClose.classList.toggle('hidden');
+      if (iconOpen) iconOpen.classList.toggle('hidden');
+      if (iconClose) iconClose.classList.toggle('hidden');
       btn.setAttribute('aria-expanded', String(!isOpen));
     });
   }
 
-  // Header background opacity on scroll
-  const header = document.getElementById('site-header');
-  if (header) {
-    window.addEventListener('scroll', () => {
-      const scrolled = window.scrollY > 20;
+  function initScrollHeader() {
+    var header = document.getElementById('site-header');
+    if (!header) return;
+    window.addEventListener('scroll', function () {
+      var scrolled = window.scrollY > 20;
       header.style.borderBottomColor = scrolled ? 'var(--color-border)' : 'transparent';
-    });
+    }, { passive: true });
   }
+
+  initMobileMenu();
+  initScrollHeader();
+
+  document.addEventListener('astro:page-load', function () {
+    initMobileMenu();
+    initScrollHeader();
+  });
 </script>
