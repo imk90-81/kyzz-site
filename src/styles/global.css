@@ -517,6 +517,10 @@
 [data-theme='nebula'] .ai-emoji { color: #ff6ec7; }
 [data-theme='nebula'] .ai-highlight { color: #ff8dd6; }
 
+/* Hero Logo - reliable cross-theme color via CSS variable */
+.hero-logo { font-weight: 900; }
+.hero-logo:hover { filter: brightness(1.2); }
+
 /* Logo brand colors */
 .logo-brand { color: var(--color-accent) !important; }
 .logo-brand-secondary { color: var(--color-text-secondary); }
