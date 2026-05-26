@@ -1,0 +1,181 @@
+---
+---
+<!-- Search Trigger Button -->
+<button
+  id="search-trigger"
+  class="p-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+  aria-label="搜索"
+  title="搜索 (Ctrl+K)"
+>
+  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+</button>
+
+<!-- Search Modal -->
+<div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true">
+  <!-- Backdrop -->
+  <div id="search-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+  <!-- Modal -->
+  <div class="relative flex flex-col items-center pt-[15vh] px-4">
+    <div id="search-box" class="w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl" style="background: var(--color-bg-secondary); border: 1px solid var(--color-border);">
+      <!-- Search Input -->
+      <div class="flex items-center px-4 py-3 border-b" style="border-color: var(--color-border);">
+        <svg class="h-5 w-5 text-zinc-500 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          class="flex-1 bg-transparent text-sm outline-none"
+          placeholder="搜索文章、动态、报告..."
+          style="color: var(--color-text);"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <kbd class="hidden sm:inline-block px-2 py-1 text-xs rounded" style="background: var(--color-bg-tertiary); color: var(--color-text-secondary); border: 1px solid var(--color-border);">ESC</kbd>
+      </div>
+
+      <!-- Results -->
+      <div id="search-results" class="max-h-[60vh] overflow-y-auto">
+        <div id="search-hint" class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">
+          开始输入以搜索...
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-4 py-2 flex items-center justify-between border-t text-xs" style="border-color: var(--color-border); color: var(--color-text-secondary);">
+        <span>Powered by <span style="color: var(--color-accent);">Pagefind</span></span>
+        <div class="flex items-center gap-4">
+          <span><kbd class="px-1 py-0.5 rounded" style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border);">↑↓</kbd> 导航</span>
+          <span><kbd class="px-1 py-0.5 rounded" style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border);">Enter</kbd> 打开</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function () {
+  var modal = document.getElementById('search-modal');
+  var trigger = document.getElementById('search-trigger');
+  var input = document.getElementById('search-input');
+  var results = document.getElementById('search-results');
+  var hint = document.getElementById('search-hint');
+  var backdrop = document.getElementById('search-backdrop');
+
+  if (!modal || !trigger || !input) return;
+
+  var pagefind = null;
+  var isLoading = false;
+
+  // Lazy load pagefind
+  async function loadPagefind() {
+    if (pagefind || isLoading) return pagefind;
+    isLoading = true;
+    try {
+      var pf = await import('/pagefind/pagefind.js');
+      await pf.init();
+      pagefind = pf;
+    } catch (e) {
+      pagefind = null;
+    }
+    isLoading = false;
+    return pagefind;
+  }
+
+  function openModal() {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () { input.focus(); }, 50);
+    loadPagefind();
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    input.value = '';
+    results.innerHTML = '<div id="search-hint" class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">开始输入以搜索...</div>';
+  }
+
+  function highlight(text, term) {
+    if (!term || !text) return text;
+    var regex = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return text.replace(regex, '<mark style="background: var(--color-accent); color: #000; border-radius: 2px; padding: 0 2px;">$1</mark>');
+  }
+
+  function renderResults(data, term) {
+    if (!data || !data.results || data.results.length === 0) {
+      results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">未找到相关内容</div>';
+      return;
+    }
+    var html = '';
+    var limit = Math.min(data.results.length, 10);
+    for (var i = 0; i < limit; i++) {
+      var r = data.results[i];
+      var title = r.meta && r.meta.title ? r.meta.title : r.url;
+      var excerpt = r.data ? r.data() : Promise.resolve('');
+      (function (item, idx) {
+        item.data().then(function (content) {
+          var ex = content.substring(0, 120) + (content.length > 120 ? '...' : '');
+          var el = document.getElementById('result-' + idx);
+          if (el) {
+            var filtered = content.replace(/<[^>]+>/g, '');
+            var shortEx = filtered.substring(0, 120) + (filtered.length > 120 ? '...' : '');
+            el.innerHTML = '<div class="text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div><div class="text-xs" style="color: var(--color-text-secondary);">' + highlight(shortEx, term) + '</div>';
+          }
+        });
+      })(r, i);
+      var url = r.url;
+      var displayUrl = url.replace(/^\//, '').substring(0, 50);
+      html += '<a href="' + url + '" id="result-' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
+      html += '<div class="text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div>';
+      html += '<div class="text-xs" style="color: var(--color-text-secondary);">加载中...</div>';
+      html += '</a>';
+    }
+    results.innerHTML = html;
+  }
+
+  var searchTimer = null;
+  input.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    var q = input.value.trim();
+    if (!q) {
+      results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">开始输入以搜索...</div>';
+      return;
+    }
+    searchTimer = setTimeout(async function () {
+      var pf = await loadPagefind();
+      if (!pf) {
+        results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索索引加载中，请稍候...</div>';
+        return;
+      }
+      results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索中...</div>';
+      try {
+        var data = await pf.search(q);
+        renderResults(data, q);
+      } catch (e) {
+        results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索失败，请重试</div>';
+      }
+    }, 200);
+  });
+
+  trigger.addEventListener('click', openModal);
+  backdrop.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      if (modal.classList.contains('hidden')) {
+        openModal();
+      } else {
+        closeModal();
+      }
+    }
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+})();
+</script>
