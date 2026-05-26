@@ -39,17 +39,11 @@ const themes = [
 
 <script is:inline>
   (function() {
+    var initialized = false;
+
     function setup() {
-      // Always read fresh from localStorage
-      var saved = localStorage.getItem('theme') || 'cosmos';
-
-      // Apply to <html> for CSS [data-theme] selectors
-      if (saved === 'cosmos') {
-        document.documentElement.removeAttribute('data-theme');
-      } else {
-        document.documentElement.setAttribute('data-theme', saved);
-      }
-
+      // Remove old listeners by cloning and replacing elements
+      // Only run full init once; on astro:page-load just re-sync UI state
       var btn = document.getElementById('theme-btn');
       var dropdown = document.getElementById('theme-dropdown');
       if (!btn || !dropdown) return;
@@ -86,8 +80,13 @@ const themes = [
         }
       }
 
-      // Sync UI to current saved theme on page load
+      // Always sync UI to saved theme (handles astro:page-load re-init)
+      var saved = localStorage.getItem('theme') || 'cosmos';
       applyTheme(saved);
+
+      // Only bind events once
+      if (initialized) return;
+      initialized = true;
 
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -112,6 +111,10 @@ const themes = [
     } else {
       setup();
     }
-    document.addEventListener('astro:page-load', setup);
+    document.addEventListener('astro:page-load', function() {
+      // Re-sync theme on page transition (don't re-bind events)
+      initialized = false;
+      setup();
+    });
   })();
 </script>

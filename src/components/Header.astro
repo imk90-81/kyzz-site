@@ -12,9 +12,9 @@ const navLinks = [
 const currentPath = Astro.url.pathname;
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 border-b border-space-500/50" id="site-header">
+<header class="fixed top-0 left-0 right-0 z-50 border-b" id="site-header" style="background: var(--color-header-bg, rgba(10,10,15,0.8)); border-color: var(--color-border); backdrop-filter: blur(12px);">
   <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-    <nav class="flex h-16 items-center justify-between backdrop-blur-md bg-space-900/80">
+    <nav class="flex h-16 items-center justify-between">
       <!-- Logo -->
       <a href="/" class="group flex items-center gap-2 text-lg font-bold tracking-tight transition-colors">
         <span class="logo-brand group-hover:logo-brand-hover transition-colors" style="color: var(--color-accent) !important">Kyzz</span>
@@ -62,7 +62,7 @@ const currentPath = Astro.url.pathname;
   </div>
 
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="sm:hidden hidden border-t border-space-500/50 bg-space-900/95 backdrop-blur-md">
+  <div id="mobile-menu" class="sm:hidden hidden border-t" style="background: var(--color-header-bg, rgba(10,10,15,0.95)); border-color: var(--color-border); backdrop-filter: blur(12px);">
     <ul class="px-4 py-3 space-y-1">
       {navLinks.map((link) => (
         <li>
@@ -107,7 +107,7 @@ const currentPath = Astro.url.pathname;
   if (header) {
     window.addEventListener('scroll', () => {
       const scrolled = window.scrollY > 20;
-      header.style.borderBottomColor = scrolled ? 'rgba(30, 30, 46, 0.8)' : 'rgba(30, 30, 46, 0.3)';
+      header.style.borderBottomColor = scrolled ? 'var(--color-border)' : 'transparent';
     });
   }
 </script>
