@@ -62,7 +62,6 @@
   var trigger = document.getElementById('search-trigger');
   var input = document.getElementById('search-input');
   var results = document.getElementById('search-results');
-  var hint = document.getElementById('search-hint');
   var backdrop = document.getElementById('search-backdrop');
 
   if (!modal || !trigger || !input) return;
@@ -123,9 +122,9 @@
       var r = data.results[i];
       var title = (r.meta && r.meta.title) ? r.meta.title : (r.url || '');
       var url = r.url || '#';
+      var safeUrl = url.replace(/'/g, "\\'");
 
-      // 先用 meta 信息渲染占位，异步加载 content 后更新
-      html += '<a href="' + url + '" data-pf-result="' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
+      html += '<a href="' + url + '" data-result-url="' + safeUrl + '" data-result-idx="' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
       html += '<div class="pf-title text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div>';
       html += '<div class="pf-excerpt text-xs" style="color: var(--color-text-secondary);">加载中...</div>';
       html += '</a>';
@@ -133,12 +132,28 @@
 
     results.innerHTML = html;
 
+    // 绑定跳转事件
+    var links = results.querySelectorAll('a[data-result-url]');
+    for (var li = 0; li < links.length; li++) {
+      (function (link) {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var targetUrl = link.getAttribute('href');
+          if (targetUrl && targetUrl !== '#') {
+            closeModal();
+            setTimeout(function () { window.location.href = targetUrl; }, 100);
+          }
+        });
+      })(links[li]);
+    }
+
     // 异步加载每条结果的 excerpt
     for (var j = 0; j < limit; j++) {
       try {
         var item = data.results[j];
         var d = await item.data();
-        var el = document.querySelector('[data-pf-result="' + j + '"]');
+        var el = document.querySelector('[data-result-idx="' + j + '"]');
         if (el && d) {
           var excerptEl = el.querySelector('.pf-excerpt');
           if (excerptEl) {
@@ -146,7 +161,6 @@
             var shortEx = raw.substring(0, 120) + (raw.length > 120 ? '...' : '');
             excerptEl.innerHTML = highlight(shortEx, term);
           }
-          // 更新标题（meta 可能不准确）
           var titleEl = el.querySelector('.pf-title');
           if (titleEl && d.meta && d.meta.title) {
             titleEl.innerHTML = highlight(d.meta.title, term);
@@ -199,7 +213,10 @@
     } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault();
       var target = items[activeIndex];
-      if (target) window.location.href = target.getAttribute('href');
+      if (target) {
+        closeModal();
+        setTimeout(function () { window.location.href = target.getAttribute('href'); }, 100);
+      }
     }
   });
 
@@ -208,17 +225,6 @@
       items[k].style.background = (k === activeIndex) ? 'rgba(255,255,255,0.08)' : '';
     }
   }
-
-  results.addEventListener('click', function (e) {
-    var link = e.target.closest('a[data-pf-result]');
-    if (link) {
-      e.preventDefault();
-      e.stopPropagation();
-      closeModal();
-      var href = link.getAttribute('href');
-      if (href) window.location.href = href;
-    }
-  });
 
   trigger.addEventListener('click', openModal);
   backdrop.addEventListener('click', closeModal);
