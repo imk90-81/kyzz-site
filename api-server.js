@@ -12,52 +12,61 @@ const ROOT = path.resolve(__dirname, '.');
 const PORT = 3210;
 
 function handlePublish(body) {
-  const { date, files, build, push, dryRun } = body;
-  
-  if (!date || !files || !files.length) {
-    return { success: false, output: 'Missing required fields: date, files' };
+  const { date, sources, htmls, build, push, dryRun } = body;
+
+  if (!date) {
+    return { success: false, output: 'Missing required field: date' };
   }
 
   const results = [];
   let hasError = false;
 
-  for (const file of files) {
-    const { source, html, targets, name } = file;
-    
-    const args = ['--date', date, '--target', targets.join(','), '--source', source];
-    if (html) args.push('--html', html);
+  // 处理 sources（.md 文件，发布到 daily/blog，不支持 reports）
+  for (const src of (sources || [])) {
+    const { path: srcPath, name, targets = [] } = src;
+
+    if (!srcPath) continue;
+
+    // reports 不从 sources 发布（需 html 文件）
+    const realTargets = targets.filter(t => t !== 'reports');
+    if (realTargets.length === 0) {
+      // md 文件被放到了 reports 栏目 -> 警告
+      results.push({
+        source: srcPath,
+        targets: ['reports'],
+        success: false,
+        output: '⚠️ 类型不匹配：Reports 栏目需使用 .html 文件，.md 文件无法发布到此栏目'
+      });
+      hasError = true;
+      continue;
+    }
+
+    const args = ['--date', date, '--target', realTargets.join(','), '--source', srcPath];
     if (name) args.push('--name', name);
     if (build) args.push('--build');
     if (push) args.push('--push');
     if (dryRun) args.push('--dry-run');
 
-    const scriptPath = path.join(ROOT, 'scripts/publish.js');
-    const cmd = 'node "' + scriptPath + '" ' + args.map(function(a) { return '"' + a.replace(/"/g, '\\"') + '"'; }).join(' ');
+    runScript(args, srcPath, realTargets, results, hasError);
+  }
 
-    try {
-      const output = execSync(cmd, {
-        cwd: ROOT,
-        encoding: 'utf8',
-        timeout: 120000,
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
+  // 处理 htmls（.html 文件，发布到 reports）
+  for (const h of (htmls || [])) {
+    const { path: htmlPath, name } = h;
+    if (!htmlPath) continue;
 
-      results.push({
-        source,
-        targets,
-        success: true,
-        output: output.trim()
-      });
-    } catch (e) {
-      hasError = true;
-      const errOutput = (e.stdout ? e.stdout.toString() : '') + (e.stderr ? e.stderr.toString() : '') || String(e.message);
-      results.push({
-        source: source || 'unknown',
-        targets: targets || [],
-        success: false,
-        output: errOutput
-      });
-    }
+    const targets = ['reports'];
+    const args = ['--date', date, '--target', 'reports', '--html', htmlPath];
+    if (name) args.push('--name', name);
+    if (build) args.push('--build');
+    if (push) args.push('--push');
+    if (dryRun) args.push('--dry-run');
+
+    runScript(args, htmlPath, targets, results, hasError);
+  }
+
+  if (results.length === 0) {
+    return { success: false, output: 'No files to publish. Add at least one file to a column.' };
   }
 
   const summary = results.map(r => {
@@ -65,11 +74,33 @@ function handlePublish(body) {
     return `${status} [${r.targets.join(',')}] ${r.source}\n${r.output}`;
   }).join('\n\n---\n\n');
 
-  return { success: !hasError, output: summary };
+  const allSuccess = results.every(r => r.success);
+  return { success: allSuccess, output: summary };
+}
+
+function runScript(args, src, targets, results, hasError) {
+  const scriptPath = path.join(ROOT, 'scripts/publish.js');
+  // 重新构造命令，用引号包裹每个参数
+  const cmd = 'node "' + scriptPath + '" ' + args.map(function(a) {
+    return '"' + String(a).replace(/"/g, '\\"') + '"';
+  }).join(' ');
+
+  try {
+    const output = execSync(cmd, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      timeout: 180000,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    results.push({ source: src, targets, success: true, output: output.trim() });
+  } catch (e) {
+    hasError = true;
+    const errOutput = (e.stdout ? e.stdout.toString() : '') + (e.stderr ? e.stderr.toString() : '') || String(e.message);
+    results.push({ source: src, targets, success: false, output: errOutput });
+  }
 }
 
 const server = http.createServer((req, res) => {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

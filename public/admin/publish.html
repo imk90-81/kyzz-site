@@ -15,6 +15,7 @@
       --primary: #00e5ff;
       --danger: #ef4444;
       --success: #22c55e;
+      --warning: #f59e0b;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -26,7 +27,6 @@
     .container { max-width: 900px; margin: 0 auto; }
     h1 { color: var(--primary); margin-bottom: 30px; font-size: 28px; }
     h2 { color: var(--primary); font-size: 18px; margin-bottom: 12px; }
-    h3 { color: var(--text); font-size: 16px; margin-bottom: 12px; font-weight: 500; }
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -36,7 +36,7 @@
     }
     .form-group { margin-bottom: 20px; }
     label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
-    input[type="text"], input[type="date"], select {
+    input[type="date"] {
       width: 100%;
       padding: 12px 16px;
       background: var(--bg);
@@ -45,52 +45,97 @@
       color: var(--text);
       font-size: 16px;
     }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
-    
-    /* 文件条目 */
-    .file-entry {
+    input:focus { outline: none; border-color: var(--primary); }
+
+    /* 栏目区块 */
+    .column-block {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 12px;
-      position: relative;
+      transition: border-color 0.2s;
     }
-    .file-entry:hover { border-color: var(--primary); }
-    .file-row { display: flex; gap: 12px; margin-bottom: 12px; }
-    .file-row:last-child { margin-bottom: 0; }
-    .file-row > div { flex: 1; }
-    .file-row > div.small { flex: 0 0 120px; }
-    
-    .checkbox-group { display: flex; gap: 12px; flex-wrap: wrap; }
-    .checkbox-item { display: flex; align-items: center; gap: 6px; }
-    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
-    .checkbox-item label { margin-bottom: 0; font-size: 14px; }
-    
+    .column-block:hover { border-color: var(--primary); }
+    .column-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .column-header input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .column-name { font-weight: 600; font-size: 15px; }
+    .column-ext { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+    .column-ext span { background: #1e293b; padding: 2px 8px; border-radius: 4px; }
+
+    /* 文件列表 */
+    .file-chips { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; }
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      max-width: 240px;
+    }
+    .file-chip .fname {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-chip .fremove {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+    }
+    .file-chip .fremove:hover { color: var(--danger); }
+
+    /* 操作按钮 */
     .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background: var(--primary); color: var(--bg); border: none; }
     .btn-primary:hover { opacity: 0.9; }
     .btn-secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
     .btn-secondary:hover { background: rgba(0, 229, 255, 0.1); }
-    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
     .btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-    
+
+    /* 结果 */
     .result { margin-top: 20px; padding: 16px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); }
     .result.success { border-color: var(--success); }
     .result.error { border-color: var(--danger); }
     .result pre { white-space: pre-wrap; font-family: monospace; font-size: 13px; max-height: 400px; overflow-y: auto; }
-    .loading { display: none; color: var(--primary); }
+    .loading { display: none; color: var(--primary); margin-top: 12px; }
     .hint { color: var(--text-muted); font-size: 12px; margin-top: 4px; opacity: 0.7; }
     ul { color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px; }
     a { color: var(--primary); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .nav { margin-bottom: 20px; }
-    .remove-btn { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 12px; }
-    .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-right: 60px; }
-    .entry-number { color: var(--primary); font-weight: 600; font-size: 14px; }
+
+    /* 警告提示 */
+    .warn-bar {
+      display: none;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid var(--warning);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      color: var(--warning);
+      font-size: 14px;
+    }
+    .warn-bar.show { display: flex; align-items: center; gap: 8px; }
+    .warn-icon { font-size: 18px; }
+
+    /* 禁用态 */
+    .column-block.disabled { opacity: 0.5; pointer-events: none; }
+    .column-block.disabled .column-header { pointer-events: none; }
   </style>
 </head>
 <body>
@@ -98,167 +143,212 @@
     <div class="nav">
       <a href="/">← 返回首页</a>
     </div>
-    
+
     <h1>📦 内容发布</h1>
-    
+
     <div class="card">
-      <div class="form-group">
-        <label for="date">发布日期 *</label>
-        <input type="date" id="date" />
+      <!-- 警告栏 -->
+      <div class="warn-bar" id="warn-bar">
+        <span class="warn-icon">⚠️</span>
+        <span id="warn-text"></span>
       </div>
-      
+
+      <!-- 日期 -->
       <div class="form-group">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="margin: 0;">文件列表</h3>
-          <button class="btn btn-ghost" id="add-file-btn">+ 添加文件</button>
-        </div>
-        <div id="file-list">
-          <!-- 文件条目将动态插入 -->
-        </div>
-        <p class="hint">可添加多个文件，每个文件可发布到不同栏目</p>
+        <label for="pub-date">发布日期 *</label>
+        <input type="date" id="pub-date" />
       </div>
-      
-      <div class="form-group">
-        <label>全局操作</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item">
-            <input type="checkbox" id="do-build" />
-            <label for="do-build">发布后自动构建</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="do-push" />
-            <label for="do-push">发布后自动推送</label>
-          </div>
+
+      <!-- Daily -->
+      <div class="column-block" id="block-daily">
+        <div class="column-header">
+          <input type="checkbox" id="col-daily" checked onchange="onColumnToggle('daily', this.checked)" />
+          <label for="col-daily" class="column-name">Daily</label>
+          <span class="column-ext"><span>.md 文件</span></span>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onclick="triggerPick('daily')">+ 选择文件</button>
+          <input type="file" id="pick-daily" accept=".md" multiple style="display:none" onchange="onFilesPicked('daily', this.files)" />
+        </div>
+        <div class="file-chips" id="chips-daily"></div>
+      </div>
+
+      <!-- Blog -->
+      <div class="column-block" id="block-blog">
+        <div class="column-header">
+          <input type="checkbox" id="col-blog" checked onchange="onColumnToggle('blog', this.checked)" />
+          <label for="col-blog" class="column-name">Blog</label>
+          <span class="column-ext"><span>.md 文件</span></span>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onclick="triggerPick('blog')">+ 选择文件</button>
+          <input type="file" id="pick-blog" accept=".md" multiple style="display:none" onchange="onFilesPicked('blog', this.files)" />
+        </div>
+        <div class="file-chips" id="chips-blog"></div>
+      </div>
+
+      <!-- Reports -->
+      <div class="column-block" id="block-reports">
+        <div class="column-header">
+          <input type="checkbox" id="col-reports" onchange="onColumnToggle('reports', this.checked)" />
+          <label for="col-reports" class="column-name">Reports</label>
+          <span class="column-ext"><span>.html 文件</span></span>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onclick="triggerPick('reports')">+ 选择文件</button>
+          <input type="file" id="pick-reports" accept=".html,.htm" multiple style="display:none" onchange="onFilesPicked('reports', this.files)" />
+        </div>
+        <div class="file-chips" id="chips-reports"></div>
+      </div>
+
+      <!-- 全局操作 -->
+      <div class="form-group" style="margin-top:20px">
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="do-build" style="width:18px;height:18px;accent-color:var(--primary)" />
+            <span style="color:var(--text-muted);font-size:14px">发布后自动构建</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="do-push" style="width:18px;height:18px;accent-color:var(--primary)" />
+            <span style="color:var(--text-muted);font-size:14px">发布后自动推送</span>
+          </label>
         </div>
       </div>
-      
+
       <div class="btn-group">
         <button class="btn btn-secondary" id="preview-btn">预览</button>
         <button class="btn btn-primary" id="publish-btn">发布</button>
       </div>
-      
+
       <p class="loading" id="loading">处理中...</p>
-      
-      <div class="result" id="result" style="display: none;">
+
+      <div class="result" id="result" style="display:none">
         <pre id="result-text"></pre>
       </div>
     </div>
-    
+
     <div class="card">
       <h2>使用说明</h2>
       <ul>
-        <li><strong>批量发布：</strong>点击"添加文件"可添加多个文件条目</li>
-        <li><strong>栏目选择：</strong>每个文件可独立选择目标栏目（daily / reports / blog）</li>
-        <li><strong>HTML 文件：</strong>reports 栏目需要 HTML 文件，其他栏目可选</li>
-        <li><strong>预览：</strong>查看将要生成的文件列表，不实际写入</li>
-        <li><strong>发布：</strong>实际写入文件，可选自动构建和推送</li>
+        <li>每个栏目独立选择文件，选中的栏目必须至少有一个文件</li>
+        <li><strong>Daily / Blog</strong>：选择 .md 文件（源 Markdown）</li>
+        <li><strong>Reports</strong>：选择 .html 文件（嵌入报告）</li>
+        <li>文件名前缀自动从文件名提取，无需手动填写</li>
+        <li>预览不实际写入文件，仅显示将要生成的文件列表</li>
       </ul>
     </div>
   </div>
-  
+
   <script>
-    // 初始化
-    document.getElementById('date').valueAsDate = new Date();
-    let fileCounter = 0;
-    
-    // 添加文件条目
-    function addFileEntry(sourcePath = '', htmlPath = '', targets = ['daily'], nameVal = '') {
-      const list = document.getElementById('file-list');
-      const entry = document.createElement('div');
-      entry.className = 'file-entry';
-      entry.id = `file-entry-${fileCounter}`;
-      
-      const targetChecks = ['daily', 'reports', 'blog'].map(t => 
-        `<div class="checkbox-item">
-          <input type="checkbox" id="target-${t}-${fileCounter}" value="${t}" ${targets.includes(t) ? 'checked' : ''} />
-          <label for="target-${t}-${fileCounter}">${t}</label>
+    // 初始化日期为今天
+    document.getElementById('pub-date').valueAsDate = new Date();
+
+    // 每个栏目的选中文件和 checkbox 状态
+    const state = { daily: [], blog: [], reports: [] };
+
+    // 触发文件选择
+    function triggerPick(col) {
+      document.getElementById('pick-' + col).click();
+    }
+
+    // 文件选择后的处理
+    function onFilesPicked(col, fileList) {
+      // 清理已选文件，避免重复（按完整路径去重）
+      const existingPaths = new Set(state[col].map(f => f.path));
+      for (const file of fileList) {
+        if (!existingPaths.has(file.path)) {
+          state[col].push({ name: file.name, path: file.path });
+        }
+      }
+      renderChips(col);
+      checkWarnings();
+      // 清空 input 以便再次选择相同文件时仍能触发
+      document.getElementById('pick-' + col).value = '';
+    }
+
+    // 删除某个文件
+    function removeFile(col, idx) {
+      state[col].splice(idx, 1);
+      renderChips(col);
+      checkWarnings();
+    }
+
+    // 渲染文件 chips
+    function renderChips(col) {
+      const container = document.getElementById('chips-' + col);
+      container.innerHTML = state[col].map((f, i) =>
+        `<div class="file-chip">
+          <span class="fname" title="${f.path}">${f.name}</span>
+          <span class="fremove" onclick="removeFile('${col}', ${i})">×</span>
         </div>`
       ).join('');
-      
-      entry.innerHTML = `
-        <div class="entry-header">
-          <span class="entry-number">文件 #${list.children.length + 1}</span>
-        </div>
-        <button class="btn btn-danger remove-btn" onclick="removeFileEntry(${fileCounter})">删除</button>
-        <div class="file-row">
-          <div>
-            <label>源 Markdown 文件 *</label>
-            <input type="text" class="source-input" placeholder="如: D:\\素材\\2026-05-28.md" value="${sourcePath}" />
-          </div>
-          <div class="small">
-            <label>文件名前缀</label>
-            <input type="text" class="name-input" placeholder="默认: ai-coding-daily" value="${nameVal || ''}" />
-            <p class="hint">如: a-gu-chenjian（留空则用默认值）</p>
-          </div>
-        </div>
-        <div class="file-row">
-          <div>
-            <label>HTML 文件（可选）</label>
-            <input type="text" class="html-input" placeholder="如: D:\\素材\\2026-05-28.html" value="${htmlPath}" />
-          </div>
-        </div>
-        <div class="file-row">
-          <div>
-            <label>目标栏目 *</label>
-            <div class="checkbox-group">${targetChecks}</div>
-          </div>
-        </div>
-      `;
-      
-      list.appendChild(entry);
-      fileCounter++;
-      updateEntryNumbers();
     }
-    
-    // 删除文件条目
-    function removeFileEntry(id) {
-      const entry = document.getElementById(`file-entry-${id}`);
-      if (entry) {
-        entry.remove();
-        updateEntryNumbers();
+
+    // 栏目 checkbox 切换
+    function onColumnToggle(col, checked) {
+      const block = document.getElementById('block-' + col);
+      if (checked) {
+        block.classList.remove('disabled');
+      } else {
+        block.classList.add('disabled');
+        state[col] = [];
+        renderChips(col);
+      }
+      checkWarnings();
+    }
+
+    // 检查警告
+    function checkWarnings() {
+      const warnings = [];
+      const activeCols = ['daily', 'blog', 'reports'].filter(c => document.getElementById('col-' + c).checked);
+
+      if (activeCols.length === 0) {
+        warnings.push('请至少选择一个栏目');
+      }
+
+      for (const col of activeCols) {
+        if (state[col].length === 0) {
+          warnings.push(`${col} 栏目已选但未添加任何文件`);
+        }
+      }
+
+      showWarnings(warnings);
+    }
+
+    function showWarnings(msgs) {
+      const bar = document.getElementById('warn-bar');
+      const text = document.getElementById('warn-text');
+      if (msgs.length > 0) {
+        text.textContent = msgs.join('；') + '。';
+        bar.classList.add('show');
+      } else {
+        bar.classList.remove('show');
       }
     }
-    
-    // 更新编号
-    function updateEntryNumbers() {
-      const entries = document.querySelectorAll('.file-entry');
-      entries.forEach((entry, index) => {
-        const num = entry.querySelector('.entry-number');
-        if (num) num.textContent = `文件 #${index + 1}`;
-      });
-    }
-    
-    // 获取所有文件数据
-    function getAllFiles() {
-      const entries = document.querySelectorAll('.file-entry');
-      const files = [];
-      
-      entries.forEach(entry => {
-        const source = entry.querySelector('.source-input').value.trim();
-        const html = entry.querySelector('.html-input').value.trim();
-        const targetCheckboxes = entry.querySelectorAll('input[type="checkbox"]:checked');
-        const targets = Array.from(targetCheckboxes).map(cb => cb.value);
-        
-        if (source && targets.length > 0) {
-          const name = entry.querySelector('.name-input').value.trim() || null;
-          files.push({ source, html: html || null, targets, name });
+
+    // 获取表单数据，构建 API payload
+    function getPayload(dryRun) {
+      const date = document.getElementById('pub-date').value;
+      const sources = [];   // [{path, name, targets}]
+      const htmls = [];    // [{path, name}]
+
+      for (const col of ['daily', 'blog', 'reports']) {
+        if (!document.getElementById('col-' + col).checked) continue;
+        for (const file of state[col]) {
+          const name = file.name.replace(/\.(md|html?)$/i, '');
+          if (col === 'reports') {
+            // reports 用 htmls，每个条目带 targets
+            htmls.push({ path: file.path, name, targets: ['reports'] });
+          } else {
+            // daily/blog 用 sources，合并 targets
+            // 同一 name 的文件，合并 targets
+            const existing = sources.find(s => s.name === name);
+            if (existing) {
+              if (!existing.targets.includes(col)) existing.targets.push(col);
+            } else {
+              sources.push({ path: file.path, name, targets: [col] });
+            }
+          }
         }
-      });
-      
-      return files;
+      }
+
+      return { date, sources, htmls, build: document.getElementById('do-build').checked, push: document.getElementById('do-push').checked, dryRun };
     }
-    
-    // 获取表单数据
-    function getFormData() {
-      return {
-        date: document.getElementById('date').value,
-        files: getAllFiles(),
-        doBuild: document.getElementById('do-build').checked,
-        doPush: document.getElementById('do-push').checked
-      };
-    }
-    
-    // 显示结果
+
     function showResult(text, isError) {
       const result = document.getElementById('result');
       const resultText = document.getElementById('result-text');
@@ -267,44 +357,33 @@
       resultText.textContent = text;
       document.getElementById('loading').style.display = 'none';
     }
-    
-    // 执行发布
+
     async function runPublish(dryRun) {
-      const data = getFormData();
-      
-      if (!data.date) { showResult('❌ 请选择日期', true); return; }
-      if (data.files.length === 0) { showResult('❌ 请添加至少一个有效的文件条目（源文件路径 + 目标栏目）', true); return; }
-      
+      const payload = getPayload(dryRun);
+
+      if (!payload.date) { showResult('❌ 请选择日期', true); return; }
+      if (payload.sources.length === 0 && payload.htmls.length === 0) {
+        showResult('❌ 请至少选择一个栏目并添加文件', true); return;
+      }
+
       document.getElementById('loading').style.display = 'block';
       document.getElementById('result').style.display = 'none';
-      
+
       try {
         const res = await fetch('http://localhost:3210/api/publish', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            date: data.date,
-            files: data.files,
-            build: data.doBuild,
-            push: data.doPush,
-            dryRun: dryRun
-          })
+          body: JSON.stringify(payload)
         });
-        
         const json = await res.json();
         showResult(json.output, !json.success);
       } catch (e) {
         showResult('❌ 请求失败: ' + e.message, true);
       }
     }
-    
-    // 事件绑定
-    document.getElementById('add-file-btn').addEventListener('click', () => addFileEntry());
+
     document.getElementById('preview-btn').addEventListener('click', () => runPublish(true));
     document.getElementById('publish-btn').addEventListener('click', () => runPublish(false));
-    
-    // 默认添加一个条目
-    addFileEntry();
   </script>
 </body>
 </html>
