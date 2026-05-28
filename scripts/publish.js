@@ -51,13 +51,30 @@ kyzz-publish - 发布内容到 kyzz-site
 // --- 工具函数 ---
 function readFile(p) {
   if (!fs.existsSync(p)) throw new Error('文件不存在: ' + p);
-  return fs.readFileSync(p, 'utf8');
+  const buf = fs.readFileSync(p);
+  // 尝试 UTF-8 解码，若含大量替换字符则尝试 GB18030
+  const utf8Str = buf.toString('utf8');
+  // 统计替换字符比例，超过 5% 认为是非 UTF-8
+  const total = utf8Str.length;
+  const bad = (utf8Str.match(/\ufffd/g) || []).length;
+  if (total > 0 && bad / total > 0.05) {
+    // 尝试 GB18030（Node 18+ 内置支持）
+    try {
+      const gbkStr = new TextDecoder('gb18030', { fatal: true }).decode(buf);
+      console.log('  检测到非 UTF-8 编码，已自动转换为 UTF-8');
+      return gbkStr;
+    } catch (e) {
+      // GB18030 也失败，退回原始 UTF-8
+    }
+  }
+  return utf8Str;
 }
 
 function writeFile(p, content) {
   const dir = path.dirname(p);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(p, content, 'utf8');
+  // 强制 UTF-8 写入
+  fs.writeFileSync(p, content, { encoding: 'utf8' });
   console.log('  OK ' + path.relative(ROOT, p));
 }
 
@@ -99,9 +116,9 @@ function generateDailyMd(sourceMd, date) {
 
 // 生成 reports MD（frontmatter 符合 reports schema）
 function generateReportsMd(date, title, description) {
-  title = title || '报告 ' + date;
-  description = description || '报告 ' + date;
-  return '---\ntitle: "' + title + '"\ndescription: "' + description + '"\npubDate: ' + date + '\ntags: [report]\n---\n\nimport Layout from \'../../layouts/ReportsLayout.astro\';\n\n<Layout title="' + title + '">\n  <div class="iframe-container">\n    <iframe \n      src={`/reports/ai-coding-daily-' + date + '.html`}\n      title="' + title + '"\n      className="report-iframe"\n      style={{ width: \'100%\', height: \'100%\', border: \'none\' }}\n    />\n  </div>\n</Layout>\n';
+  const t = title || '报告 ' + date;
+  const d = description || '报告 ' + date;
+  return '---\ntitle: "' + t + '"\ndescription: "' + d + '"\npubDate: ' + date + '\ntags: [report]\n---\n\nimport Layout from \'../../layouts/ReportsLayout.astro\';\n\n<Layout title="' + t + '">\n  <div class="iframe-container">\n    <iframe \n      src={`/reports/ai-coding-daily-' + date + '.html`}\n      title="' + t + '"\n      className="report-iframe"\n      style={{ width: \'100%\', height: \'100%\', border: \'none\' }}\n    />\n  </div>\n</Layout>\n';
 }
 
 // 生成 blog MD（frontmatter 符合 blog schema）
@@ -163,26 +180,26 @@ function main() {
   targets.forEach(function(t) {
     if (t === 'daily') {
       files.push({
-        path: path.join(ROOT, 'src/content/daily', 'AI_Coding_Daily_' + date + '.md'),
+        path: path.join(ROOT, 'src', 'content', 'daily', 'AI_Coding_Daily_' + date + '.md'),
         content: generateDailyMd(sourceMd, date),
         label: 'daily'
       });
     } else if (t === 'reports') {
       if (htmlContent) {
         files.push({
-          path: path.join(ROOT, 'public/reports', 'ai-coding-daily-' + date + '.html'),
+          path: path.join(ROOT, 'public', 'reports', 'ai-coding-daily-' + date + '.html'),
           content: htmlContent,
           label: 'reports-html'
         });
       }
       files.push({
-        path: path.join(ROOT, 'src/content/reports', 'ai-coding-daily-' + date + '.md'),
+        path: path.join(ROOT, 'src', 'content', 'reports', 'ai-coding-daily-' + date + '.md'),
         content: generateReportsMd(date, srcTitle, srcDesc),
         label: 'reports-md'
       });
     } else if (t === 'blog') {
       files.push({
-        path: path.join(ROOT, 'src/content/blog', 'ai-coding-daily-' + date + '.md'),
+        path: path.join(ROOT, 'src', 'content', 'blog', 'ai-coding-daily-' + date + '.md'),
         content: generateBlogMd(sourceMd, date),
         label: 'blog'
       });
