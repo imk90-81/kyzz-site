@@ -19,6 +19,7 @@ function parseArgs() {
     else if (a === '--target') opts.target = args[++i];
     else if (a === '--source') opts.source = args[++i];
     else if (a === '--html') opts.html = args[++i];
+    else if (a === '--name') opts.name = args[++i];
     else if (a === '--build') opts.build = true;
     else if (a === '--push') opts.push = true;
     else if (a === '--dry-run') opts.dryRun = true;
@@ -41,6 +42,7 @@ kyzz-publish - 发布内容到 kyzz-site
 
 可选参数:
   --html <文件路径>        wechat HTML 文件路径（reports 需要）
+  --name <名称>            文件名前缀，默认 ai-coding-daily（如：a-gu-chenjian）
   --build                  生成后自动 npm run build
   --push                   构建后自动 git commit + push
   --dry-run                预览，不实际写入
@@ -49,6 +51,17 @@ kyzz-publish - 发布内容到 kyzz-site
 }
 
 // --- 工具函数 ---
+
+// 将任意字符串转为 kebab-case 文件名（中文拼音化 + 去特殊字符）
+// 简单实现：只保留英文、数字、连字符、下划线、汉字，其余替换为 -
+function toKebab(str) {
+  return str
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')           // 空格/下划线 → 连字符
+    .replace(/[^a-z0-9\-\u4e00-\u9fff]/g, '')  // 只保留英文数字连字符中文
+    .replace(/^-+|-+$/g, '');          // 去首尾连字符
+}
+
 function readFile(p) {
   if (!fs.existsSync(p)) throw new Error('文件不存在: ' + p);
   const buf = fs.readFileSync(p);
@@ -115,10 +128,11 @@ function generateDailyMd(sourceMd, date) {
 }
 
 // 生成 reports MD（frontmatter 符合 reports schema）
-function generateReportsMd(date, title, description) {
+function generateReportsMd(date, name, title, description) {
   const t = title || '报告 ' + date;
   const d = description || '报告 ' + date;
-  return '---\ntitle: "' + t + '"\ndescription: "' + d + '"\npubDate: ' + date + '\ntags: [report]\n---\n\nimport Layout from \'../../layouts/ReportsLayout.astro\';\n\n<Layout title="' + t + '">\n  <div class="iframe-container">\n    <iframe \n      src={`/reports/ai-coding-daily-' + date + '.html`}\n      title="' + t + '"\n      className="report-iframe"\n      style={{ width: \'100%\', height: \'100%\', border: \'none\' }}\n    />\n  </div>\n</Layout>\n';
+  const safeName = name || 'ai-coding-daily';
+  return '---\ntitle: "' + t + '"\ndescription: "' + d + '"\npubDate: ' + date + '\ntags: [report]\n---\n\nimport Layout from \'../../layouts/ReportsLayout.astro\';\n\n<Layout title="' + t + '">\n  <div class="iframe-container">\n    <iframe \n      src={`/reports/' + safeName + '-' + date + '.html`}\n      title="' + t + '"\n      className="report-iframe"\n      style={{ width: \'100%\', height: \'100%\', border: \'none\' }}\n    />\n  </div>\n</Layout>\n';
 }
 
 // 生成 blog MD（frontmatter 符合 blog schema）
@@ -174,6 +188,8 @@ function main() {
   const parsed = extractFrontmatter(sourceMd);
   const srcTitle = parsed.fm.title;
   const srcDesc = parsed.fm.description;
+  // 文件名前缀：默认 ai-coding-daily，可通过 --name 覆盖
+  const nameSlug = opts.name ? toKebab(opts.name) : 'ai-coding-daily';
 
   const files = [];
 
@@ -187,19 +203,19 @@ function main() {
     } else if (t === 'reports') {
       if (htmlContent) {
         files.push({
-          path: path.join(ROOT, 'public', 'reports', 'ai-coding-daily-' + date + '.html'),
+          path: path.join(ROOT, 'public', 'reports', nameSlug + '-' + date + '.html'),
           content: htmlContent,
           label: 'reports-html'
         });
       }
       files.push({
-        path: path.join(ROOT, 'src', 'content', 'reports', 'ai-coding-daily-' + date + '.md'),
-        content: generateReportsMd(date, srcTitle, srcDesc),
+        path: path.join(ROOT, 'src', 'content', 'reports', nameSlug + '-' + date + '.md'),
+        content: generateReportsMd(date, nameSlug, srcTitle, srcDesc),
         label: 'reports-md'
       });
     } else if (t === 'blog') {
       files.push({
-        path: path.join(ROOT, 'src', 'content', 'blog', 'ai-coding-daily-' + date + '.md'),
+        path: path.join(ROOT, 'src', 'content', 'blog', nameSlug + '-' + date + '.md'),
         content: generateBlogMd(sourceMd, date),
         label: 'blog'
       });

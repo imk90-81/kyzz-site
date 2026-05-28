@@ -22,10 +22,11 @@ function handlePublish(body) {
   let hasError = false;
 
   for (const file of files) {
-    const { source, html, targets } = file;
+    const { source, html, targets, name } = file;
     
     const args = ['--date', date, '--target', targets.join(','), '--source', source];
     if (html) args.push('--html', html);
+    if (name) args.push('--name', name);
     if (build) args.push('--build');
     if (push) args.push('--push');
     if (dryRun) args.push('--dry-run');

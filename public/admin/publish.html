@@ -162,7 +162,7 @@
     let fileCounter = 0;
     
     // 添加文件条目
-    function addFileEntry(sourcePath = '', htmlPath = '', targets = ['daily']) {
+    function addFileEntry(sourcePath = '', htmlPath = '', targets = ['daily'], nameVal = '') {
       const list = document.getElementById('file-list');
       const entry = document.createElement('div');
       entry.className = 'file-entry';
@@ -184,6 +184,11 @@
           <div>
             <label>源 Markdown 文件 *</label>
             <input type="text" class="source-input" placeholder="如: D:\\素材\\2026-05-28.md" value="${sourcePath}" />
+          </div>
+          <div class="small">
+            <label>文件名前缀</label>
+            <input type="text" class="name-input" placeholder="默认: ai-coding-daily" value="${nameVal || ''}" />
+            <p class="hint">如: a-gu-chenjian（留空则用默认值）</p>
           </div>
         </div>
         <div class="file-row">
@@ -235,7 +240,8 @@
         const targets = Array.from(targetCheckboxes).map(cb => cb.value);
         
         if (source && targets.length > 0) {
-          files.push({ source, html: html || null, targets });
+          const name = entry.querySelector('.name-input').value.trim() || null;
+          files.push({ source, html: html || null, targets, name });
         }
       });
       
