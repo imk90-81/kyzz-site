@@ -50,19 +50,30 @@ function handlePublish(body) {
     runScript(args, srcPath, realTargets, results, hasError);
   }
 
-  // 处理 htmls（.html 文件，发布到 reports）
+  // 处理 htmls（.html 文件，发布到 reports 或 blog）
   for (const h of (htmls || [])) {
-    const { path: htmlPath, name } = h;
+    const { path: htmlPath, name, targets: hTargets = [] } = h;
     if (!htmlPath) continue;
 
-    const targets = ['reports'];
-    const args = ['--date', date, '--target', 'reports', '--html', htmlPath];
+    // 只接受 reports/blog 作为 html 发布目标
+    const validTargets = hTargets.filter(t => t === 'reports' || t === 'blog');
+    if (validTargets.length === 0) {
+      results.push({
+        source: htmlPath, targets: hTargets,
+        success: false,
+        output: '⚠️ 类型不匹配：Daily/Blog 栏目需使用 .md 文件，.html 文件无法发布到此栏目'
+      });
+      hasError = true;
+      continue;
+    }
+
+    const args = ['--date', date, '--target', validTargets.join(','), '--html', htmlPath];
     if (name) args.push('--name', name);
     if (build) args.push('--build');
     if (push) args.push('--push');
     if (dryRun) args.push('--dry-run');
 
-    runScript(args, htmlPath, targets, results, hasError);
+    runScript(args, htmlPath, validTargets, results, hasError);
   }
 
   if (results.length === 0) {

@@ -135,6 +135,14 @@ function generateReportsMd(date, name, title, description) {
   return '---\ntitle: "' + t + '"\ndescription: "' + d + '"\npubDate: ' + date + '\ntags: [report]\n---\n\nimport Layout from \'../../layouts/ReportsLayout.astro\';\n\n<Layout title="' + t + '">\n  <div class="iframe-container">\n    <iframe \n      src={`/reports/' + safeName + '-' + date + '.html`}\n      title="' + t + '"\n      className="report-iframe"\n      style={{ width: \'100%\', height: \'100%\', border: \'none\' }}\n    />\n  </div>\n</Layout>\n';
 }
 
+// 生成 blog MD（嵌入 HTML iframe，Astro 原样渲染 body）
+function generateBlogHtmlMd(date, name, htmlTitle, htmlDesc) {
+  const t = htmlTitle || 'Blog ' + date;
+  const d = htmlDesc || 'Blog ' + date;
+  const safeName = name || 'ai-coding-daily';
+  return '---\ntitle: "' + t + '"\ndescription: "' + d + '"\npubDate: ' + date + '\ntags: [blog]\n---\n\n<iframe src="/blog/' + safeName + '-' + date + '.html" style="width:100%;border:none;min-height:800px;background:#1a1a2e" onload="this.style.height=this.contentDocument.body.scrollHeight+\'px\'"></iframe>\n';
+}
+
 // 生成 blog MD（frontmatter 符合 blog schema）
 function generateBlogMd(sourceMd, date) {
   const parsed = extractFrontmatter(sourceMd);
@@ -214,11 +222,28 @@ function main() {
         label: 'reports-md'
       });
     } else if (t === 'blog') {
-      files.push({
-        path: path.join(ROOT, 'src', 'content', 'blog', nameSlug + '-' + date + '.md'),
-        content: generateBlogMd(sourceMd, date),
-        label: 'blog'
-      });
+      if (htmlContent) {
+        // html 文件嵌入 blog（HTML 放 public/blog/，MD 用 BlogLayout iframe）
+        const htmlTitle = htmlContent.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim() || srcTitle || 'Blog ' + date;
+        const htmlDesc = srcDesc || 'Blog ' + date;
+        files.push({
+          path: path.join(ROOT, 'public', 'blog', nameSlug + '-' + date + '.html'),
+          content: htmlContent,
+          label: 'blog-html'
+        });
+        files.push({
+          path: path.join(ROOT, 'src', 'content', 'blog', nameSlug + '-' + date + '.md'),
+          content: generateBlogHtmlMd(date, nameSlug, htmlTitle, htmlDesc),
+          label: 'blog-md'
+        });
+      } else {
+        // md 文件直接作为 blog 内容
+        files.push({
+          path: path.join(ROOT, 'src', 'content', 'blog', nameSlug + '-' + date + '.md'),
+          content: generateBlogMd(sourceMd, date),
+          label: 'blog'
+        });
+      }
     } else {
       console.warn('  WARN: unknown target: ' + t);
     }

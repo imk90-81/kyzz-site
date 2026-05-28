@@ -176,9 +176,9 @@
         <div class="column-header">
           <input type="checkbox" id="col-blog" checked onchange="onColumnToggle('blog', this.checked)" />
           <label for="col-blog" class="column-name">Blog</label>
-          <span class="column-ext"><span>.md 文件</span></span>
+          <span class="column-ext"><span>.md / .html 文件</span></span>
           <button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onclick="triggerPick('blog')">+ 选择文件</button>
-          <input type="file" id="pick-blog" accept=".md" multiple style="display:none" onchange="onFilesPicked('blog', this.files)" />
+          <input type="file" id="pick-blog" accept=".md,.html,.htm" multiple style="display:none" onchange="onFilesPicked('blog', this.files)" />
         </div>
         <div class="file-chips" id="chips-blog"></div>
       </div>
@@ -225,7 +225,8 @@
       <h2>使用说明</h2>
       <ul>
         <li>每个栏目独立选择文件，选中的栏目必须至少有一个文件</li>
-        <li><strong>Daily / Blog</strong>：选择 .md 文件（源 Markdown）</li>
+        <li><strong>Daily</strong>：选择 .md 文件（源 Markdown）</li>
+        <li><strong>Blog</strong>：选择 .md 文件（源 Markdown）或 .html 文件（iframe 嵌入）</li>
         <li><strong>Reports</strong>：选择 .html 文件（嵌入报告）</li>
         <li>文件名前缀自动从文件名提取，无需手动填写</li>
         <li>预览不实际写入文件，仅显示将要生成的文件列表</li>
@@ -323,19 +324,20 @@
     // 获取表单数据，构建 API payload
     function getPayload(dryRun) {
       const date = document.getElementById('pub-date').value;
-      const sources = [];   // [{path, name, targets}]
-      const htmls = [];    // [{path, name}]
+      const sources = [];   // [{path, name, targets}]  md文件
+      const htmls = [];    // [{path, name, targets}]  html文件
 
       for (const col of ['daily', 'blog', 'reports']) {
         if (!document.getElementById('col-' + col).checked) continue;
         for (const file of state[col]) {
           const name = file.name.replace(/\.(md|html?)$/i, '');
-          if (col === 'reports') {
-            // reports 用 htmls，每个条目带 targets
-            htmls.push({ path: file.path, name, targets: ['reports'] });
+          const isHtml = /\.html?$/i.test(file.name);
+
+          if (isHtml) {
+            // html文件 → reports 或 blog（iframe嵌入）
+            htmls.push({ path: file.path, name, targets: [col] });
           } else {
-            // daily/blog 用 sources，合并 targets
-            // 同一 name 的文件，合并 targets
+            // md文件 → daily 或 blog（解析frontmatter）
             const existing = sources.find(s => s.name === name);
             if (existing) {
               if (!existing.targets.includes(col)) existing.targets.push(col);
