@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内容发布 - Kyzz管理后台</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --card-bg: #18181b;
+      --border: #27272a;
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --primary: #00e5ff;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 40px 20px 80px;
+      min-height: 100vh;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { color: var(--primary); margin-bottom: 30px; font-size: 28px; }
+    h2 { color: var(--primary); font-size: 18px; margin-bottom: 12px; }
+    h3 { color: var(--text); font-size: 16px; margin-bottom: 12px; font-weight: 500; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 16px;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    
+    /* 文件条目 */
+    .file-entry {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .file-entry:hover { border-color: var(--primary); }
+    .file-row { display: flex; gap: 12px; margin-bottom: 12px; }
+    .file-row:last-child { margin-bottom: 0; }
+    .file-row > div { flex: 1; }
+    .file-row > div.small { flex: 0 0 120px; }
+    
+    .checkbox-group { display: flex; gap: 12px; flex-wrap: wrap; }
+    .checkbox-item { display: flex; align-items: center; gap: 6px; }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+    .checkbox-item label { margin-bottom: 0; font-size: 14px; }
+    
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--primary); color: var(--bg); border: none; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+    .btn-secondary:hover { background: rgba(0, 229, 255, 0.1); }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+    .btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    
+    .result { margin-top: 20px; padding: 16px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); }
+    .result.success { border-color: var(--success); }
+    .result.error { border-color: var(--danger); }
+    .result pre { white-space: pre-wrap; font-family: monospace; font-size: 13px; max-height: 400px; overflow-y: auto; }
+    .loading { display: none; color: var(--primary); }
+    .hint { color: var(--text-muted); font-size: 12px; margin-top: 4px; opacity: 0.7; }
+    ul { color: var(--text-muted); font-size: 14px; line-height: 1.8; padding-left: 20px; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav { margin-bottom: 20px; }
+    .remove-btn { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 12px; }
+    .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-right: 60px; }
+    .entry-number { color: var(--primary); font-weight: 600; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <a href="/">← 返回首页</a>
+    </div>
+    
+    <h1>📦 内容发布</h1>
+    
+    <div class="card">
+      <div class="form-group">
+        <label for="date">发布日期 *</label>
+        <input type="date" id="date" />
+      </div>
+      
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0;">文件列表</h3>
+          <button class="btn btn-ghost" id="add-file-btn">+ 添加文件</button>
+        </div>
+        <div id="file-list">
+          <!-- 文件条目将动态插入 -->
+        </div>
+        <p class="hint">可添加多个文件，每个文件可发布到不同栏目</p>
+      </div>
+      
+      <div class="form-group">
+        <label>全局操作</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="do-build" />
+            <label for="do-build">发布后自动构建</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="do-push" />
+            <label for="do-push">发布后自动推送</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="preview-btn">预览</button>
+        <button class="btn btn-primary" id="publish-btn">发布</button>
+      </div>
+      
+      <p class="loading" id="loading">处理中...</p>
+      
+      <div class="result" id="result" style="display: none;">
+        <pre id="result-text"></pre>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>使用说明</h2>
+      <ul>
+        <li><strong>批量发布：</strong>点击"添加文件"可添加多个文件条目</li>
+        <li><strong>栏目选择：</strong>每个文件可独立选择目标栏目（daily / reports / blog）</li>
+        <li><strong>HTML 文件：</strong>reports 栏目需要 HTML 文件，其他栏目可选</li>
+        <li><strong>预览：</strong>查看将要生成的文件列表，不实际写入</li>
+        <li><strong>发布：</strong>实际写入文件，可选自动构建和推送</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // 初始化
+    document.getElementById('date').valueAsDate = new Date();
+    let fileCounter = 0;
+    
+    // 添加文件条目
+    function addFileEntry(sourcePath = '', htmlPath = '', targets = ['daily']) {
+      const list = document.getElementById('file-list');
+      const entry = document.createElement('div');
+      entry.className = 'file-entry';
+      entry.id = `file-entry-${fileCounter}`;
+      
+      const targetChecks = ['daily', 'reports', 'blog'].map(t => 
+        `<div class="checkbox-item">
+          <input type="checkbox" id="target-${t}-${fileCounter}" value="${t}" ${targets.includes(t) ? 'checked' : ''} />
+          <label for="target-${t}-${fileCounter}">${t}</label>
+        </div>`
+      ).join('');
+      
+      entry.innerHTML = `
+        <div class="entry-header">
+          <span class="entry-number">文件 #${list.children.length + 1}</span>
+        </div>
+        <button class="btn btn-danger remove-btn" onclick="removeFileEntry(${fileCounter})">删除</button>
+        <div class="file-row">
+          <div>
+            <label>源 Markdown 文件 *</label>
+            <input type="text" class="source-input" placeholder="如: D:\\素材\\2026-05-28.md" value="${sourcePath}" />
+          </div>
+        </div>
+        <div class="file-row">
+          <div>
+            <label>HTML 文件（可选）</label>
+            <input type="text" class="html-input" placeholder="如: D:\\素材\\2026-05-28.html" value="${htmlPath}" />
+          </div>
+        </div>
+        <div class="file-row">
+          <div>
+            <label>目标栏目 *</label>
+            <div class="checkbox-group">${targetChecks}</div>
+          </div>
+        </div>
+      `;
+      
+      list.appendChild(entry);
+      fileCounter++;
+      updateEntryNumbers();
+    }
+    
+    // 删除文件条目
+    function removeFileEntry(id) {
+      const entry = document.getElementById(`file-entry-${id}`);
+      if (entry) {
+        entry.remove();
+        updateEntryNumbers();
+      }
+    }
+    
+    // 更新编号
+    function updateEntryNumbers() {
+      const entries = document.querySelectorAll('.file-entry');
+      entries.forEach((entry, index) => {
+        const num = entry.querySelector('.entry-number');
+        if (num) num.textContent = `文件 #${index + 1}`;
+      });
+    }
+    
+    // 获取所有文件数据
+    function getAllFiles() {
+      const entries = document.querySelectorAll('.file-entry');
+      const files = [];
+      
+      entries.forEach(entry => {
+        const source = entry.querySelector('.source-input').value.trim();
+        const html = entry.querySelector('.html-input').value.trim();
+        const targetCheckboxes = entry.querySelectorAll('input[type="checkbox"]:checked');
+        const targets = Array.from(targetCheckboxes).map(cb => cb.value);
+        
+        if (source && targets.length > 0) {
+          files.push({ source, html: html || null, targets });
+        }
+      });
+      
+      return files;
+    }
+    
+    // 获取表单数据
+    function getFormData() {
+      return {
+        date: document.getElementById('date').value,
+        files: getAllFiles(),
+        doBuild: document.getElementById('do-build').checked,
+        doPush: document.getElementById('do-push').checked
+      };
+    }
+    
+    // 显示结果
+    function showResult(text, isError) {
+      const result = document.getElementById('result');
+      const resultText = document.getElementById('result-text');
+      result.style.display = 'block';
+      result.className = 'result ' + (isError ? 'error' : 'success');
+      resultText.textContent = text;
+      document.getElementById('loading').style.display = 'none';
+    }
+    
+    // 执行发布
+    async function runPublish(dryRun) {
+      const data = getFormData();
+      
+      if (!data.date) { showResult('❌ 请选择日期', true); return; }
+      if (data.files.length === 0) { showResult('❌ 请添加至少一个有效的文件条目（源文件路径 + 目标栏目）', true); return; }
+      
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      
+      try {
+        const res = await fetch('http://localhost:3210/api/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date: data.date,
+            files: data.files,
+            build: data.doBuild,
+            push: data.doPush,
+            dryRun: dryRun
+          })
+        });
+        
+        const json = await res.json();
+        showResult(json.output, !json.success);
+      } catch (e) {
+        showResult('❌ 请求失败: ' + e.message, true);
+      }
+    }
+    
+    // 事件绑定
+    document.getElementById('add-file-btn').addEventListener('click', () => addFileEntry());
+    document.getElementById('preview-btn').addEventListener('click', () => runPublish(true));
+    document.getElementById('publish-btn').addEventListener('click', () => runPublish(false));
+    
+    // 默认添加一个条目
+    addFileEntry();
+  </script>
+</body>
+</html>

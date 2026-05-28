@@ -8,6 +8,7 @@
     "start": "astro dev",
     "build": "astro check && astro build && pagefind --site public",
     "preview": "astro preview",
+    "publish": "node scripts/publish.js",
     "astro": "astro"
   },
   "dependencies": {
