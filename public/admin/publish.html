@@ -105,6 +105,8 @@
     .btn-primary:hover { opacity: 0.9; }
     .btn-secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
     .btn-secondary:hover { background: rgba(0, 229, 255, 0.1); }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--primary); border-color: var(--primary); }
     .btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
 
     /* 结果 */
@@ -133,9 +135,13 @@
     .warn-bar.show { display: flex; align-items: center; gap: 8px; }
     .warn-icon { font-size: 18px; }
 
-    /* 禁用态 */
-    .column-block.disabled { opacity: 0.5; pointer-events: none; }
+    /* 禁用态 — checkbox 始终可点击 */
+    .column-block.disabled { opacity: 0.5; }
     .column-block.disabled .column-header { pointer-events: none; }
+    .column-block.disabled input[type="checkbox"] { pointer-events: auto; cursor: pointer; }
+    .column-block.disabled button,
+    .column-block.disabled .file-chips,
+    .column-block.disabled .file-chip { pointer-events: none; }
   </style>
 </head>
 <body>
@@ -238,7 +244,7 @@
     // 初始化日期为今天
     document.getElementById('pub-date').valueAsDate = new Date();
 
-    // 每个栏目的选中文件和 checkbox 状态
+    // 每个栏目的选中文件（存 File 对象读取后的文本内容）
     const state = { daily: [], blog: [], reports: [] };
 
     // 触发文件选择
@@ -246,13 +252,28 @@
       document.getElementById('pick-' + col).click();
     }
 
+    // 用 FileReader 异步读取文件内容
+    function readFileContent(file) {
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function() { resolve(reader.result); };
+        reader.onerror = function() { reject(reader.error); };
+        reader.readAsText(file);
+      });
+    }
+
     // 文件选择后的处理
-    function onFilesPicked(col, fileList) {
-      // 清理已选文件，避免重复（按完整路径去重）
-      const existingPaths = new Set(state[col].map(f => f.path));
-      for (const file of fileList) {
-        if (!existingPaths.has(file.path)) {
-          state[col].push({ name: file.name, path: file.path });
+    async function onFilesPicked(col, fileList) {
+      for (var i = 0; i < fileList.length; i++) {
+        var file = fileList[i];
+        // 按文件名去重
+        if (state[col].some(function(f) { return f.name === file.name; })) continue;
+        // 读取文件文本内容（浏览器无法获取文件真实路径）
+        try {
+          var content = await readFileContent(file);
+          state[col].push({ name: file.name, content: content });
+        } catch (e) {
+          alert('读取文件失败: ' + file.name + ' - ' + e.message);
         }
       }
       renderChips(col);
@@ -270,40 +291,47 @@
 
     // 渲染文件 chips
     function renderChips(col) {
-      const container = document.getElementById('chips-' + col);
-      container.innerHTML = state[col].map((f, i) =>
-        `<div class="file-chip">
-          <span class="fname" title="${f.path}">${f.name}</span>
-          <span class="fremove" onclick="removeFile('${col}', ${i})">×</span>
-        </div>`
-      ).join('');
+      var container = document.getElementById('chips-' + col);
+      container.innerHTML = state[col].map(function(f, i) {
+        return '<div class="file-chip">' +
+          '<span class="fname">' + escapeHtml(f.name) + '</span>' +
+          '<span class="fremove" onclick="removeFile(\'' + col + '\', ' + i + ')">×</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      var d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
     }
 
     // 栏目 checkbox 切换
     function onColumnToggle(col, checked) {
-      const block = document.getElementById('block-' + col);
+      var block = document.getElementById('block-' + col);
       if (checked) {
         block.classList.remove('disabled');
       } else {
         block.classList.add('disabled');
-        state[col] = [];
-        renderChips(col);
       }
       checkWarnings();
     }
 
     // 检查警告
     function checkWarnings() {
-      const warnings = [];
-      const activeCols = ['daily', 'blog', 'reports'].filter(c => document.getElementById('col-' + c).checked);
+      var warnings = [];
+      var activeCols = ['daily', 'blog', 'reports'].filter(function(c) {
+        return document.getElementById('col-' + c).checked;
+      });
 
       if (activeCols.length === 0) {
         warnings.push('请至少选择一个栏目');
       }
 
-      for (const col of activeCols) {
+      for (var j = 0; j < activeCols.length; j++) {
+        var col = activeCols[j];
         if (state[col].length === 0) {
-          warnings.push(`${col} 栏目已选但未添加任何文件`);
+          warnings.push(col + ' 栏目已选但未添加任何文件');
         }
       }
 
@@ -311,8 +339,8 @@
     }
 
     function showWarnings(msgs) {
-      const bar = document.getElementById('warn-bar');
-      const text = document.getElementById('warn-text');
+      var bar = document.getElementById('warn-bar');
+      var text = document.getElementById('warn-text');
       if (msgs.length > 0) {
         text.textContent = msgs.join('；') + '。';
         bar.classList.add('show');
@@ -321,39 +349,47 @@
       }
     }
 
-    // 获取表单数据，构建 API payload
-    function getPayload(dryRun) {
-      const date = document.getElementById('pub-date').value;
-      const sources = [];   // [{path, name, targets}]  md文件
-      const htmls = [];    // [{path, name, targets}]  html文件
+    // 获取表单数据，构建 API payload（含文件文本内容）
+    async function getPayload(dryRun) {
+      var date = document.getElementById('pub-date').value;
+      var sources = [];   // [{content, name, targets}]  md文件
+      var htmls = [];     // [{content, name, targets}]  html文件
 
-      for (const col of ['daily', 'blog', 'reports']) {
+      var cols = ['daily', 'blog', 'reports'];
+      for (var ci = 0; ci < cols.length; ci++) {
+        var col = cols[ci];
         if (!document.getElementById('col-' + col).checked) continue;
-        for (const file of state[col]) {
-          const name = file.name.replace(/\.(md|html?)$/i, '');
-          const isHtml = /\.html?$/i.test(file.name);
+        for (var fi = 0; fi < state[col].length; fi++) {
+          var file = state[col][fi];
+          var name = file.name.replace(/\.(md|html?)$/i, '');
+          var isHtml = /\.html?$/i.test(file.name);
 
           if (isHtml) {
-            // html文件 → reports 或 blog（iframe嵌入）
-            htmls.push({ path: file.path, name, targets: [col] });
+            htmls.push({ content: file.content, name: name, targets: [col] });
           } else {
-            // md文件 → daily 或 blog（解析frontmatter）
-            const existing = sources.find(s => s.name === name);
+            var existing = sources.find(function(s) { return s.name === name; });
             if (existing) {
-              if (!existing.targets.includes(col)) existing.targets.push(col);
+              if (existing.targets.indexOf(col) === -1) existing.targets.push(col);
             } else {
-              sources.push({ path: file.path, name, targets: [col] });
+              sources.push({ content: file.content, name: name, targets: [col] });
             }
           }
         }
       }
 
-      return { date, sources, htmls, build: document.getElementById('do-build').checked, push: document.getElementById('do-push').checked, dryRun };
+      return {
+        date: date,
+        sources: sources,
+        htmls: htmls,
+        build: document.getElementById('do-build').checked,
+        push: document.getElementById('do-push').checked,
+        dryRun: dryRun
+      };
     }
 
     function showResult(text, isError) {
-      const result = document.getElementById('result');
-      const resultText = document.getElementById('result-text');
+      var result = document.getElementById('result');
+      var resultText = document.getElementById('result-text');
       result.style.display = 'block';
       result.className = 'result ' + (isError ? 'error' : 'success');
       resultText.textContent = text;
@@ -361,7 +397,7 @@
     }
 
     async function runPublish(dryRun) {
-      const payload = getPayload(dryRun);
+      var payload = await getPayload(dryRun);
 
       if (!payload.date) { showResult('❌ 请选择日期', true); return; }
       if (payload.sources.length === 0 && payload.htmls.length === 0) {
@@ -372,20 +408,20 @@
       document.getElementById('result').style.display = 'none';
 
       try {
-        const res = await fetch('http://localhost:3210/api/publish', {
+        var res = await fetch('http://localhost:33200/api/publish', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
+        var json = await res.json();
         showResult(json.output, !json.success);
       } catch (e) {
         showResult('❌ 请求失败: ' + e.message, true);
       }
     }
 
-    document.getElementById('preview-btn').addEventListener('click', () => runPublish(true));
-    document.getElementById('publish-btn').addEventListener('click', () => runPublish(false));
+    document.getElementById('preview-btn').addEventListener('click', function() { runPublish(true); });
+    document.getElementById('publish-btn').addEventListener('click', function() { runPublish(false); });
   </script>
 </body>
 </html>

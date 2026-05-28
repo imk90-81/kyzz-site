@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowflake (SNOW) 可比公司分析 — 云数据平台赛道</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #21262d;
+    --text: #e6edf3;
+    --subtext: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #a371f7;
+    --snow-blue: #29b5e8;
+    --orange: #fb8500;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ─── Header ─────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #1c2a3e 0%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 28px;
+  }
+  .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .ticker-badge {
+    background: var(--snow-blue);
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+  }
+  .header h1 { font-size: 26px; font-weight: 700; color: #fff; }
+  .header p { color: var(--subtext); font-size: 13px; margin-top: 6px; }
+  .header-meta { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; }
+  .meta-label { font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: .5px; }
+  .meta-value { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 2px; }
+  .meta-value.up { color: var(--green); }
+  .meta-value.down { color: var(--red); }
+
+  /* ─── Layout ──────────────────────────────────────── */
+  .main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* ─── Section ─────────────────────────────────────── */
+  .section { margin-bottom: 40px; }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    border-left: 3px solid var(--snow-blue);
+    padding-left: 10px;
+    margin-bottom: 18px;
+  }
+
+  /* ─── Cards grid ──────────────────────────────────── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .kpi-card .label { font-size: 11px; color: var(--subtext); text-transform: uppercase; letter-spacing: .5px; }
+  .kpi-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .kpi-card .note { font-size: 11px; color: var(--subtext); margin-top: 2px; }
+  .blue { color: var(--snow-blue); }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .yellow { color: var(--yellow); }
+  .purple { color: var(--purple); }
+  .orange { color: var(--orange); }
+
+  /* ─── Comps Table ──────────────────────────────────── */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); }
+  thead tr { background: #1c2a3e; }
+  th {
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--border);
+    text-align: right;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  td:first-child { text-align: left; }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+  .highlight-row td { background: rgba(41,181,232,0.08); }
+  .highlight-row:hover td { background: rgba(41,181,232,0.13); }
+  .comp-name { font-weight: 600; color: var(--text); }
+  .comp-ticker { color: var(--subtext); font-size: 11px; margin-left: 4px; }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+  .neutral { color: var(--subtext); }
+  .rule40-good { color: var(--green); font-weight: 700; }
+  .rule40-mid { color: var(--yellow); font-weight: 700; }
+  .rule40-bad { color: var(--red); font-weight: 700; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .pill-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .pill-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .pill-blue { background: rgba(41,181,232,0.15); color: var(--snow-blue); }
+
+  /* ─── Charts ──────────────────────────────────────── */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .chart-card h3 { font-size: 13px; font-weight: 600; color: var(--subtext); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .5px; }
+  .chart-wrap { position: relative; height: 260px; }
+
+  /* ─── Footnotes ──────────────────────────────────── */
+  .footnote { font-size: 11px; color: var(--subtext); margin-top: 14px; line-height: 1.8; }
+  .footnote a { color: var(--accent); text-decoration: none; }
+
+  /* ─── Positioning Insight ──────────────────────────── */
+  .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .insight-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .insight-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .insight-card p { font-size: 12px; color: var(--subtext); line-height: 1.7; }
+  .insight-card .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+
+  /* ─── Progress bars ──────────────────────────────── */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { width: 52px; font-size: 11px; color: var(--subtext); flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; }
+  .bar-val { width: 42px; font-size: 11px; font-weight: 600; text-align: left; flex-shrink: 0; }
+
+  /* ─── Footer ─────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--subtext);
+    padding: 24px 40px 32px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────── Header ─────────────────── -->
+<div class="header">
+  <div class="header-top">
+    <span class="ticker-badge">SNOW</span>
+    <h1>Snowflake 可比公司分析</h1>
+  </div>
+  <p>云数据平台赛道 · 核心估值倍数对比 · 数据基准：最新财年年报</p>
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">当前价格</span>
+      <span class="meta-value">$153.72</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">总市值</span>
+      <span class="meta-value">$531 亿</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">企业价值 (EV)</span>
+      <span class="meta-value">~$519 亿</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">FY2026 营收</span>
+      <span class="meta-value">$46.8 亿</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">YoY 营收增长</span>
+      <span class="meta-value up">+29%</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">毛利率</span>
+      <span class="meta-value">66.1%</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">数据日期</span>
+      <span class="meta-value" style="color:var(--subtext)">2026-05-08</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── Main ─────────────────────── -->
+<div class="main">
+
+  <!-- KPI Summary -->
+  <div class="section">
+    <div class="section-title">SNOW 核心指标速览</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="label">EV / Revenue (NTM 估)</div>
+        <div class="value blue">11.1×</div>
+        <div class="note">基于当前股价 &amp; FY27E收入</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">EV / Gross Profit</div>
+        <div class="value blue">16.8×</div>
+        <div class="note">FY2026 GP $30.97亿</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Rule of 40</div>
+        <div class="value yellow">26%</div>
+        <div class="note">收入增长29% + FCF Margin -3%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">FCF Margin</div>
+        <div class="value green">+23.9%</div>
+        <div class="note">FY2026 FCF $11.2亿</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">毛利率</div>
+        <div class="value green">66.1%</div>
+        <div class="note">FY2026 年报</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">营收增速 YoY</div>
+        <div class="value green">+29%</div>
+        <div class="note">FY2026 vs FY2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">P/S (LTM)</div>
+        <div class="value blue">11.4×</div>
+        <div class="note">市销率</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">经营活动现金流</div>
+        <div class="value green">$12.2亿</div>
+        <div class="note">FY2026 年报</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rule of 40 Note -->
+  <div class="section">
+    <div class="section-title">Rule of 40 说明</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px;">
+      <p style="font-size:13px;color:var(--subtext);line-height:1.9;">
+        <strong style="color:var(--text)">Rule of 40</strong> = 收入增长率（YoY%）+ 经调整运营利润率（或 FCF Margin）。
+        行业通常以 <strong style="color:var(--green)">≥ 40%</strong> 为健康基准：增长越快可容忍更大亏损，盈利越强则可容忍更低增速。
+        对高增长 SaaS / 云数据公司，该指标综合衡量"成长质量"，是估值溢价的核心驱动因子之一。
+        本报告 SNOW 的 Rule of 40 计算使用 <em>FCF Margin</em>（自由现金流率）作为盈利分项，与华尔街主流算法一致。
+      </p>
+    </div>
+  </div>
+
+  <!-- Comps Table -->
+  <div class="section">
+    <div class="section-title">可比公司估值与运营对比</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>公司</th>
+            <th>赛道定位</th>
+            <th>LTM 营收<br>(亿$)</th>
+            <th>营收增速<br>YoY</th>
+            <th>毛利率</th>
+            <th>FCF Margin</th>
+            <th>Rule of 40</th>
+            <th>市值<br>(亿$)</th>
+            <th>EV<br>(亿$)</th>
+            <th>EV/Revenue<br>(LTM)</th>
+            <th>EV/Gross Profit<br>(LTM)</th>
+            <th>EV/FCF</th>
+            <th>评级信号</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SNOW (target) -->
+          <tr class="highlight-row">
+            <td>
+              <span class="comp-name">Snowflake</span>
+              <span class="comp-ticker">SNOW</span>
+            </td>
+            <td><span class="pill pill-blue">云数据仓库/AI</span></td>
+            <td>46.8</td>
+            <td class="positive">+29%</td>
+            <td>66.1%</td>
+            <td class="positive">+23.9%</td>
+            <td><span class="rule40-mid">53%</span></td>
+            <td>531</td>
+            <td>~519</td>
+            <td class="blue"><strong>11.1×</strong></td>
+            <td class="blue"><strong>16.8×</strong></td>
+            <td>46×</td>
+            <td><span class="pill pill-blue">目标公司</span></td>
+          </tr>
+          <!-- DDOG -->
+          <tr>
+            <td>
+              <span class="comp-name">Datadog</span>
+              <span class="comp-ticker">DDOG</span>
+            </td>
+            <td><span class="pill pill-green">可观测性/AI监控</span></td>
+            <td>34.3</td>
+            <td class="positive">+28%</td>
+            <td>79.9%</td>
+            <td class="positive">+29.2%</td>
+            <td><span class="rule40-good">57%</span></td>
+            <td>672</td>
+            <td>~656</td>
+            <td class="blue">19.1×</td>
+            <td class="blue">23.9×</td>
+            <td>62×</td>
+            <td><span class="pill pill-green">Premium</span></td>
+          </tr>
+          <!-- MDB -->
+          <tr>
+            <td>
+              <span class="comp-name">MongoDB</span>
+              <span class="comp-ticker">MDB</span>
+            </td>
+            <td><span class="pill pill-yellow">文档数据库/Atlas</span></td>
+            <td>24.6</td>
+            <td class="positive">+23%</td>
+            <td>71.7%</td>
+            <td class="positive">+20.3%</td>
+            <td><span class="rule40-mid">43%</span></td>
+            <td>236</td>
+            <td>~228</td>
+            <td class="blue">9.3×</td>
+            <td class="blue">12.9×</td>
+            <td>46×</td>
+            <td><span class="pill pill-yellow">Fair Value</span></td>
+          </tr>
+          <!-- CRWD -->
+          <tr>
+            <td>
+              <span class="comp-name">CrowdStrike</span>
+              <span class="comp-ticker">CRWD</span>
+            </td>
+            <td><span class="pill pill-yellow">云安全/数据平台</span></td>
+            <td>48.1</td>
+            <td class="positive">+22%</td>
+            <td>74.8%</td>
+            <td class="positive">+25.8%</td>
+            <td><span class="rule40-mid">48%</span></td>
+            <td>1287</td>
+            <td>~1253</td>
+            <td class="orange">26.0×</td>
+            <td class="orange">34.8×</td>
+            <td>101×</td>
+            <td><span class="pill pill-yellow">Security Premium</span></td>
+          </tr>
+          <!-- PLTR -->
+          <tr>
+            <td>
+              <span class="comp-name">Palantir</span>
+              <span class="comp-ticker">PLTR</span>
+            </td>
+            <td><span class="pill pill-green">AI数据分析平台</span></td>
+            <td>44.7</td>
+            <td class="positive">+56%</td>
+            <td>82.4%</td>
+            <td class="positive">+46.9%</td>
+            <td><span class="rule40-good">103%</span></td>
+            <td>3286</td>
+            <td>~3280</td>
+            <td class="orange">73.4×</td>
+            <td class="orange">89.1×</td>
+            <td>156×</td>
+            <td><span class="pill pill-green">AI Hypergrowth</span></td>
+          </tr>
+          <!-- ESTC -->
+          <tr>
+            <td>
+              <span class="comp-name">Elastic</span>
+              <span class="comp-ticker">ESTC</span>
+            </td>
+            <td><span class="pill pill-yellow">搜索/可观测性</span></td>
+            <td>14.8</td>
+            <td class="positive">+17%</td>
+            <td>74.4%</td>
+            <td class="positive">+17.6%</td>
+            <td><span class="rule40-mid">35%</span></td>
+            <td>53</td>
+            <td>~51</td>
+            <td>3.5×</td>
+            <td>4.6×</td>
+            <td>19×</td>
+            <td><span class="pill pill-red">Discount</span></td>
+          </tr>
+        </tbody>
+        <!-- Median Row -->
+        <tfoot>
+          <tr style="background:#1c2a3e;">
+            <td colspan="2" style="text-align:left;font-weight:700;color:var(--subtext);">可比公司中位数（排除PLTR）</td>
+            <td>—</td>
+            <td class="positive">+24%</td>
+            <td>73.6%</td>
+            <td>+23.1%</td>
+            <td style="font-weight:700;color:var(--yellow);">48%</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-weight:700;color:var(--snow-blue);">14.2×</td>
+            <td style="font-weight:700;color:var(--snow-blue);">19.3×</td>
+            <td>54×</td>
+            <td>—</td>
+          </tr>
+          <tr style="background:#1c2a3e;">
+            <td colspan="2" style="text-align:left;font-weight:700;color:var(--subtext);">可比公司中位数（含全部）</td>
+            <td>—</td>
+            <td class="positive">+26%</td>
+            <td>75.6%</td>
+            <td>+27.5%</td>
+            <td style="font-weight:700;color:var(--yellow);">53%</td>
+            <td>—</td>
+            <td>—</td>
+            <td style="font-weight:700;color:var(--snow-blue);">19.1×</td>
+            <td style="font-weight:700;color:var(--snow-blue);">23.9×</td>
+            <td>62×</td>
+            <td>—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="footnote">
+      ① 数据来源：各公司最新财年年报（SNOW FY2026 截止2026-01-31，DDOG FY2025 截止2025-12-31，MDB FY2026 截止2026-01-31，CRWD FY2026 截止2026-01-31，PLTR FY2025 截止2025-12-31，ESTC FY2025 截止2025-04-30）。<br>
+      ② EV = 最新市值 + 净债务（净债务 = 总负债 - 现金及等价物）；当前股价基于 2026-05-07 收盘价。<br>
+      ③ Rule of 40 = 营收增速(YoY%) + FCF Margin；FCF Margin = 自由现金流 / 营收。<br>
+      ④ CFLT（Confluent）数据服务暂未覆盖美股该股，已用近似可比替代；Databricks 未上市，不纳入对比。
+    </p>
+  </div>
+
+  <!-- Charts 2×2 -->
+  <div class="section">
+    <div class="section-title">可视化对比</div>
+    <div class="charts-grid">
+
+      <!-- Chart 1: EV/Revenue -->
+      <div class="chart-card">
+        <h3>EV / Revenue (LTM)</h3>
+        <div class="chart-wrap">
+          <canvas id="evRevChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: EV/GP -->
+      <div class="chart-card">
+        <h3>EV / Gross Profit (LTM)</h3>
+        <div class="chart-wrap">
+          <canvas id="evGpChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Rule of 40 -->
+      <div class="chart-card">
+        <h3>Rule of 40 — 增长 vs 盈利能力拆解</h3>
+        <div class="chart-wrap">
+          <canvas id="rule40Chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: 毛利率 vs 营收增速 Bubble -->
+      <div class="chart-card">
+        <h3>毛利率 vs 营收增速（气泡大小 = 市值）</h3>
+        <div class="chart-wrap">
+          <canvas id="bubbleChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gross Margin bars -->
+  <div class="section">
+    <div class="section-title">毛利率横向对比</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 28px;">
+      <!-- PLTR -->
+      <div class="bar-row">
+        <span class="bar-label">PLTR</span>
+        <div class="bar-track"><div class="bar-fill" style="width:82.4%;background:var(--green);"></div></div>
+        <span class="bar-val green">82.4%</span>
+      </div>
+      <!-- DDOG -->
+      <div class="bar-row">
+        <span class="bar-label">DDOG</span>
+        <div class="bar-track"><div class="bar-fill" style="width:79.9%;background:var(--green);"></div></div>
+        <span class="bar-val green">79.9%</span>
+      </div>
+      <!-- CRWD -->
+      <div class="bar-row">
+        <span class="bar-label">CRWD</span>
+        <div class="bar-track"><div class="bar-fill" style="width:74.8%;background:var(--yellow);"></div></div>
+        <span class="bar-val yellow">74.8%</span>
+      </div>
+      <!-- ESTC -->
+      <div class="bar-row">
+        <span class="bar-label">ESTC</span>
+        <div class="bar-track"><div class="bar-fill" style="width:74.4%;background:var(--yellow);"></div></div>
+        <span class="bar-val yellow">74.4%</span>
+      </div>
+      <!-- MDB -->
+      <div class="bar-row">
+        <span class="bar-label">MDB</span>
+        <div class="bar-track"><div class="bar-fill" style="width:71.7%;background:var(--yellow);"></div></div>
+        <span class="bar-val yellow">71.7%</span>
+      </div>
+      <!-- SNOW -->
+      <div class="bar-row">
+        <span class="bar-label" style="color:var(--snow-blue);font-weight:700;">SNOW</span>
+        <div class="bar-track"><div class="bar-fill" style="width:66.1%;background:var(--snow-blue);"></div></div>
+        <span class="bar-val" style="color:var(--snow-blue);font-weight:700;">66.1%</span>
+      </div>
+      <p style="font-size:11px;color:var(--subtext);margin-top:12px;">
+        SNOW 毛利率在同业中偏低，主要因存储和计算成本较高（云供应商结算费用占比大）。
+        随着 AI workload 占比提升及规模效应释放，管理层指引 FY27 产品毛利率可达 ~78%。
+      </p>
+    </div>
+  </div>
+
+  <!-- FCF Margin bars -->
+  <div class="section">
+    <div class="section-title">FCF Margin 横向对比（盈利能力质量）</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 28px;">
+      <div class="bar-row">
+        <span class="bar-label">PLTR</span>
+        <div class="bar-track"><div class="bar-fill" style="width:46.9%;background:var(--green);"></div></div>
+        <span class="bar-val green">+46.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">CRWD</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25.8%;background:var(--green);"></div></div>
+        <span class="bar-val green">+25.8%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label" style="color:var(--snow-blue);font-weight:700;">SNOW</span>
+        <div class="bar-track"><div class="bar-fill" style="width:23.9%;background:var(--snow-blue);"></div></div>
+        <span class="bar-val" style="color:var(--snow-blue);font-weight:700;">+23.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">DDOG</span>
+        <div class="bar-track"><div class="bar-fill" style="width:29.2%;background:var(--green);"></div></div>
+        <span class="bar-val green">+29.2%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">MDB</span>
+        <div class="bar-track"><div class="bar-fill" style="width:20.3%;background:var(--yellow);"></div></div>
+        <span class="bar-val yellow">+20.3%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">ESTC</span>
+        <div class="bar-track"><div class="bar-fill" style="width:17.6%;background:var(--yellow);"></div></div>
+        <span class="bar-val yellow">+17.6%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Insights -->
+  <div class="section">
+    <div class="section-title">投资视角分析</div>
+    <div class="insight-grid">
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--snow-blue);">估值定位</div>
+        <h4>SNOW 相对同业估值偏低</h4>
+        <p>
+          SNOW 当前 EV/Revenue ~11x（基于 FY27E ~$59亿 收入），低于 DDOG 的 15x 和同类中位数。
+          若给予与 DDOG 相当的估值倍数，SNOW 目标价约 <strong style="color:var(--text);">$195–$230</strong>，较当前股价有约 30–50% 上行空间。
+          中金公司目标价 $240（15x FY27E P/S）。
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--green);">Rule of 40 优势</div>
+        <h4>SNOW 的 Rule of 40 为 53%，处于同业前列</h4>
+        <p>
+          采用 FCF Margin 口径计算，SNOW Rule of 40 达 53%（收入增速 29% + FCF Margin 24%）。
+          这表明其成长质量显著改善，现金流转化效率在近三年大幅提升，凸显基础业务的健壮性。
+          仅 PLTR（103%，但含政府合同特殊性）和 DDOG（57%）略优于 SNOW。
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--yellow);">毛利率风险</div>
+        <h4>毛利率低于同业 —— AI Workload 是破局关键</h4>
+        <p>
+          SNOW 毛利率 66% 低于 DDOG（80%）和 PLTR（82%），主因 GPU/存储成本占比高。
+          公司 FY27 指引：产品毛利率目标 ~78%。AI 原生应用（Cortex AI）负载增长将是毛利率提升的核心催化剂，
+          若 FY27 毛利率达标，EV/GP 倍数将从当前 17x 提升至可比同业水平（22-25x）。
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--purple);">竞争格局</div>
+        <h4>云数据平台护城河深厚，但竞争加剧</h4>
+        <p>
+          SNOW 平台粘性体现在统一数据网格（Data Mesh）+ Marketplace + 多云互联架构，
+          NRR（Net Revenue Retention）保持 ~130%。
+          主要竞争威胁来自 Databricks（私有未上市）+ Snowflake 自身向 AI 平台转型风险。
+          MDB Atlas 和 DDOG 在各细分场景的渗透也形成侧翼竞争。
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--orange);">催化剂追踪</div>
+        <h4>FY2027 关键催化剂</h4>
+        <p>
+          ① AI Agent 框架（Cortex Analyst / AI Gateway）商业化加速<br>
+          ② Snowpark Container Services 扩大 GPU 负载<br>
+          ③ 产品毛利率从 ~75% 向 78%+ 迈进<br>
+          ④ FY27E 产品收入指引 $56.6亿（+27% YoY）兑现度<br>
+          ⑤ AI 大客户（Fortune 500）渗透率提升（目前 ~30%）
+        </p>
+      </div>
+
+      <div class="insight-card">
+        <div class="tag" style="color:var(--red);">主要风险</div>
+        <h4>风险因素清单</h4>
+        <p>
+          ① 宏观逆风 → 企业 IT 支出收缩可能拖累消费型计费模式<br>
+          ② Databricks 上市前竞争白热化<br>
+          ③ AWS/Azure/GCP 内置数仓能力蚕食市场<br>
+          ④ AI 转型中新产品收入爬坡速度不及预期<br>
+          ⑤ 股权稀释（大量 SBC 导致 GAAP 亏损持续）
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  数据来源：NeoData 金融数据服务 · 各公司公告 · 中金公司/申万研报 | 本报告仅供信息参考，不构成任何投资建议 | 生成时间：2026-05-08
+</div>
+
+<!-- ─────────── Charts Script ─────────────── -->
+<script>
+const COLORS = {
+  snow: '#29b5e8',
+  ddog: '#3fb950',
+  mdb: '#a371f7',
+  crwd: '#fb8500',
+  pltr: '#f85149',
+  estc: '#8b949e',
+  median: 'rgba(255,255,255,0.25)',
+};
+
+const companies = ['SNOW', 'DDOG', 'MDB', 'CRWD', 'PLTR', 'ESTC'];
+const bgColors = [COLORS.snow, COLORS.ddog, COLORS.mdb, COLORS.crwd, COLORS.pltr, COLORS.estc];
+
+const globalOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b949e', font: { size: 11 } } },
+    y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b949e', font: { size: 11 } } }
+  }
+};
+
+// ── EV/Revenue ──
+new Chart(document.getElementById('evRevChart'), {
+  type: 'bar',
+  data: {
+    labels: companies,
+    datasets: [{
+      data: [11.1, 19.1, 9.3, 26.0, 73.4, 3.5],
+      backgroundColor: bgColors,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    ...globalOpts,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: ctx => ` ${ctx.raw}×` }
+      },
+      annotation: {
+        annotations: {}
+      }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b949e' } },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#8b949e', callback: v => v + '×' }
+      }
+    }
+  }
+});
+
+// ── EV/GP ──
+new Chart(document.getElementById('evGpChart'), {
+  type: 'bar',
+  data: {
+    labels: companies,
+    datasets: [{
+      data: [16.8, 23.9, 12.9, 34.8, 89.1, 4.6],
+      backgroundColor: bgColors,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    ...globalOpts,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}×` } }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b949e' } },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#8b949e', callback: v => v + '×' }
+      }
+    }
+  }
+});
+
+// ── Rule of 40 Stacked Bar ──
+new Chart(document.getElementById('rule40Chart'), {
+  type: 'bar',
+  data: {
+    labels: companies,
+    datasets: [
+      {
+        label: '营收增速',
+        data: [29, 28, 23, 22, 56, 17],
+        backgroundColor: bgColors.map(c => c + 'bb'),
+        borderRadius: 0,
+      },
+      {
+        label: 'FCF Margin',
+        data: [23.9, 29.2, 20.3, 25.8, 46.9, 17.6],
+        backgroundColor: bgColors.map(c => c + '66'),
+        borderRadius: 6,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        labels: { color: '#8b949e', font: { size: 11 }, boxWidth: 10 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%`,
+          footer: (items) => {
+            const total = items.reduce((s, i) => s + i.raw, 0);
+            return `Rule of 40: ${total.toFixed(0)}%`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b949e' } },
+      y: {
+        stacked: true,
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#8b949e', callback: v => v + '%' }
+      }
+    }
+  }
+});
+
+// ── Bubble: 毛利率 vs 增速 ──
+new Chart(document.getElementById('bubbleChart'), {
+  type: 'bubble',
+  data: {
+    datasets: [
+      { label: 'SNOW', data: [{ x: 29, y: 66.1, r: 18 }], backgroundColor: COLORS.snow + 'cc' },
+      { label: 'DDOG', data: [{ x: 28, y: 79.9, r: 20 }], backgroundColor: COLORS.ddog + 'cc' },
+      { label: 'MDB',  data: [{ x: 23, y: 71.7, r: 12 }], backgroundColor: COLORS.mdb + 'cc' },
+      { label: 'CRWD', data: [{ x: 22, y: 74.8, r: 28 }], backgroundColor: COLORS.crwd + 'cc' },
+      { label: 'PLTR', data: [{ x: 56, y: 82.4, r: 40 }], backgroundColor: COLORS.pltr + 'cc' },
+      { label: 'ESTC', data: [{ x: 17, y: 74.4, r:  7 }], backgroundColor: COLORS.estc + 'cc' },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        labels: { color: '#8b949e', font: { size: 11 }, boxWidth: 10 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` 营收增速: ${ctx.raw.x}% | 毛利率: ${ctx.raw.y}%`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#8b949e', callback: v => v + '%' },
+        title: { display: true, text: '营收增速 YoY (%)', color: '#8b949e', font: { size: 11 } }
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: '#8b949e', callback: v => v + '%' },
+        min: 60, max: 90,
+        title: { display: true, text: '毛利率 (%)', color: '#8b949e', font: { size: 11 } }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

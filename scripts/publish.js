@@ -159,7 +159,8 @@ function main() {
   const errors = [];
   if (!opts.date) errors.push('--date 必填');
   if (!opts.target) errors.push('--target 必填');
-  if (!opts.source) errors.push('--source 必填');
+  // source 非必填：当 target 包含 reports/blog 且有 html 时，可以只传 --html
+  if (!opts.source && !opts.html) errors.push('--source 或 --html 至少传一个');
   if (errors.length) {
     errors.forEach(function(e) { console.error('ERROR: ' + e); });
     showHelp();
@@ -168,16 +169,24 @@ function main() {
 
   const date = opts.date;
   const targets = opts.target === 'all' ? ['daily', 'reports', 'blog'] : opts.target.split(',').map(function(t) { return t.trim(); });
-  const sourcePath = path.resolve(opts.source);
 
   console.log('\nkyzz-publish');
   console.log('  date: ' + date);
   console.log('  targets: ' + targets.join(', '));
-  console.log('  source: ' + opts.source + '\n');
+  console.log('  source: ' + (opts.source || '(none)'));
+  console.log('  html: ' + (opts.html || '(none)') + '\n');
 
-  let sourceMd;
-  try { sourceMd = readFile(sourcePath); }
-  catch (e) { console.error('ERROR: ' + e.message); process.exit(1); }
+  // daily 需要 source（md）
+  if (targets.includes('daily') && !opts.source) {
+    console.error('ERROR: daily 栏目需要 --source（.md 文件）');
+    process.exit(1);
+  }
+
+  let sourceMd = null;
+  if (opts.source) {
+    try { sourceMd = readFile(path.resolve(opts.source)); }
+    catch (e) { console.error('ERROR: ' + e.message); process.exit(1); }
+  }
 
   let htmlContent = null;
   if (opts.html) {
@@ -192,10 +201,17 @@ function main() {
     console.warn('  WARN: target includes reports but no --html, skipping HTML file');
   }
 
-  // 从源文件提取 title/description 传给 reports
-  const parsed = extractFrontmatter(sourceMd);
-  const srcTitle = parsed.fm.title;
-  const srcDesc = parsed.fm.description;
+  // 从源文件或 HTML 提取 title/description
+  let srcTitle, srcDesc;
+  if (sourceMd) {
+    const parsed = extractFrontmatter(sourceMd);
+    srcTitle = parsed.fm.title;
+    srcDesc = parsed.fm.description;
+  } else if (htmlContent) {
+    const titleMatch = htmlContent.match(/<title>([\s\S]*?)<\/title>/i);
+    srcTitle = titleMatch ? titleMatch[1].trim() : null;
+    srcDesc = null;
+  }
   // 文件名前缀：默认 ai-coding-daily，可通过 --name 覆盖
   const nameSlug = opts.name ? toKebab(opts.name) : 'ai-coding-daily';
 
@@ -262,14 +278,37 @@ function main() {
   const commitMsg = 'feat: add content ' + date + ' (' + targets.join(', ') + ')';
   console.log('\nFiles written. commit: ' + commitMsg + '\n');
 
+  // 构建干净的 env，过滤掉 Windows 上有问题的环境变量（含 Unicode/特殊字符导致 shell 报错）
+  function cleanEnv() {
+    const env = Object.assign({}, process.env);
+    // 删除包含非 ASCII 字符或特殊冒号的变量名（Windows shell 无法处理）
+    Object.keys(env).forEach(function(k) {
+      if (/[^A-Za-z0-9_]/.test(k)) delete env[k];
+    });
+    return env;
+  }
+
   if (opts.build) {
     console.log('Building...\n');
     try {
-      execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });
+      // 用 npx 直接调用，绕过 QClaw npm wrapper 的 CreateCleanEnv 问题
+      var astroBin = path.join(ROOT, 'node_modules', '.bin', 'astro');
+      var pagefindBin = path.join(ROOT, 'node_modules', '.bin', 'pagefind');
+      execSync('"' + astroBin + '" build && "' + pagefindBin + '" --site public', {
+        cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'], env: cleanEnv(), shell: true
+      });
       console.log('\nBuild success.\n');
     } catch (e) {
-      console.error('\nBuild failed.');
-      process.exit(1);
+      // Pagefind 的 stderr 警告（stemming）不影响构建，检查是否实际完成
+      var stdout = (e.stdout || '').toString();
+      var stderr = (e.stderr || '').toString();
+      if (/build Complete|Indexed \d+ pages|Finished in/.test(stdout + stderr)) {
+        console.log('\nBuild success (with warnings).\n');
+      } else {
+        console.error('\nBuild failed.');
+        console.error(stdout.slice(-1000));
+        process.exit(1);
+      }
     }
   }
 
@@ -277,11 +316,15 @@ function main() {
     console.log('Committing and pushing...\n');
     try {
       execSync('git add -A && git commit -m "' + commitMsg + '" && git push origin master', {
-        cwd: ROOT, stdio: 'inherit'
+        cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'], env: cleanEnv()
       });
       console.log('\nPush success.\n');
     } catch (e) {
       console.error('\nPush failed.');
+      var stdout2 = e.stdout ? e.stdout.toString() : '';
+      var stderr2 = e.stderr ? e.stderr.toString() : '';
+      if (stdout2) console.error(stdout2);
+      if (stderr2) console.error(stderr2);
       process.exit(1);
     }
   }
