@@ -23,7 +23,7 @@ const formatDate = (date: Date) => {
 };
 
 // Build-time: 用 import.meta.glob 加载 HTML（Astro 原生，无需 fs）
-const htmlGlob = import.meta.glob('/public/reports/**/*.html', { as: 'raw' });
+const htmlGlob = import.meta.glob('/public/reports/**/*.html', { query: '?raw', import: 'default' });
 const expectedPath = `/public/reports/${report.slug}.html`;
 const htmlLoader = htmlGlob[expectedPath];
 
