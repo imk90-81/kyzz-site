@@ -12,8 +12,14 @@ export async function getStaticPaths() {
     try {
       const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
       const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
-      const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      reportHtml = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+      // 提取 <head> 中的 <style> 标签（内联样式）
+      const styleMatches = fullHtml.match(/<style[\s\S]*?<\/style>/gi) || [];
+      const headStyles = styleMatches.join('\n');
+      // 提取 <body> 内容
+      const bodyMatch = fullHtml.match(/<body[\s\S]*?>([\s\S]*?)<\/body>/i);
+      const bodyContent = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+      // 将样式注入到 body 内容之前，确保样式生效
+      reportHtml = headStyles + '\n' + bodyContent;
     } catch (e) {
       console.error(`[Reports] Failed to read HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
       reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
