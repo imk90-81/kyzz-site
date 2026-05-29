@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年5月27日 A股每日动态</title>
+<style>
+  :root {
+    --bg-primary: #0f1923;
+    --bg-secondary: #1a2736;
+    --bg-card: #1e2d3d;
+    --bg-card-hover: #243547;
+    --text-primary: #e8edf2;
+    --text-secondary: #8a9bb0;
+    --text-muted: #5c7080;
+    --accent-red: #e74c3c;
+    --accent-green: #2ecc71;
+    --accent-blue: #3498db;
+    --accent-orange: #e67e22;
+    --accent-purple: #9b59b6;
+    --accent-yellow: #f1c40f;
+    --border-color: #2a3f52;
+    --gradient-red: linear-gradient(135deg, #e74c3c, #c0392b);
+    --gradient-green: linear-gradient(135deg, #2ecc71, #27ae60);
+    --gradient-blue: linear-gradient(135deg, #3498db, #2980b9);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 40px 20px 32px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-red));
+  }
+
+  .header-date {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e8edf2, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+
+  .header-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* Section */
+  .section {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .section-body {
+    padding: 20px;
+  }
+
+  /* Index Cards */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  @media (min-width: 640px) {
+    .index-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .index-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+  }
+
+  .index-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .index-name {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .index-value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .index-change {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .text-red { color: var(--accent-red); }
+  .text-green { color: var(--accent-green); }
+  .text-blue { color: var(--accent-blue); }
+  .text-orange { color: var(--accent-orange); }
+  .text-muted { color: var(--text-muted); }
+
+  /* Tables */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 10px 12px;
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  tbody td {
+    padding: 9px 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(42,63,82,0.5);
+    white-space: nowrap;
+  }
+
+  tbody tr:hover { background: var(--bg-card); }
+
+  /* News Cards */
+  .news-item {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--accent-blue);
+    transition: all 0.2s;
+  }
+
+  .news-item:hover {
+    background: var(--bg-card-hover);
+    transform: translateX(4px);
+  }
+
+  .news-item:nth-child(1) { border-left-color: var(--accent-red); }
+  .news-item:nth-child(2) { border-left-color: var(--accent-orange); }
+  .news-item:nth-child(3) { border-left-color: var(--accent-green); }
+  .news-item:nth-child(4) { border-left-color: var(--accent-purple); }
+  .news-item:nth-child(5) { border-left-color: var(--accent-yellow); }
+
+  .news-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .news-item:nth-child(1) .news-number { background: var(--gradient-red); }
+  .news-item:nth-child(2) .news-number { background: linear-gradient(135deg, #e67e22, #d35400); }
+  .news-item:nth-child(3) .news-number { background: var(--gradient-green); }
+  .news-item:nth-child(4) .news-number { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+  .news-item:nth-child(5) .news-number { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+
+  .news-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .news-content {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .news-reason {
+    font-size: 13px;
+    background: rgba(52,152,219,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    border: 1px solid rgba(52,152,219,0.2);
+  }
+
+  .news-reason-label {
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  /* Market Note */
+  .market-note {
+    background: rgba(231,76,60,0.08);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border: 1px solid rgba(231,76,60,0.15);
+    margin-top: 16px;
+    line-height: 1.8;
+  }
+
+  /* Global Markets */
+  .global-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .global-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .global-block {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+  }
+
+  .global-block-title {
+    font-size: 13px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .global-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+
+  .global-row:not(:last-child) {
+    border-bottom: 1px dashed rgba(42,63,82,0.5);
+  }
+
+  /* Watch List */
+  .watch-list {
+    list-style: none;
+    counter-reset: watch-counter;
+  }
+
+  .watch-item {
+    counter-increment: watch-counter;
+    padding: 10px 16px 10px 44px;
+    position: relative;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .watch-item:not(:last-child) {
+    border-bottom: 1px solid rgba(42,63,82,0.4);
+  }
+
+  .watch-item::before {
+    content: counter(watch-counter);
+    position: absolute;
+    left: 12px;
+    top: 11px;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--accent-blue);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+  }
+
+  .watch-item strong {
+    color: var(--text-primary);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+  /* Fund flow bar */
+  .fund-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .fund-bar-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .fund-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-card);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .fund-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s;
+  }
+
+  .fund-bar-value {
+    font-size: 12px;
+    min-width: 80px;
+  }
+
+  /* Commodity mini table */
+  .commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  @media (min-width: 640px) {
+    .commodity-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .commodity-card {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+  }
+
+  .commodity-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .commodity-price {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .commodity-change {
+    font-size: 13px;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-date">2026年5月27日 · 周三</div>
+    <div class="header-title">A 股 每 日 动 态</div>
+    <div class="header-subtitle">主板回调科创暴跌 | 科技股巨震分化 | 美伊谈判油价跳水</div>
+  </div>
+
+  <!-- Section 1: Core Indices -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(52,152,219,0.15);color:var(--accent-blue);">📊</div>
+      <div class="section-title">A 股核心指数</div>
+    </div>
+    <div class="section-body">
+      <div class="index-grid">
+        <div class="index-card">
+          <div class="index-name">上证指数</div>
+          <div class="index-value">4,093.73</div>
+          <div class="index-change text-green">▼ -1.25%</div>
+        </div>
+        <div class="index-card">
+          <div class="index-name">深证成指</div>
+          <div class="index-value">15,736.47</div>
+          <div class="index-change text-green">▼ -0.88%</div>
+        </div>
+        <div class="index-card">
+          <div class="index-name">创业板指</div>
+          <div class="index-value">4,045.77</div>
+          <div class="index-change text-red">▲ +0.07%</div>
+        </div>
+        <div class="index-card">
+          <div class="index-name">科创50</div>
+          <div class="index-value">1,815.45</div>
+          <div class="index-change text-green">▼ -2.80%</div>
+        </div>
+      </div>
+      <div class="market-note">
+        ⚠️ <strong>市场特征</strong>：主板回调，科创50暴跌近3%，市场分化加剧。创业板指微涨独红。沪深两市主力资金净流出 <strong style="color:var(--accent-green)">585.32亿元</strong>，电子板块独占流出211.50亿元。
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Top Sectors -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(231,76,60,0.15);color:var(--accent-red);">🔥</div>
+      <div class="section-title">领涨板块 TOP 6</div>
+    </div>
+    <div class="section-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>#</th><th>板块</th><th>涨幅</th><th>换手率</th><th>领涨股</th><th>领涨股涨幅</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>综合信息</td><td class="text-red">+2.76%</td><td>1.07%</td><td>阳光照明</td><td class="text-red">+6.88%</td></tr>
+            <tr><td>2</td><td>白酒</td><td class="text-red">+2.15%</td><td>2.05%</td><td>水井坊</td><td class="text-red">+10.02%</td></tr>
+            <tr><td>3</td><td>焦炭焦煤</td><td class="text-red">+1.67%</td><td>1.14%</td><td>安源煤业</td><td class="text-red">+9.95%</td></tr>
+            <tr><td>4</td><td>影视院线</td><td class="text-red">+1.61%</td><td>1.62%</td><td>百纳千成</td><td class="text-red">+20.04%</td></tr>
+            <tr><td>5</td><td>煤炭</td><td class="text-red">+1.43%</td><td>1.02%</td><td>沃尔德</td><td class="text-red">+10.01%</td></tr>
+            <tr><td>6</td><td>电力</td><td class="text-red">+1.02%</td><td>1.13%</td><td>粤电力A</td><td class="text-red">+10.04%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;font-weight:600;">板块主力资金流向</div>
+        <div class="fund-bar-container">
+          <div class="fund-bar-label" style="color:var(--accent-green)">电子</div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" style="width:100%;background:var(--accent-green);"></div></div>
+          <div class="fund-bar-value text-green">-211.50亿</div>
+        </div>
+        <div class="fund-bar-container">
+          <div class="fund-bar-label" style="color:var(--accent-green)">机械设备</div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" style="width:50.6%;background:var(--accent-green);"></div></div>
+          <div class="fund-bar-value text-green">-107.01亿</div>
+        </div>
+        <div class="fund-bar-container">
+          <div class="fund-bar-label" style="color:var(--accent-green)">计算机</div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" style="width:36.0%;background:var(--accent-green);"></div></div>
+          <div class="fund-bar-value text-green">-76.06亿</div>
+        </div>
+        <div class="fund-bar-container">
+          <div class="fund-bar-label" style="color:var(--accent-red)">公用事业</div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" style="width:6.7%;background:var(--accent-red);"></div></div>
+          <div class="fund-bar-value text-red">+14.23亿</div>
+        </div>
+        <div class="fund-bar-container">
+          <div class="fund-bar-label" style="color:var(--accent-red)">食品饮料</div>
+          <div class="fund-bar-track"><div class="fund-bar-fill" style="width:6.7%;background:var(--accent-red);"></div></div>
+          <div class="fund-bar-value text-red">+14.15亿</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Key News -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(241,196,15,0.15);color:var(--accent-yellow);">📌</div>
+      <div class="section-title">精选高价值动态（5条）</div>
+    </div>
+    <div class="section-body">
+
+      <div class="news-item">
+        <div class="news-title"><span class="news-number">1</span>科技股巨震分化，电子板块单日净流出超211亿元</div>
+        <div class="news-content">
+          5月27日，科技线全天大幅分化——早盘受隔夜美光科技暴涨19%刺激，存储芯片一度冲高，但午后资金疯狂出逃，AI算力、机器人等高估值题材集体回调。电子板块全天净流出211.50亿元，仅华天科技、胜宏科技、通富微电、沪电股份、长电科技5只个股合计净流出就超108亿元。科创50指数暴跌2.80%，为近期最大单日跌幅。
+        </div>
+        <div class="news-reason">
+          <div class="news-reason-label">💡 关注理由</div>
+          科技板块已连续三日大幅波动（25日暴涨→26日回调→27日深度分化），交易拥挤度处于历史高位——申万半导体日均换手率5.8%，远超全A均值2.3%。短期风险信号明确：科创50相关ETF近一周净流出超80亿元，市场正从"普涨扫货"转向"个股深度博弈"，后续分化将加剧。
+        </div>
+      </div>
+
+      <div class="news-item">
+        <div class="news-title"><span class="news-number">2</span>美伊谅解备忘录草案曝光，油价暴跌5%、黄金跌破4400美元</div>
+        <div class="news-content">
+          5月27日晚间，伊朗与美国谅解备忘录框架"初步非正式文件"被披露——美方承诺解除对伊海上封锁并撤出部分军事力量，伊朗则承诺一个月内恢复霍尔木兹海峡商业船只通行。受此影响，WTI原油盘中跳水逾5%跌破89美元/桶，布油跌超4%；COMEX黄金跌破4410美元/盎司，跌幅近2%。
+        </div>
+        <div class="news-reason">
+          <div class="news-reason-label">💡 关注理由</div>
+          这是美伊谈判的实质性突破信号。若60天内达成最终协议并以联合国安理会决议确认，霍尔木兹海峡通行正常化将显著增加全球原油供应，油价可能持续承压。对A股而言，油价下跌利好航空、化工等成本敏感行业，但对煤炭、石油开采板块构成利空。黄金调整则给中长期配置者提供观察窗口。
+        </div>
+      </div>
+
+      <div class="news-item">
+        <div class="news-title"><span class="news-number">3</span>瑞银：长线外资开始加码中国，AI盈利兑现夯实A股基本面</div>
+        <div class="news-content">
+          瑞银亚太区研究部总监连沛堃5月27日表示，今年更多具备长线视角的海外基金正带着"真金白银"进入中国，投资期限往往设定在一年以上。A股一季度整体盈利同比增长7%（剔除金融达12%），科创板AI相关公司盈利增长预期达23%。瑞银预计人民币兑美元年底升至6.6附近，黄金年底仍有上行空间。
+        </div>
+        <div class="news-reason">
+          <div class="news-reason-label">💡 关注理由</div>
+          外资性质从"短线交易"转向"长线配置"是重大趋势信号。瑞银明确指出"AI不只是一个故事，已落实到上市公司业绩"，这与国内券商"盈利兑现"判断形成共振。基本面锚定的AI核心资产与高股息蓝筹，正成为内外资共识方向。
+        </div>
+      </div>
+
+      <div class="news-item">
+        <div class="news-title"><span class="news-number">4</span>SpaceX IPO倒计时，马斯克探讨与特斯拉合并，太空板块持续暴涨</div>
+        <div class="news-content">
+          SpaceX将于6月12日正式登陆纳斯达克（代码SPCX），目标估值1.75-2万亿美元，融资规模750-800亿美元。马斯克已与同事探讨SpaceX与特斯拉合并的可能性。受IPO预期推动，太空板块全线飙涨：Redwire暴涨26%、AST SpaceMobile涨13%、Firefly Aerospace涨19%。Procure Space ETF年内涨幅已达69%，远超标普500的9.8%。
+        </div>
+        <div class="news-reason">
+          <div class="news-reason-label">💡 关注理由</div>
+          这将是人类金融史上最大规模IPO，2万亿美元估值对标特斯拉1.6万亿美元市值。合并传闻若成真，将催生全球首个"航天+AI+电动车"超级帝国。对A股而言，太空经济概念映射（卫星互联网、商业航天）可能获得持续催化。
+        </div>
+      </div>
+
+      <div class="news-item">
+        <div class="news-title"><span class="news-number">5</span>新股N长进上市首日暴涨1510%，市场投机情绪极致化</div>
+        <div class="news-content">
+          5月27日，新股N长进（688635）上市首日暴涨1510.52%，全天成交78.9亿元，换手率高达77.53%，主力资金净流入8.47亿元。这一涨幅创下近年来A股新股首日涨幅纪录。
+        </div>
+        <div class="news-reason">
+          <div class="news-reason-label">💡 关注理由</div>
+          新股首日15倍涨幅、77%换手率，折射出市场投机情绪极度亢奋。在科技股高位分化、ETF资金加速流出的背景下，资金涌入新股博短差，本质上是"流动性外溢+博弈心态"的集中体现。这种极端表现往往出现在行情后期的分歧阶段，值得警惕。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 4: Global Markets -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(46,204,113,0.15);color:var(--accent-green);">🌍</div>
+      <div class="section-title">全球市场联动</div>
+    </div>
+    <div class="section-body">
+      <div class="global-grid">
+        <!-- US -->
+        <div class="global-block">
+          <div class="global-block-title">🇺🇸 美股（5/26收盘）</div>
+          <div class="global-row">
+            <span>纳斯达克</span>
+            <span class="text-red">+1.19%</span>
+          </div>
+          <div class="global-row">
+            <span>标普500</span>
+            <span class="text-red">+0.61%</span>
+          </div>
+          <div class="global-row">
+            <span>道琼斯</span>
+            <span class="text-green">-0.23%</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">纳指与标普500同创历史新高</div>
+        </div>
+        <!-- HK -->
+        <div class="global-block">
+          <div class="global-block-title">🇭🇰 港股（5/27收盘）</div>
+          <div class="global-row">
+            <span>恒生指数</span>
+            <span class="text-green">-1.06%</span>
+          </div>
+          <div class="global-row">
+            <span>恒生科技</span>
+            <span class="text-green">-0.79%</span>
+          </div>
+          <div class="global-row">
+            <span>国企指数</span>
+            <span class="text-green">-1.33%</span>
+          </div>
+        </div>
+        <!-- Commodities -->
+        <div class="global-block">
+          <div class="global-block-title">💎 大宗商品</div>
+          <div class="global-row">
+            <span>COMEX黄金</span>
+            <span class="text-green">-1.99%</span>
+          </div>
+          <div class="global-row">
+            <span>伦敦金现</span>
+            <span class="text-green">-2.06%</span>
+          </div>
+          <div class="global-row">
+            <span>WTI原油</span>
+            <span class="text-green">-4.64%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="commodity-grid" style="margin-top:16px;">
+        <div class="commodity-card">
+          <div class="commodity-name">COMEX黄金</div>
+          <div class="commodity-price">4,412.50</div>
+          <div class="commodity-change text-green">-1.99%</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">美元/盎司</div>
+        </div>
+        <div class="commodity-card">
+          <div class="commodity-name">伦敦金现</div>
+          <div class="commodity-price">4,414.16</div>
+          <div class="commodity-change text-green">-2.06%</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">美元/盎司</div>
+        </div>
+        <div class="commodity-card">
+          <div class="commodity-name">上海金 AU9999</div>
+          <div class="commodity-price">970.00</div>
+          <div class="commodity-change text-green">-1.28%</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">元/克</div>
+        </div>
+        <div class="commodity-card">
+          <div class="commodity-name">WTI原油</div>
+          <div class="commodity-price">89.53</div>
+          <div class="commodity-change text-green">-4.64%</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">美元/桶</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        💱 美元指数跌破99，日内跌0.15% ｜ 瑞银预计人民币兑美元年底升至 <strong>6.6</strong> 附近
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Tomorrow Watch -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(155,89,182,0.15);color:var(--accent-purple);">🔮</div>
+      <div class="section-title">明日关注</div>
+    </div>
+    <div class="section-body">
+      <ol class="watch-list">
+        <li class="watch-item"><strong>美伊谈判后续</strong>：谅解备忘录草案若被官方确认，油价及黄金可能进一步调整，关注A股能源板块反应</li>
+        <li class="watch-item"><strong>科技股能否止跌</strong>：电子板块连续三日资金大幅流出，关注半导体核心标的是否出现企稳信号</li>
+        <li class="watch-item"><strong>SpaceX概念映射</strong>：A股商业航天、卫星互联网板块是否持续受催化</li>
+        <li class="watch-item"><strong>5月28日特朗普内阁会议</strong>：可能对美伊协议及关税政策释放新信号</li>
+        <li class="watch-item"><strong>美联储加息预期</strong>：CME数据显示市场开始计入12月加息25bp概率37%，关注后续联储官员表态</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    数据来源：neodata-financial-search / westock-data ｜ 生成时间：2026-05-27 21:11
+  </div>
+
+</div>
+</body>
+</html>
