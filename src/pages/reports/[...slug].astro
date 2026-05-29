@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import fs from 'fs';
+import path from 'path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -11,11 +13,7 @@ export async function getStaticPaths() {
 }
 
 const report = Astro.props;
-const { Content } = await report.render();
 const { title, description, pubDate, tags = [] } = report.data;
-
-// Auto-derive iframe src from slug
-const iframeSrc = `/reports/${report.slug}.html`;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', {
@@ -25,6 +23,19 @@ const formatDate = (date: Date) => {
     weekday: 'long'
   });
 };
+
+// Build-time: read HTML file and extract body content
+let reportHtml = '';
+try {
+  const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
+  const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
+  const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  reportHtml = bodyMatch ? bodyMatch[1] : fullHtml;
+  reportHtml = reportHtml.trim();
+} catch (e) {
+  console.error(`[Reports] Failed to read HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
+  reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
+}
 ---
 
 <BaseLayout title={`${title} | Kyzz空间站`} description={description}>
@@ -59,14 +70,8 @@ const formatDate = (date: Date) => {
         <div class="mt-6 h-px bg-gradient-to-r from-purple-500/30 via-space-500 to-transparent"></div>
       </header>
 
-      {/* Report Content - iframe */}
-      <div class="report-content">
-        <iframe 
-          src={iframeSrc}
-          style="width:100%;height:80vh;border:none;border-radius:12px;" 
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        ></iframe>
+      {/* Report Content - direct HTML embed */}
+      <div class="report-content prose prose-invert max-w-none" set:html={reportHtml}>
       </div>
 
       {/* Footer */}
@@ -86,13 +91,3 @@ const formatDate = (date: Date) => {
     </article>
   </main>
 </BaseLayout>
-
-<style>
-  .report-content iframe {
-    width: 100%;
-    min-height: 600px;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
-    background: #1a1a2e;
-  }
-</style>
