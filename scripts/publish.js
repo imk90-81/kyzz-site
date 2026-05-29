@@ -219,8 +219,9 @@ function main() {
 
   targets.forEach(function(t) {
     if (t === 'daily') {
+      const dailyName = opts.name ? toKebab(opts.name) : 'ai-coding-daily';
       files.push({
-        path: path.join(ROOT, 'src', 'content', 'daily', 'AI_Coding_Daily_' + date + '.md'),
+        path: path.join(ROOT, 'src', 'content', 'daily', dailyName + '-' + date + '.md'),
         content: generateDailyMd(sourceMd, date),
         label: 'daily'
       });
