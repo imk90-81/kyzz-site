@@ -1,7 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import fs from 'fs';
-import path from 'path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -24,24 +22,33 @@ const formatDate = (date: Date) => {
   });
 };
 
-// Build-time: read HTML file and extract body content
+// Build-time: 用 import.meta.glob 加载 HTML（Astro 原生，无需 fs）
+const htmlGlob = import.meta.glob('/public/reports/**/*.html', { as: 'raw' });
+const expectedPath = `/public/reports/${report.slug}.html`;
+const htmlLoader = htmlGlob[expectedPath];
+
 let reportHtml = '';
-try {
-  const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
-  const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
-  const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-  reportHtml = bodyMatch ? bodyMatch[1] : fullHtml;
-  reportHtml = reportHtml.trim();
-} catch (e) {
-  console.error(`[Reports] Failed to read HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
-  reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
+
+if (!htmlLoader) {
+  const available = Object.keys(htmlGlob).join(', ');
+  console.error(`[Reports] HTML not found: ${expectedPath}. Available: ${available}`);
+  reportHtml = `<p class="text-zinc-400">报告HTML文件未找到: ${report.slug}.html</p>`;
+} else {
+  try {
+    const fullHtml = await htmlLoader();
+    const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    reportHtml = bodyMatch ? bodyMatch[1] : fullHtml;
+    reportHtml = reportHtml.trim();
+  } catch (e) {
+    console.error(`[Reports] Failed to load HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
+    reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
+  }
 }
 ---
 
 <BaseLayout title={`${title} | Kyzz空间站`} description={description}>
   <main class="min-h-[calc(100vh-4rem)] pt-24 pb-16">
     <article class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      {/* Header */}
       <header class="mb-10">
         <div class="flex items-center gap-2 mb-4">
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
@@ -71,10 +78,8 @@ try {
       </header>
 
       {/* Report Content - direct HTML embed */}
-      <div class="report-content prose prose-invert max-w-none" set:html={reportHtml}>
-      </div>
+      <div class="report-content prose prose-invert max-w-none" set:html={reportHtml}></div>
 
-      {/* Footer */}
       <footer class="mt-12 pt-8 border-t border-space-500/50">
         <div class="flex justify-center">
           <a
