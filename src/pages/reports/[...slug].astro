@@ -1,17 +1,39 @@
 ---
 import { getCollection } from 'astro:content';
+import fs from 'fs';
+import path from 'path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports', ({ data }) => !data.draft).catch(() => []);
-  return reports.map(report => ({
-    params: { slug: report.slug },
-    props: report,
+
+  const paths = await Promise.all(reports.map(async (report) => {
+    let reportHtml = '';
+    try {
+      const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
+      const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
+      const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      reportHtml = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+    } catch (e) {
+      console.error(`[Reports] Failed to read HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
+      reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
+    }
+
+    return {
+      params: { slug: report.slug },
+      props: {
+        ...report,
+        reportHtml,
+      },
+    };
   }));
+
+  return paths;
 }
 
 const report = Astro.props;
 const { title, description, pubDate, tags = [] } = report.data;
+const reportHtml = report.reportHtml;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', {
@@ -21,29 +43,6 @@ const formatDate = (date: Date) => {
     weekday: 'long'
   });
 };
-
-// Build-time: 用 import.meta.glob 加载 HTML（Astro 原生，无需 fs）
-const htmlGlob = import.meta.glob('/public/reports/**/*.html', { query: '?raw', import: 'default' });
-const expectedPath = `/public/reports/${report.slug}.html`;
-const htmlLoader = htmlGlob[expectedPath];
-
-let reportHtml = '';
-
-if (!htmlLoader) {
-  const available = Object.keys(htmlGlob).join(', ');
-  console.error(`[Reports] HTML not found: ${expectedPath}. Available: ${available}`);
-  reportHtml = `<p class="text-zinc-400">报告HTML文件未找到: ${report.slug}.html</p>`;
-} else {
-  try {
-    const fullHtml = await htmlLoader();
-    const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-    reportHtml = bodyMatch ? bodyMatch[1] : fullHtml;
-    reportHtml = reportHtml.trim();
-  } catch (e) {
-    console.error(`[Reports] Failed to load HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
-    reportHtml = '<p class="text-zinc-400">报告内容加载失败</p>';
-  }
-}
 ---
 
 <BaseLayout title={`${title} | Kyzz空间站`} description={description}>
@@ -77,7 +76,6 @@ if (!htmlLoader) {
         <div class="mt-6 h-px bg-gradient-to-r from-purple-500/30 via-space-500 to-transparent"></div>
       </header>
 
-      {/* Report Content - direct HTML embed */}
       <div class="report-content prose prose-invert max-w-none" set:html={reportHtml}></div>
 
       <footer class="mt-12 pt-8 border-t border-space-500/50">
