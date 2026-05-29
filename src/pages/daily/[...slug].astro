@@ -2,8 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import DailyLayout from '../../layouts/DailyLayout.astro';
 
-export const prerender = true;
-
 export async function getStaticPaths() {
   const dailyEntries = await getCollection('daily', ({ data }) => !data.draft);
   return Promise.all(dailyEntries.map(async entry => {
