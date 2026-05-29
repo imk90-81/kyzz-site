@@ -58,189 +58,196 @@
 
 <script is:inline>
 (function () {
-  var modal = document.getElementById('search-modal');
-  var trigger = document.getElementById('search-trigger');
-  var input = document.getElementById('search-input');
-  var results = document.getElementById('search-results');
-  var backdrop = document.getElementById('search-backdrop');
+  // 用 astro:page-load 确保每次页面切换后都重新初始化
+  function initSearch() {
+    var modal = document.getElementById('search-modal');
+    var trigger = document.getElementById('search-trigger');
+    var input = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+    var backdrop = document.getElementById('search-backdrop');
 
-  if (!modal || !trigger || !input) return;
-
-  var pagefind = null;
-  var isLoading = false;
-
-  async function loadPagefind() {
-    if (pagefind || isLoading) return pagefind;
-    isLoading = true;
-    try {
-      var pf = await import('/pagefind/pagefind.js');
-      await pf.init();
-      pagefind = pf;
-    } catch (e) {
-      console.error('[Search] Pagefind load error:', e);
-      pagefind = null;
-    }
-    isLoading = false;
-    return pagefind;
-  }
-
-  function openModal() {
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    setTimeout(function () { input.focus(); }, 50);
-    loadPagefind();
-  }
-
-  function closeModal() {
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-    input.value = '';
-    results.innerHTML = '<div id="search-hint" class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">开始输入以搜索...</div>';
-  }
-
-  function highlight(text, term) {
-    if (!term || !text) return text;
-    try {
-      var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      var regex = new RegExp('(' + escaped + ')', 'gi');
-      return text.replace(regex, '<mark style="background: var(--color-accent); color: #000; border-radius: 2px; padding: 0 2px;">$1</mark>');
-    } catch (err) {
-      return text;
-    }
-  }
-
-  async function renderResults(data, term) {
-    if (!data || !data.results || data.results.length === 0) {
-      results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">未找到相关内容</div>';
+    if (!modal || !trigger || !input || !results || !backdrop) {
+      // DOM 元素还不存在，延迟重试
+      setTimeout(initSearch, 100);
       return;
     }
 
-    var limit = Math.min(data.results.length, 10);
-    var html = '';
+    // 防止重复绑定
+    if (modal.dataset.searchInitialized) return;
+    modal.dataset.searchInitialized = 'true';
 
-    for (var i = 0; i < limit; i++) {
-      var r = data.results[i];
-      var title = (r.meta && r.meta.title) ? r.meta.title : (r.url || '');
-      var url = r.url || '#';
-      var safeUrl = url.replace(/'/g, "\\'");
+    var pagefind = null;
+    var isLoading = false;
+    var activeIndex = -1;
 
-      html += '<a href="' + url + '" data-result-url="' + safeUrl + '" data-result-idx="' + i + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
-      html += '<div class="pf-title text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div>';
-      html += '<div class="pf-excerpt text-xs" style="color: var(--color-text-secondary);">加载中...</div>';
-      html += '</a>';
-    }
-
-    results.innerHTML = html;
-
-    // 绑定跳转事件
-    var links = results.querySelectorAll('a[data-result-url]');
-    for (var li = 0; li < links.length; li++) {
-      (function (link) {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var targetUrl = link.getAttribute('href');
-          if (targetUrl && targetUrl !== '#') {
-            closeModal();
-            setTimeout(function () { window.location.href = targetUrl; }, 100);
-          }
+    function loadPagefind(cb) {
+      if (pagefind) { cb && cb(pagefind); return; }
+      if (isLoading) return;
+      isLoading = true;
+      import('/pagefind/pagefind.js')
+        .then(function (pf) { return pf.init(); })
+        .then(function () {
+          pagefind = pf;
+          isLoading = false;
+          cb && cb(pagefind);
+        })
+        .catch(function (e) {
+          console.error('[Search] Pagefind load error:', e);
+          isLoading = false;
         });
-      })(links[li]);
     }
 
-    // 异步加载每条结果的 excerpt
-    for (var j = 0; j < limit; j++) {
-      try {
-        var item = data.results[j];
-        var d = await item.data();
-        var el = document.querySelector('[data-result-idx="' + j + '"]');
-        if (el && d) {
-          var excerptEl = el.querySelector('.pf-excerpt');
-          if (excerptEl) {
-            var raw = (d.content || '').toString().replace(/<[^>]+>/g, '');
-            var shortEx = raw.substring(0, 120) + (raw.length > 120 ? '...' : '');
-            excerptEl.innerHTML = highlight(shortEx, term);
-          }
-          var titleEl = el.querySelector('.pf-title');
-          if (titleEl && d.meta && d.meta.title) {
-            titleEl.innerHTML = highlight(d.meta.title, term);
-          }
-        }
-      } catch (err) {
-        console.warn('[Search] Result ' + j + ' load error:', err);
-      }
+    function openModal() {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () { input.focus(); }, 50);
+      loadPagefind();
     }
-  }
 
-  var searchTimer = null;
-
-  input.addEventListener('input', function () {
-    clearTimeout(searchTimer);
-    var q = input.value.trim();
-    if (!q) {
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      input.value = '';
+      activeIndex = -1;
       results.innerHTML = '<div id="search-hint" class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">开始输入以搜索...</div>';
-      return;
     }
-    searchTimer = setTimeout(async function () {
-      var pf = await loadPagefind();
-      if (!pf) {
-        results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索索引加载失败，请刷新页面重试</div>';
+
+    function highlight(text, term) {
+      if (!term || !text) return text;
+      try {
+        var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var regex = new RegExp('(' + escaped + ')', 'gi');
+        return text.replace(regex, '<mark style="background: var(--color-accent); color: #000; border-radius: 2px; padding: 0 2px;">$1</mark>');
+      } catch (err) { return text; }
+    }
+
+    function renderResults(data, term) {
+      if (!data || !data.results || data.results.length === 0) {
+        results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">未找到相关内容</div>';
         return;
       }
-      results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索中...</div>';
-      try {
-        var data = await pf.search(q);
-        await renderResults(data, q);
-      } catch (e) {
-        console.error('[Search] Error:', e);
-        results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索失败，请重试</div>';
-      }
-    }, 200);
-  });
 
-  // Keyboard navigation
-  var activeIndex = -1;
-  input.addEventListener('keydown', function (e) {
-    var items = results.querySelectorAll('.result-item');
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, items.length - 1);
-      updateActive(items);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      updateActive(items);
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
-      e.preventDefault();
-      var target = items[activeIndex];
-      if (target) {
+      var limit = Math.min(data.results.length, 10);
+      var html = '';
+
+      for (var i = 0; i < limit; i++) {
+        var r = data.results[i];
+        var title = (r.meta && r.meta.title) ? r.meta.title : (r.url || '');
+        var url = r.url || '#';
+        html += '<a href="' + url + '" class="result-item block px-4 py-3 border-b transition-colors hover:bg-white/5" style="border-color: var(--color-border); text-decoration: none;">';
+        html += '<div class="pf-title text-sm font-medium mb-1" style="color: var(--color-text);">' + highlight(title, term) + '</div>';
+        html += '<div class="pf-excerpt text-xs" style="color: var(--color-text-secondary);">加载中...</div>';
+        html += '</a>';
+      }
+
+      results.innerHTML = html;
+
+      // 异步加载 excerpt
+      for (var j = 0; j < limit; j++) {
+        (function (idx) {
+          data.results[idx].data().then(function (d) {
+            var el = results.querySelectorAll('.result-item')[idx];
+            if (!el || !d) return;
+            var excerptEl = el.querySelector('.pf-excerpt');
+            if (excerptEl) {
+              var raw = (d.content || '').toString().replace(/<[^>]+>/g, '');
+              var shortEx = raw.substring(0, 120) + (raw.length > 120 ? '...' : '');
+              excerptEl.innerHTML = highlight(shortEx, term);
+            }
+          }).catch(function () {});
+        })(j);
+      }
+    }
+
+    // 输入防抖搜索
+    var searchTimer = null;
+    input.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      var q = input.value.trim();
+      if (!q) {
+        results.innerHTML = '<div id="search-hint" class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">开始输入以搜索...</div>';
+        return;
+      }
+      searchTimer = setTimeout(function () {
+        loadPagefind(function (pf) {
+          if (!pf) return;
+          results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索中...</div>';
+          pf.search(q).then(function (data) {
+            renderResults(data, q);
+          }).catch(function (e) {
+            console.error('[Search] Error:', e);
+            results.innerHTML = '<div class="px-4 py-8 text-center text-sm" style="color: var(--color-text-secondary);">搜索失败，请重试</div>';
+          });
+        });
+      }, 200);
+    });
+
+    // 键盘导航
+    input.addEventListener('keydown', function (e) {
+      var items = results.querySelectorAll('.result-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        updateActive(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, -1);
+        updateActive(items);
+      } else if (e.key === 'Enter' && activeIndex >= 0 && items[activeIndex]) {
+        e.preventDefault();
         closeModal();
-        setTimeout(function () { window.location.href = target.getAttribute('href'); }, 100);
+        setTimeout(function () { window.location.href = items[activeIndex].getAttribute('href'); }, 100);
+      }
+    });
+
+    function updateActive(items) {
+      for (var k = 0; k < items.length; k++) {
+        items[k].style.background = (k === activeIndex) ? 'rgba(255,255,255,0.08)' : '';
       }
     }
-  });
 
-  function updateActive(items) {
-    for (var k = 0; k < items.length; k++) {
-      items[k].style.background = (k === activeIndex) ? 'rgba(255,255,255,0.08)' : '';
-    }
+    // 点击结果项跳转
+    results.addEventListener('click', function (e) {
+      var link = e.target.closest('.result-item');
+      if (link) {
+        e.preventDefault();
+        closeModal();
+        setTimeout(function () { window.location.href = link.getAttribute('href'); }, 100);
+      }
+    });
+
+    // 绑定触发按钮和背景点击
+    trigger.addEventListener('click', openModal);
+    backdrop.addEventListener('click', closeModal);
+
+    // 全局快捷键
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (modal.classList.contains('hidden')) {
+          openModal();
+        } else {
+          closeModal();
+        }
+      }
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
   }
 
-  trigger.addEventListener('click', openModal);
-  backdrop.addEventListener('click', closeModal);
-
-  document.addEventListener('keydown', function (e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      if (modal.classList.contains('hidden')) {
-        openModal();
-      } else {
-        closeModal();
-      }
-    }
-    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-      closeModal();
-    }
+  // 支持 astro:page-load（ViewTransitions）和 DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearch);
+  } else {
+    initSearch();
+  }
+  document.addEventListener('astro:page-load', function () {
+    // 重置初始化标记，允许重新绑定
+    var modal = document.getElementById('search-modal');
+    if (modal) delete modal.dataset.searchInitialized;
+    initSearch();
   });
 })();
 </script>
+
