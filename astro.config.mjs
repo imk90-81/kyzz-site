@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://kyzz.space',
-  output: 'server',
+  output: 'hybrid',
   adapter: cloudflare(),
   integrations: [
     mdx(),
