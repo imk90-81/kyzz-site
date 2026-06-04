@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政府信息化项目，90%的坑都踩在同一类问题上</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f7f7f7;
+    color: #333;
+    line-height: 1.8;
+    font-size: 16px;
+  }
+  .cover {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+  }
+  .article-body {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 28px 24px 40px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #1a1a1a;
+    margin: 20px 0 8px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #222;
+    margin: 32px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid #1a73e8;
+  }
+  p {
+    margin-bottom: 16px;
+    text-align: justify;
+    color: #444;
+  }
+  .highlight-box {
+    background: #f0f4ff;
+    border-left: 4px solid #1a73e8;
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .highlight-box p { margin-bottom: 0; color: #333; }
+  .case-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 16px 0;
+  }
+  .case-card .case-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a73e8;
+    margin-bottom: 8px;
+  }
+  .case-card p { font-size: 15px; color: #555; margin-bottom: 8px; }
+  .case-card .case-tag {
+    display: inline-block;
+    background: #fee;
+    color: #c00;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  .rule-list { list-style: none; margin: 16px 0; }
+  .rule-list li {
+    padding: 12px 0 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: flex-start;
+  }
+  .rule-list li:last-child { border-bottom: none; }
+  .rule-num {
+    background: #1a73e8;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .rule-text { font-size: 15px; color: #333; }
+  .rule-text strong { color: #1a1a1a; }
+  .cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: #fff;
+    padding: 28px 20px;
+    border-radius: 12px;
+    margin: 32px 0 8px;
+  }
+  .cta-section h3 { font-size: 18px; margin-bottom: 10px; }
+  .cta-section p { color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 0; text-align: center; }
+  .author-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+    padding: 18px;
+    background: #fafafa;
+    border-radius: 10px;
+  }
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .author-info h4 { font-size: 15px; font-weight: 600; color: #222; }
+  .author-info p { font-size: 13px; color: #888; margin-bottom: 0; }
+  .divider { text-align: center; margin: 28px 0; color: #ccc; font-size: 20px; letter-spacing: 8px; }
+  .key-point { color: #1a73e8; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="article-body">
+  <h1>政府信息化项目，90%的坑都踩在同一类问题上</h1>
+  <div class="subtitle">作者：Kyzz  2026年5月</div>
+
+  <h2>写在前面</h2>
+  <p>做了十年政府信息化项目，我越来越相信一句话——</p>
+  <div class="highlight-box">
+    <p><strong>一个项目能不能成，在签合同之前就已经注定了。</strong></p>
+  </div>
+  <p>不是技术不行，不是团队不努力，是从立项到招标到合同到验收，每一步都埋着坑。等你发现的时候，要么木已成舟，要么无力回天。</p>
+  <p>这个系列，我会把那些反复出现、反复坑人的问题逐一拆解。不讲大道理，只讲真实案例和方法论。</p>
+
+  <h2>坑一：需求阶段，你以为聊清楚了，其实什么都没定</h2>
+  <p>这是我见过最多的项目死亡方式。</p>
+  <p>甲方说"我们想要一个智慧政务平台"，乙方说"没问题，我们做过很多"。双方握手，开干。三个月后——甲方发现这不是他想要的，乙方说"你们当时没说要XX功能"。</p>
+  <div class="case-card">
+    <div class="case-title">典型场景还原</div>
+    <p>某区大数据局上马"综合指挥平台"，需求说明书厚达200页。实施方按文档开发，上线后领导一句话："界面太复杂了，要像手机一样简单。"——200页白写了。</p>
+    <span class="case-tag">根因：需求确认 ≠ 需求文档</span>
+  </div>
+  <p>政府项目里，需求确认往往流于形式。签字的人未必是最终用的人，用的人没有发言权。PM要做的，不是记录需求，而是<strong>穿透文档，找到真正的使用者和决策链</strong>。</p>
+
+  <h2>坑二：招标文件，写进去就是给自己挖的</h2>
+  <p>招标文件的每一句话，都是后续验收的依据。你写"系统应具备良好的用户体验"，等验收时，甲方拿出ISO标准的交互设计规范，你怎么办？</p>
+  <div class="case-card">
+    <div class="case-title">血泪教训</div>
+    <p>某千万级智慧社区项目，招标文件要求"系统应支持移动端访问"。验收时甲方提出：必须在ios和Android两大应用市场上架，且评分不低于4.5。——招标文件没有写，追加费用280万。</p>
+    <span class="case-tag">根因：招标文件没有量化的验收标准</span>
+  </div>
+  <p>一个实用的原则：<strong>每一个模糊描述的背后，都藏着一颗验收时的雷</strong>。把它炸掉的办法只有一个——量化。</p>
+
+  <h2>坑三：合同里的"验收"两个字，轻飘飘，重如山</h2>
+  <p>政府项目合同，通常有验收条款，但验收标准呢？验收流程呢？验收不通过怎么办？</p>
+  <p>很多合同写的是"甲方组织验收，乙方配合"。七个字，没有了。</p>
+  <p>结果呢？项目做完了，甲方说"我们还没准备好"，拖你半年。项目款付不出来，理由是"系统还不稳定"。你去找合同，没写啊。</p>
+
+  <h2>坑四：把"等领导确认"当成项目节点</h2>
+  <p>政府项目里，最大的不可控因素不是技术，是人。</p>
+  <p>领导出国了、领导换岗了、领导开会了——每个"等确认"都可能导致进度归零。更要命的是，这种延误不写在任何项目文档里，日后复盘，你会发现整个项目有40%的时间在等确认。</p>
+  <div class="case-card">
+    <div class="case-title">案例</div>
+    <p>项目临近验收期，甲方单位一把手更换，对前期建设成果提出“新的想法”，直接导致延期一年才完成验收，期间投入成本几乎翻倍。</p>
+    <span class="case-tag">根因：政府项目的组织风险不在风险库里</span>
+  </div>
+
+  <h2>避坑实战指南</h2>
+  <p>说了这么多问题，给几个马上能用的方法：</p>
+  <ul class="rule-list">
+    <li>
+      <span class="rule-num">1</span>
+      <span class="rule-text"><strong>需求穿透</strong>：谁签字、谁用、谁验收，三类人必须分别沟通，签字人的需求 ≠ 使用人的需求。</span>
+    </li>
+    <li>
+      <span class="rule-num">2</span>
+      <span class="rule-text"><strong>招标量化</strong>：每一个"良好""完善""支持"，都要追问：好到什么程度？完善的标准是什么？支持多少并发？</span>
+    </li>
+    <li>
+      <span class="rule-num">3</span>
+      <span class="rule-text"><strong>合同锁死</strong>：验收标准、验收流程、初验终验时间节点、延期责任，全部写入合同附件。口头承诺不算数。</span>
+    </li>
+    <li>
+      <span class="rule-num">4</span>
+      <span class="rule-text"><strong>决策链备案</strong>：列出所有关键决策人，标注联系方式和在职状态。换人第一时间启动关系重建。</span>
+    </li>
+    <li>
+      <span class="rule-num">5</span>
+      <span class="rule-text"><strong>等确认的成本</strong>：每次"等领导确认"超过3个工作日，书面发邮件或OA记录，并同步影响工期。留痕就是保护自己。</span>
+    </li>
+  </ul>
+
+  <div class="divider">· · ·</div>
+
+
+  <div class="author-box">
+    <div class="author-avatar">K</div>
+    <div class="author-info">
+      <h4>数字PM · Kyzz</h4>
+    </div>
+  </div>
+</div>
+</body>
+</html>
