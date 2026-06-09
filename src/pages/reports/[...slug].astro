@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports', ({ data }) => !data.draft).catch(() => []);
@@ -28,8 +28,8 @@ const formatDate = (date: Date) => {
 };
 ---
 
-<BaseLayout title={`${title} | Kyzz空间站`} description={description}>
-  <div class="flex flex-col min-h-[calc(100vh-4rem)] pt-20">
+<DetailLayout title={title} description={description}>
+  <div class="flex flex-col min-h-[calc(100vh-3.5rem)] pt-4 pb-20">
     <!-- 报告信息头部 -->
     <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
       <div class="flex items-center gap-2 mb-2">
@@ -65,4 +65,4 @@ const formatDate = (date: Date) => {
       </div>
     </div>
   </div>
-</BaseLayout>
+</DetailLayout>

@@ -1,218 +1,602 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroSection from '../components/HeroSection.astro';
-import PostCard from '../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 
-const allPosts = (await getCollection('blog', ({ data }) => !data.draft).catch(() => [])).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
-const recentPosts = allPosts.slice(0, 5);
-
+// 获取各栏目最新文章
 const dailyEntries = (await getCollection('daily', ({ data }) => !data.draft).catch(() => []))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+  .slice(0, 10);
 
 const reportEntries = (await getCollection('reports', ({ data }) => !data.draft).catch(() => []))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+  .slice(0, 10);
+
+const blogPosts = (await getCollection('blog', ({ data }) => !data.draft).catch(() => []))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 10);
 
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
 };
-
-// Skill tags for display
-const skills = [
-  'TypeScript', 'React', 'Vue', 'Node.js', 'Python',
-  'Astro', 'Tailwind', 'Docker', 'Git', 'Rust',
-];
 ---
 
 <BaseLayout title="Kyzz空间站">
-  {/* Hero Section */}
-  <HeroSection />
+  <div class="home-container">
+    <!-- 左侧个人信息区 -->
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <!-- 头像 -->
+        <div class="avatar">K</div>
 
-  {/* Daily Digest Section */}
-  <section class="py-16 sm:py-24">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-10">
-        <div class="flex items-center gap-3">
-          <div class="h-px w-8 bg-cyber-500/60"></div>
-          <h2 class="text-xl font-bold text-white tracking-tight">每日动态</h2>
+        <!-- 站名 -->
+        <h1 class="site-name">Kyzz空间站</h1>
+        <p class="site-tagline">记录思考 · 分享成长</p>
+
+        <!-- 导航 -->
+        <nav class="nav-section">
+          <div class="nav-title">导航</div>
+          <a href="/" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+          </a>
+          <a href="/blog" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">博客</span>
+            <span class="nav-count">{blogPosts.length}</span>
+          </a>
+          <a href="/daily" class="nav-item">
+            <span class="nav-icon">📰</span>
+            <span class="nav-label">Daily</span>
+            <span class="nav-count">{dailyEntries.length}</span>
+          </a>
+          <a href="/reports" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Reports</span>
+            <span class="nav-count">{reportEntries.length}</span>
+          </a>
+          <button id="search-trigger" class="nav-item">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">搜索</span>
+          </button>
+        </nav>
+
+        <!-- 主题切换 -->
+        <div class="theme-switcher">
+          <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
+          <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
+          <button class="theme-btn" data-theme="nebula" title="星云">🌠</button>
         </div>
-        <a
-          href="/daily"
-          class="group inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
-        >
-          查看全部
-          <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </a>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {dailyEntries.map(entry => (
-          <a href={`/daily/${entry.slug}`} class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
-            <div class="p-5">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-cyber-500/10 border border-cyber-500/20 text-cyber-400">
-                  <span class="w-1 h-1 rounded-full bg-cyber-500 animate-pulse"></span>
-                  DAILY
-                </span>
-                <span class="text-xs text-zinc-500 font-mono">{formatDate(entry.data.pubDate)}</span>
+        <!-- 社交链接 -->
+        <div class="social-links">
+          <a href="mailto:" class="social-link" title="邮箱">📧</a>
+          <a href="https://github.com" target="_blank" class="social-link" title="GitHub">🐙</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧内容区 - 横向滚动 -->
+    <main class="main-content" id="mainContent">
+      <!-- Daily 栏目 -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Daily · 每日动态</h2>
+          <a href="/daily" class="view-all">全部 →</a>
+        </div>
+        <div class="cards-list">
+          {dailyEntries.map(entry => (
+            <a href={`/daily/${entry.slug}`} class="card">
+              <div class="card-image daily">
+                <span class="card-emoji">📰</span>
               </div>
-              <h3 class="text-base font-bold text-white group-hover:text-cyber-400 transition-colors mb-2">
-                {entry.data.title}
-              </h3>
-              <p class="text-xs text-zinc-500 line-clamp-2">
-                {entry.data.description}
-              </p>
-              {entry.data.tags && entry.data.tags.length > 0 && (
-                <div class="flex flex-wrap gap-1.5 mt-3">
-                  {entry.data.tags.slice(0, 3).map(tag => (
-                    <span class="text-xs font-mono text-cyber-400/70 bg-cyber-500/5 border border-cyber-500/10 px-2 py-0.5 rounded">
-                      #{tag}
-                    </span>
-                  ))}
+              <div class="card-body">
+                <span class="card-tag daily">Daily</span>
+                <h3 class="card-title">{entry.data.title}</h3>
+                <p class="card-desc">{entry.data.description}</p>
+                <div class="card-meta">
+                  <span>📅 {formatDate(entry.data.pubDate)}</span>
                 </div>
-              )}
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* Reports Section */}
-  <section class="py-16 sm:py-24">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-10">
-        <div class="flex items-center gap-3">
-          <div class="h-px w-8 bg-cyber-500/60"></div>
-          <h2 class="text-xl font-bold text-white tracking-tight">可视化报告</h2>
-        </div>
-        <a
-          href="/reports"
-          class="group inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
-        >
-          查看全部
-          <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {reportEntries.map(entry => (
-          <a href={`/reports/${entry.slug}`} class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-cyber-500/30 hover:bg-space-700/40 transition-all duration-300 group">
-            <div class="p-5">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                  </svg>
-                  REPORT
-                </span>
-                <span class="text-xs text-zinc-500 font-mono">{formatDate(entry.data.pubDate)}</span>
               </div>
-              <h3 class="text-base font-bold text-white group-hover:text-purple-400 transition-colors mb-2">
-                {entry.data.title}
-              </h3>
-              <p class="text-xs text-zinc-500 line-clamp-2">
-                {entry.data.description}
-              </p>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* Recent Posts Section */}
-  <section class="py-16 sm:py-24">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      {/* Section Header */}
-      <div class="flex items-center justify-between mb-10">
-        <div class="flex items-center gap-3">
-          <div class="h-px w-8 bg-cyber-500/60"></div>
-          <h2 class="text-xl font-bold text-white tracking-tight">最新文章</h2>
-        </div>
-        <a
-          href="/blog"
-          class="group inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
-        >
-          查看全部
-          <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </a>
-      </div>
-
-      {/* Post Grid */}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {recentPosts.map((post) => (
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            tags={post.data.tags}
-            slug={post.slug}
-            heroImage={post.data.heroImage}
-          />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* Skills / Tags Section */}
-  <section class="py-16 sm:py-24 border-t border-space-500/30">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center gap-3 mb-10">
-        <div class="h-px w-8 bg-cyber-500/60"></div>
-        <h2 class="text-xl font-bold text-white tracking-tight">技术标签</h2>
-      </div>
-
-      <div class="flex flex-wrap gap-3">
-        {skills.map((skill) => (
-          <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-mono text-zinc-300 bg-space-700/30 border border-space-500/50 hover:border-cyber-500/30 hover:text-cyber-400 hover:bg-cyber-500/5 transition-all duration-200 cursor-default">
-            <span class="mr-2 text-cyber-500/50">λ</span>
-            {skill}
-          </span>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* CTA Section */}
-  <section class="py-16 sm:py-24">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="relative rounded-2xl overflow-hidden border border-space-500/50 bg-space-700/20 p-8 sm:p-12 text-center">
-        {/* Background decoration */}
-        <div class="absolute inset-0 grid-bg opacity-20"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-cyber-500/5 rounded-full blur-[80px]"></div>
-
-        <div class="relative z-10">
-          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">探索更多</h2>
-          <p class="text-zinc-400 mb-8 max-w-md mx-auto">
-            在这个空间站中，有更多关于技术、编程和思考的内容等待你的发现。
-          </p>
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a
-              href="/blog"
-              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-500/15 border border-cyber-500/30 text-cyber-400 font-medium hover:bg-cyber-500/25 hover:border-cyber-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,229,255,0.1)]"
-            >
-              浏览博客
             </a>
-            <a
-              href="/about"
-              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-zinc-400 hover:text-zinc-200 transition-colors"
-            >
-              关于我
-            </a>
-          </div>
+          ))}
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
+
+      <!-- Reports 栏目 -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Reports · 深度报告</h2>
+          <a href="/reports" class="view-all">全部 →</a>
+        </div>
+        <div class="cards-list">
+          {reportEntries.map(entry => (
+            <a href={`/reports/${entry.slug}`} class="card">
+              <div class="card-image reports">
+                <span class="card-emoji">📊</span>
+              </div>
+              <div class="card-body">
+                <span class="card-tag reports">Reports</span>
+                <h3 class="card-title">{entry.data.title}</h3>
+                <p class="card-desc">{entry.data.description}</p>
+                <div class="card-meta">
+                  <span>📅 {formatDate(entry.data.pubDate)}</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- Blog 栏目 -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Blog · 博客文章</h2>
+          <a href="/blog" class="view-all">全部 →</a>
+        </div>
+        <div class="cards-list">
+          {blogPosts.map(post => (
+            <a href={`/blog/${post.slug}`} class="card">
+              <div class="card-image blog">
+                <span class="card-emoji">💡</span>
+              </div>
+              <div class="card-body">
+                <span class="card-tag">Blog</span>
+                <h3 class="card-title">{post.data.title}</h3>
+                <p class="card-desc">{post.data.description}</p>
+                <div class="card-meta">
+                  <span>📅 {formatDate(post.data.pubDate)}</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <style>
+    .home-container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ===== 左侧个人信息区 ===== */
+    .sidebar {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-content {
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.25);
+    }
+
+    .site-name {
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .site-tagline {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* ===== 导航 ===== */
+    .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .nav-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+      padding-left: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      border: none;
+      background: none;
+      width: 100%;
+      font-size: inherit;
+    }
+
+    .nav-item:hover {
+      background: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(99, 102, 241, 0.1));
+      color: var(--color-accent);
+      border-left: 3px solid var(--color-accent);
+    }
+
+    .nav-icon {
+      width: 18px;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    .nav-label {
+      font-size: 14px;
+    }
+
+    .nav-count {
+      margin-left: auto;
+      font-size: 11px;
+      background: var(--color-border);
+      padding: 2px 8px;
+      border-radius: 10px;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== 主题切换 ===== */
+    .theme-switcher {
+      display: flex;
+      gap: 6px;
+      padding: 8px;
+      background: var(--color-border);
+      border-radius: 8px;
+      margin-top: auto;
+    }
+
+    .theme-btn {
+      flex: 1;
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .theme-btn.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(99, 102, 241, 0.15));
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    /* ===== 社交链接 ===== */
+    .social-links {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .social-link {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 16px;
+      text-decoration: none;
+    }
+
+    .social-link:hover {
+      background: var(--color-accent);
+      transform: translateY(-2px);
+    }
+
+    /* ===== 右侧内容区 ===== */
+    .main-content {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .main-content::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+      background: var(--color-surface);
+      border-radius: 4px;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    .main-content::-webkit-scrollbar-thumb:hover {
+      background: var(--color-accent);
+    }
+
+    /* ===== 栏目区块 ===== */
+    .section {
+      min-width: 340px;
+      max-width: 380px;
+      height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      scroll-snap-align: start;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-text);
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: linear-gradient(180deg, var(--color-accent), var(--color-accent-secondary));
+      border-radius: 2px;
+    }
+
+    .view-all {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .view-all:hover {
+      color: var(--color-accent);
+    }
+
+    /* ===== 卡片列表 ===== */
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 8px;
+    }
+
+    .cards-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .cards-list::-webkit-scrollbar-track {
+      background: var(--color-surface);
+      border-radius: 2px;
+    }
+
+    .cards-list::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 2px;
+    }
+
+    /* ===== 卡片 ===== */
+    .card {
+      background: var(--color-surface);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+      text-decoration: none;
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-accent);
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.12);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-border) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-image.daily {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    }
+
+    .card-image.reports {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.1) 100%);
+    }
+
+    .card-image.blog {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    }
+
+    .card-emoji {
+      font-size: 40px;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(0, 229, 255, 0.1);
+      color: var(--color-accent);
+      margin-bottom: 10px;
+    }
+
+    .card-tag.daily {
+      background: rgba(99, 102, 241, 0.1);
+      color: #818cf8;
+    }
+
+    .card-tag.reports {
+      background: rgba(236, 72, 153, 0.1);
+      color: #f472b6;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: var(--color-text);
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+      .home-container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .section {
+        min-width: 300px;
+      }
+    }
+  </style>
+
+  <script>
+    // 鼠标滚轮横向滚动
+    const mainContent = document.getElementById('mainContent');
+
+    mainContent?.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      mainContent.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    // 主题切换
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const theme = this.getAttribute('data-theme') || 'cosmos';
+
+        // 更新按钮状态
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        // 应用主题
+        if (theme === 'cosmos') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        // 保存到 localStorage
+        try {
+          localStorage.setItem('theme', theme);
+        } catch (e) {}
+      });
+    });
+
+    // 初始化主题
+    try {
+      const savedTheme = localStorage.getItem('theme') || 'cosmos';
+      const btn = document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`);
+      if (btn) {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    } catch (e) {}
+
+    // 搜索触发
+    document.getElementById('search-trigger')?.addEventListener('click', () => {
+      // 触发全局搜索快捷键
+      const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
+      document.dispatchEvent(event);
+    });
+  </script>
 </BaseLayout>

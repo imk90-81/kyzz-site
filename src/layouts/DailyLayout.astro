@@ -1,5 +1,5 @@
 ---
-import BaseLayout from './BaseLayout.astro';
+import DetailLayout from './DetailLayout.astro';
 import TagList from '../components/TagList.astro';
 
 interface Props {
@@ -21,7 +21,7 @@ const formattedWeekday = pubDate.toLocaleDateString('zh-CN', { weekday: 'long' }
 const articleUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<BaseLayout title={title} description={description} ogType="article">
+<DetailLayout title={title} description={description}>
   <!-- Article meta tags -->
   <meta property="article:published_time" content={pubDate.toISOString()} slot="head" />
 
@@ -52,7 +52,7 @@ const articleUrl = new URL(Astro.url.pathname, Astro.site);
     "url": articleUrl.toString()
   })} />
 
-  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16 pb-20">
     {/* Article Header */}
     <header class="mb-10 sm:mb-14">
       {/* Tags */}
@@ -122,4 +122,4 @@ const articleUrl = new URL(Astro.url.pathname, Astro.site);
       </div>
     </footer>
   </article>
-</BaseLayout>
+</DetailLayout>

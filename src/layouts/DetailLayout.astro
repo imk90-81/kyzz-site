@@ -1,0 +1,150 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Kyzz空间站 - 在技术宇宙中漂浮的前哨站' } = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const themeMap: Record<string, { key: string; icon: string; label: string }> = {
+  cosmos: { key: 'cosmos', icon: '🌌', label: '宇宙' },
+  day: { key: 'day', icon: '☀️', label: '白昼' },
+  nebula: { key: 'nebula', icon: '🌠', label: '星云' },
+};
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | Kyzz空间站</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <ViewTransitions />
+  </head>
+  <body class="min-h-screen bg-space-900 text-zinc-200 antialiased">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 border-b border-space-500/50 backdrop-blur-md" style="background: var(--color-header-bg);">
+      <nav class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-14 items-center justify-between">
+          <!-- 左侧导航 -->
+          <div class="flex items-center gap-6">
+            <a href="/" class="text-lg font-bold logo-brand hover:opacity-80 transition-opacity">K</a>
+            <div class="hidden sm:flex items-center gap-4">
+              <a href="/" class={`text-sm transition-colors ${currentPath === '/' ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>首页</a>
+              <a href="/blog" class={`text-sm transition-colors ${currentPath.startsWith('/blog') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>博客</a>
+              <a href="/daily" class={`text-sm transition-colors ${currentPath.startsWith('/daily') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>Daily</a>
+              <a href="/reports" class={`text-sm transition-colors ${currentPath.startsWith('/reports') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>Reports</a>
+            </div>
+          </div>
+
+          <!-- 右侧工具 -->
+          <div class="flex items-center gap-3">
+            <!-- 搜索 -->
+            <button id="search-trigger" class="p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-space-600/50 transition-colors" aria-label="搜索">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+            </button>
+
+            <!-- 主题切换 -->
+            <div class="theme-switcher-compact">
+              <button class="theme-btn-compact active" data-theme="cosmos" title="宇宙">🌌</button>
+              <button class="theme-btn-compact" data-theme="day" title="白昼">☀️</button>
+              <button class="theme-btn-compact" data-theme="nebula" title="星云">🌠</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- 主内容区 -->
+    <main id="main-content" class="min-h-[calc(100vh-3.5rem)]">
+      <slot />
+    </main>
+
+    <!-- AI 提示栏 -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-space-500/50 bg-space-900/95 backdrop-blur-sm ai-disclaimer-bar">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-3 text-xs ai-disclaimer-text">
+        <span class="ai-emoji">🤖</span>
+        <span>本站所有内容均为 <span class="ai-highlight font-medium">AI 生成</span>，仅供参考</span>
+      </div>
+    </div>
+
+    <style>
+      .theme-switcher-compact {
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        background: var(--color-border);
+        border-radius: 6px;
+      }
+
+      .theme-btn-compact {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 16px;
+      }
+
+      .theme-btn-compact:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .theme-btn-compact.active {
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(99, 102, 241, 0.15));
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+      }
+    </style>
+
+    <script>
+      // 主题切换
+      document.querySelectorAll('.theme-btn-compact').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const theme = this.getAttribute('data-theme') || 'cosmos';
+
+          document.querySelectorAll('.theme-btn-compact').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          if (theme === 'cosmos') {
+            document.documentElement.removeAttribute('data-theme');
+          } else {
+            document.documentElement.setAttribute('data-theme', theme);
+          }
+
+          try {
+            localStorage.setItem('theme', theme);
+          } catch (e) {}
+        });
+      });
+
+      // 初始化主题
+      try {
+        const savedTheme = localStorage.getItem('theme') || 'cosmos';
+        const btn = document.querySelector(`.theme-btn-compact[data-theme="${savedTheme}"]`);
+        if (btn) {
+          document.querySelectorAll('.theme-btn-compact').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        }
+      } catch (e) {}
+
+      // 搜索触发
+      document.getElementById('search-trigger')?.addEventListener('click', () => {
+        const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
+        document.dispatchEvent(event);
+      });
+    </script>
+  </body>
+</html>
