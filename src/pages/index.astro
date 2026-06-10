@@ -1,8 +1,8 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import { ViewTransitions } from 'astro:transitions';
+import '../styles/global.css';
 import { getCollection } from 'astro:content';
 
-// 获取各栏目最新文章
 const dailyEntries = (await getCollection('daily', ({ data }) => !data.draft).catch(() => []))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 10);
@@ -18,585 +18,628 @@ const blogPosts = (await getCollection('blog', ({ data }) => !data.draft).catch(
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
 };
+
+// 生成基于标题的渐变色
+const gradients = [
+  'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+  'linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)',
+  'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+];
+
+function getGradient(index: number): string {
+  return gradients[index % gradients.length];
+}
 ---
 
-<BaseLayout title="Kyzz空间站">
-  <div class="home-container">
-    <!-- 左侧个人信息区 -->
-    <aside class="sidebar">
-      <div class="sidebar-content">
-        <!-- 头像 -->
-        <div class="avatar">K</div>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyzz空间站</title>
+    <meta name="description" content="Kyzz空间站 - 在技术宇宙中漂浮的前哨站" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <ViewTransitions />
+  </head>
+  <body>
+    <div class="home-container">
+      <!-- 左侧个人信息区 -->
+      <aside class="sidebar">
+        <div class="sidebar-content">
+          <div class="avatar">K</div>
+          <h1 class="site-name">Kyzz空间站</h1>
+          <p class="site-tagline">记录思考 · 分享成长</p>
 
-        <!-- 站名 -->
-        <h1 class="site-name">Kyzz空间站</h1>
-        <p class="site-tagline">记录思考 · 分享成长</p>
-
-        <!-- 导航 -->
-        <nav class="nav-section">
-          <div class="nav-title">导航</div>
-          <a href="/" class="nav-item active">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">首页</span>
-          </a>
-          <a href="/blog" class="nav-item">
-            <span class="nav-icon">📝</span>
-            <span class="nav-label">博客</span>
-            <span class="nav-count">{blogPosts.length}</span>
-          </a>
-          <a href="/daily" class="nav-item">
-            <span class="nav-icon">📰</span>
-            <span class="nav-label">Daily</span>
-            <span class="nav-count">{dailyEntries.length}</span>
-          </a>
-          <a href="/reports" class="nav-item">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Reports</span>
-            <span class="nav-count">{reportEntries.length}</span>
-          </a>
-          <button id="search-trigger" class="nav-item">
-            <span class="nav-icon">🔍</span>
-            <span class="nav-label">搜索</span>
-          </button>
-        </nav>
-
-        <!-- 主题切换 -->
-        <div class="theme-switcher">
-          <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
-          <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
-          <button class="theme-btn" data-theme="nebula" title="星云">🌠</button>
-        </div>
-
-        <!-- 社交链接 -->
-        <div class="social-links">
-          <a href="mailto:" class="social-link" title="邮箱">📧</a>
-          <a href="https://github.com" target="_blank" class="social-link" title="GitHub">🐙</a>
-        </div>
-      </div>
-    </aside>
-
-    <!-- 右侧内容区 - 横向滚动 -->
-    <main class="main-content" id="mainContent">
-      <!-- Daily 栏目 -->
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Daily · 每日动态</h2>
-          <a href="/daily" class="view-all">全部 →</a>
-        </div>
-        <div class="cards-list">
-          {dailyEntries.map(entry => (
-            <a href={`/daily/${entry.slug}`} class="card">
-              <div class="card-image daily">
-                <span class="card-emoji">📰</span>
-              </div>
-              <div class="card-body">
-                <span class="card-tag daily">Daily</span>
-                <h3 class="card-title">{entry.data.title}</h3>
-                <p class="card-desc">{entry.data.description}</p>
-                <div class="card-meta">
-                  <span>📅 {formatDate(entry.data.pubDate)}</span>
-                </div>
-              </div>
+          <nav class="nav-section">
+            <div class="nav-title">导航</div>
+            <a href="/" class="nav-item active">
+              <span class="nav-icon">🏠</span>
+              <span class="nav-label">首页</span>
             </a>
-          ))}
-        </div>
-      </section>
-
-      <!-- Reports 栏目 -->
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Reports · 深度报告</h2>
-          <a href="/reports" class="view-all">全部 →</a>
-        </div>
-        <div class="cards-list">
-          {reportEntries.map(entry => (
-            <a href={`/reports/${entry.slug}`} class="card">
-              <div class="card-image reports">
-                <span class="card-emoji">📊</span>
-              </div>
-              <div class="card-body">
-                <span class="card-tag reports">Reports</span>
-                <h3 class="card-title">{entry.data.title}</h3>
-                <p class="card-desc">{entry.data.description}</p>
-                <div class="card-meta">
-                  <span>📅 {formatDate(entry.data.pubDate)}</span>
-                </div>
-              </div>
+            <a href="/blog" class="nav-item">
+              <span class="nav-icon">📝</span>
+              <span class="nav-label">博客</span>
+              <span class="nav-count">{blogPosts.length}</span>
             </a>
-          ))}
-        </div>
-      </section>
-
-      <!-- Blog 栏目 -->
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Blog · 博客文章</h2>
-          <a href="/blog" class="view-all">全部 →</a>
-        </div>
-        <div class="cards-list">
-          {blogPosts.map(post => (
-            <a href={`/blog/${post.slug}`} class="card">
-              <div class="card-image blog">
-                <span class="card-emoji">💡</span>
-              </div>
-              <div class="card-body">
-                <span class="card-tag">Blog</span>
-                <h3 class="card-title">{post.data.title}</h3>
-                <p class="card-desc">{post.data.description}</p>
-                <div class="card-meta">
-                  <span>📅 {formatDate(post.data.pubDate)}</span>
-                </div>
-              </div>
+            <a href="/daily" class="nav-item">
+              <span class="nav-icon">📰</span>
+              <span class="nav-label">Daily</span>
+              <span class="nav-count">{dailyEntries.length}</span>
             </a>
-          ))}
+            <a href="/reports" class="nav-item">
+              <span class="nav-icon">📊</span>
+              <span class="nav-label">Reports</span>
+              <span class="nav-count">{reportEntries.length}</span>
+            </a>
+            <button id="search-trigger" class="nav-item">
+              <span class="nav-icon">🔍</span>
+              <span class="nav-label">搜索</span>
+            </button>
+          </nav>
+
+          <div class="theme-switcher">
+            <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
+            <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
+            <button class="theme-btn" data-theme="nebula" title="星云">🌠</button>
+          </div>
+
+          <div class="social-links">
+            <a href="mailto:" class="social-link" title="邮箱">📧</a>
+            <a href="https://github.com" target="_blank" class="social-link" title="GitHub">🐙</a>
+          </div>
         </div>
-      </section>
-    </main>
-  </div>
+      </aside>
 
-  <style>
-    .home-container {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      min-height: 100vh;
-    }
+      <!-- 右侧内容区 - 横向滚动 -->
+      <main class="main-content" id="mainContent">
+        <!-- Daily 栏目 -->
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-icon daily-icon">📰</span>
+              Daily · 每日动态
+            </h2>
+            <a href="/daily" class="view-all">全部 →</a>
+          </div>
+          <div class="cards-list">
+            {dailyEntries.map((entry, i) => (
+              <a href={`/daily/${entry.slug}`} class="card">
+                <div class="card-image" style={`background: ${getGradient(i)};`}>
+                  <div class="card-pattern"></div>
+                  <div class="card-image-label">
+                    <span class="card-image-date">{formatDate(entry.data.pubDate)}</span>
+                    <span class="card-image-type">DAILY</span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h3 class="card-title">{entry.data.title}</h3>
+                  <p class="card-desc">{entry.data.description}</p>
+                  {entry.data.tags && entry.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {entry.data.tags.slice(0, 3).map(tag => (
+                        <span class="card-tag-inline">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
 
-    /* ===== 左侧个人信息区 ===== */
-    .sidebar {
-      background: var(--color-surface);
-      border-right: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
+        <!-- Reports 栏目 -->
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-icon reports-icon">📊</span>
+              Reports · 深度报告
+            </h2>
+            <a href="/reports" class="view-all">全部 →</a>
+          </div>
+          <div class="cards-list">
+            {reportEntries.map((entry, i) => (
+              <a href={`/reports/${entry.slug}`} class="card">
+                <div class="card-image" style={`background: ${getGradient(i + 3)};`}>
+                  <div class="card-pattern"></div>
+                  <div class="card-image-label">
+                    <span class="card-image-date">{formatDate(entry.data.pubDate)}</span>
+                    <span class="card-image-type">REPORT</span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h3 class="card-title">{entry.data.title}</h3>
+                  <p class="card-desc">{entry.data.description}</p>
+                  {entry.data.tags && entry.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {entry.data.tags.slice(0, 3).map(tag => (
+                        <span class="card-tag-inline">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
 
-    .sidebar-content {
-      padding: 28px 20px;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
+        <!-- Blog 栏目 -->
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-icon blog-icon">💡</span>
+              Blog · 博客文章
+            </h2>
+            <a href="/blog" class="view-all">全部 →</a>
+          </div>
+          <div class="cards-list">
+            {blogPosts.map((post, i) => (
+              <a href={`/blog/${post.slug}`} class="card">
+                <div class="card-image" style={`background: ${getGradient(i + 6)};`}>
+                  <div class="card-pattern"></div>
+                  <div class="card-image-label">
+                    <span class="card-image-date">{formatDate(post.data.pubDate)}</span>
+                    <span class="card-image-type">BLOG</span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h3 class="card-title">{post.data.title}</h3>
+                  <p class="card-desc">{post.data.description}</p>
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {post.data.tags.slice(0, 3).map(tag => (
+                        <span class="card-tag-inline">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
 
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
-      margin: 0 auto 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      font-weight: bold;
-      box-shadow: 0 0 30px rgba(0, 229, 255, 0.25);
-    }
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .site-name {
-      font-size: 20px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 4px;
-      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+      html, body {
+        height: 100%;
+        overflow: hidden;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
 
-    .site-tagline {
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    /* ===== 导航 ===== */
-    .nav-section {
-      margin-bottom: 20px;
-    }
-
-    .nav-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--color-text-secondary);
-      margin-bottom: 10px;
-      padding-left: 10px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 2px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--color-text-secondary);
-      text-decoration: none;
-      border: none;
-      background: none;
-      width: 100%;
-      font-size: inherit;
-    }
-
-    .nav-item:hover {
-      background: var(--color-border);
-      color: var(--color-text);
-    }
-
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(99, 102, 241, 0.1));
-      color: var(--color-accent);
-      border-left: 3px solid var(--color-accent);
-    }
-
-    .nav-icon {
-      width: 18px;
-      margin-right: 10px;
-      font-size: 16px;
-    }
-
-    .nav-label {
-      font-size: 14px;
-    }
-
-    .nav-count {
-      margin-left: auto;
-      font-size: 11px;
-      background: var(--color-border);
-      padding: 2px 8px;
-      border-radius: 10px;
-      color: var(--color-text-secondary);
-    }
-
-    /* ===== 主题切换 ===== */
-    .theme-switcher {
-      display: flex;
-      gap: 6px;
-      padding: 8px;
-      background: var(--color-border);
-      border-radius: 8px;
-      margin-top: auto;
-    }
-
-    .theme-btn {
-      flex: 1;
-      padding: 8px 6px;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 18px;
-      text-align: center;
-    }
-
-    .theme-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .theme-btn.active {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(99, 102, 241, 0.15));
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
-    }
-
-    /* ===== 社交链接 ===== */
-    .social-links {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      padding-top: 16px;
-      margin-top: 16px;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .social-link {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 16px;
-      text-decoration: none;
-    }
-
-    .social-link:hover {
-      background: var(--color-accent);
-      transform: translateY(-2px);
-    }
-
-    /* ===== 右侧内容区 ===== */
-    .main-content {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      height: 100vh;
-      padding: 24px;
-      gap: 24px;
-    }
-
-    .main-content::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .main-content::-webkit-scrollbar-track {
-      background: var(--color-surface);
-      border-radius: 4px;
-    }
-
-    .main-content::-webkit-scrollbar-thumb {
-      background: var(--color-border);
-      border-radius: 4px;
-    }
-
-    .main-content::-webkit-scrollbar-thumb:hover {
-      background: var(--color-accent);
-    }
-
-    /* ===== 栏目区块 ===== */
-    .section {
-      min-width: 340px;
-      max-width: 380px;
-      height: calc(100vh - 48px);
-      display: flex;
-      flex-direction: column;
-      scroll-snap-align: start;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--color-text);
-    }
-
-    .section-title::before {
-      content: '';
-      width: 4px;
-      height: 18px;
-      background: linear-gradient(180deg, var(--color-accent), var(--color-accent-secondary));
-      border-radius: 2px;
-    }
-
-    .view-all {
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: color 0.2s ease;
-      white-space: nowrap;
-      text-decoration: none;
-    }
-
-    .view-all:hover {
-      color: var(--color-accent);
-    }
-
-    /* ===== 卡片列表 ===== */
-    .cards-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-      flex: 1;
-      padding-right: 8px;
-    }
-
-    .cards-list::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .cards-list::-webkit-scrollbar-track {
-      background: var(--color-surface);
-      border-radius: 2px;
-    }
-
-    .cards-list::-webkit-scrollbar-thumb {
-      background: var(--color-border);
-      border-radius: 2px;
-    }
-
-    /* ===== 卡片 ===== */
-    .card {
-      background: var(--color-surface);
-      border-radius: 12px;
-      border: 1px solid var(--color-border);
-      overflow: hidden;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      flex-shrink: 0;
-      text-decoration: none;
-      display: block;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: var(--color-accent);
-      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.12);
-    }
-
-    .card-image {
-      width: 100%;
-      height: 120px;
-      background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-border) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-image.daily {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    }
-
-    .card-image.reports {
-      background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.1) 100%);
-    }
-
-    .card-image.blog {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
-    }
-
-    .card-emoji {
-      font-size: 40px;
-    }
-
-    .card-body {
-      padding: 16px;
-    }
-
-    .card-tag {
-      display: inline-block;
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 10px;
-      background: rgba(0, 229, 255, 0.1);
-      color: var(--color-accent);
-      margin-bottom: 10px;
-    }
-
-    .card-tag.daily {
-      background: rgba(99, 102, 241, 0.1);
-      color: #818cf8;
-    }
-
-    .card-tag.reports {
-      background: rgba(236, 72, 153, 0.1);
-      color: #f472b6;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      color: var(--color-text);
-    }
-
-    .card-desc {
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      line-height: 1.5;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--color-text-secondary);
-    }
-
-    /* ===== 响应式 ===== */
-    @media (max-width: 900px) {
       .home-container {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        height: 100vh;
       }
 
+      /* ===== 左侧 ===== */
       .sidebar {
-        display: none;
+        background: var(--color-surface);
+        border-right: 1px solid var(--color-border);
+        height: 100vh;
+        overflow-y: auto;
       }
 
+      .sidebar-content {
+        padding: 28px 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+        margin: 0 auto 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        color: #fff;
+        box-shadow: 0 0 24px rgba(0, 229, 255, 0.2);
+      }
+
+      .site-name {
+        font-size: 18px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 4px;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .site-tagline {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .nav-section { margin-bottom: 16px; }
+
+      .nav-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--color-text-secondary);
+        margin-bottom: 8px;
+        padding-left: 10px;
+        opacity: 0.6;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 9px 12px;
+        border-radius: 8px;
+        margin-bottom: 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        border: none;
+        background: none;
+        width: 100%;
+        font-size: 13px;
+        font-family: inherit;
+      }
+
+      .nav-item:hover { background: var(--color-border); color: var(--color-text); }
+
+      .nav-item.active {
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(99, 102, 241, 0.08));
+        color: var(--color-accent);
+      }
+
+      .nav-icon { width: 18px; margin-right: 10px; font-size: 15px; }
+      .nav-label { flex: 1; }
+
+      .nav-count {
+        font-size: 10px;
+        background: var(--color-border);
+        padding: 1px 7px;
+        border-radius: 10px;
+        color: var(--color-text-secondary);
+      }
+
+      /* ===== 主题切换 ===== */
+      .theme-switcher {
+        display: flex;
+        gap: 4px;
+        padding: 6px;
+        background: var(--color-border);
+        border-radius: 8px;
+        margin-top: auto;
+      }
+
+      .theme-btn {
+        flex: 1;
+        padding: 7px 4px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 16px;
+      }
+
+      .theme-btn:hover { background: rgba(255, 255, 255, 0.05); }
+
+      .theme-btn.active {
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(99, 102, 241, 0.12));
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.15);
+      }
+
+      /* ===== 社交链接 ===== */
+      .social-links {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding-top: 14px;
+        margin-top: 14px;
+        border-top: 1px solid var(--color-border);
+      }
+
+      .social-link {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        background: var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .social-link:hover { background: var(--color-accent); transform: translateY(-2px); }
+
+      /* ===== 右侧横向滚动 ===== */
+      .main-content {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        height: 100vh;
+        padding: 24px 24px 24px 24px;
+        gap: 24px;
+      }
+
+      .main-content::-webkit-scrollbar { height: 6px; }
+      .main-content::-webkit-scrollbar-track { background: transparent; }
+      .main-content::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: 3px;
+      }
+      .main-content::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+      /* ===== 栏目区块 ===== */
       .section {
-        min-width: 300px;
+        min-width: 320px;
+        max-width: 360px;
+        height: calc(100vh - 48px);
+        display: flex;
+        flex-direction: column;
+        scroll-snap-align: start;
+        flex-shrink: 0;
       }
-    }
-  </style>
 
-  <script>
-    // 鼠标滚轮横向滚动
-    const mainContent = document.getElementById('mainContent');
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        flex-shrink: 0;
+      }
 
-    mainContent?.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      mainContent.scrollLeft += e.deltaY;
-    }, { passive: false });
+      .section-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    // 主题切换
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const theme = this.getAttribute('data-theme') || 'cosmos';
+      .section-icon { font-size: 16px; }
 
-        // 更新按钮状态
-        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
+      .view-all {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+        white-space: nowrap;
+      }
 
-        // 应用主题
-        if (theme === 'cosmos') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', theme);
+      .view-all:hover { color: var(--color-accent); }
+
+      /* ===== 卡片列表 ===== */
+      .cards-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow-y: auto;
+        flex: 1;
+        padding-right: 6px;
+      }
+
+      .cards-list::-webkit-scrollbar { width: 3px; }
+      .cards-list::-webkit-scrollbar-track { background: transparent; }
+      .cards-list::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: 2px;
+      }
+
+      /* ===== 卡片 ===== */
+      .card {
+        background: var(--color-surface);
+        border-radius: 10px;
+        border: 1px solid var(--color-border);
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+        flex-shrink: 0;
+        text-decoration: none;
+        display: block;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: var(--color-accent);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-image {
+        width: 100%;
+        height: 100px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .card-pattern {
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0%, transparent 50%);
+      }
+
+      .card-pattern::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+
+      .card-pattern::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -30%;
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 50%;
+      }
+
+      .card-image-label {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 14px;
+        background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+      }
+
+      .card-image-date {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .card-image-type {
+        font-size: 9px;
+        letter-spacing: 1px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.12);
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+
+      .card-body { padding: 14px; }
+
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--color-text);
+      }
+
+      .card-desc {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .card-tag-inline {
+        font-size: 10px;
+        color: var(--color-accent);
+        opacity: 0.7;
+      }
+
+      /* ===== 响应式 ===== */
+      @media (max-width: 900px) {
+        .home-container { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .section { min-width: 280px; }
+      }
+    </style>
+
+    <script is:inline>
+      (function() {
+        function init() {
+          var mc = document.getElementById('mainContent');
+          if (!mc) return;
+
+          // 鼠标滚轮 → 横向滚动（用 capture 确保优先级）
+          mc.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            mc.scrollLeft += e.deltaY;
+          }, { passive: false, capture: true });
+
+          // 触摸滑动
+          var startX = 0;
+          var scrollStart = 0;
+          mc.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            scrollStart = mc.scrollLeft;
+          }, { passive: true });
+
+          mc.addEventListener('touchmove', function(e) {
+            var dx = startX - e.touches[0].clientX;
+            if (Math.abs(dx) > 5) {
+              mc.scrollLeft = scrollStart + dx;
+            }
+          }, { passive: true });
         }
 
-        // 保存到 localStorage
+        init();
+
+        // 主题切换
+        document.querySelectorAll('.theme-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var theme = this.getAttribute('data-theme') || 'cosmos';
+            document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+
+            if (theme === 'cosmos') {
+              document.documentElement.removeAttribute('data-theme');
+            } else {
+              document.documentElement.setAttribute('data-theme', theme);
+            }
+            try { localStorage.setItem('theme', theme); } catch (e) {}
+          });
+        });
+
+        // 初始化主题
         try {
-          localStorage.setItem('theme', theme);
+          var saved = localStorage.getItem('theme') || 'cosmos';
+          var btn = document.querySelector('.theme-btn[data-theme="' + saved + '"]');
+          if (btn) {
+            document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+          }
         } catch (e) {}
-      });
-    });
 
-    // 初始化主题
-    try {
-      const savedTheme = localStorage.getItem('theme') || 'cosmos';
-      const btn = document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`);
-      if (btn) {
-        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
-    } catch (e) {}
-
-    // 搜索触发
-    document.getElementById('search-trigger')?.addEventListener('click', () => {
-      // 触发全局搜索快捷键
-      const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
-      document.dispatchEvent(event);
-    });
-  </script>
-</BaseLayout>
+        // 搜索
+        document.getElementById('search-trigger')?.addEventListener('click', function() {
+          var event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
+          document.dispatchEvent(event);
+        });
+      })();
+    </script>
+  </body>
+</html>
