@@ -584,8 +584,21 @@ function getGradient(index: number): string {
           var mc = document.getElementById('mainContent');
           if (!mc) return;
 
-          // 鼠标滚轮 → 横向滚动（用 capture 确保优先级）
+          // 智能滚轮：优先栏目内纵向滚动，到边界后横向切换栏目
           mc.addEventListener('wheel', function(e) {
+            // 找鼠标下方的 cards-list（当前聚焦的栏目列表）
+            var target = e.target.closest('.cards-list');
+            if (target) {
+              var atTop = target.scrollTop <= 0;
+              var atBottom = target.scrollTop >= target.scrollHeight - target.clientHeight - 1;
+              
+              // 向上滚且不在顶部 → 让栏目内部滚动
+              if (e.deltaY < 0 && !atTop) return;
+              // 向下滚且不在底部 → 让栏目内部滚动
+              if (e.deltaY > 0 && !atBottom) return;
+            }
+            
+            // 到边界了，横向切换栏目
             e.preventDefault();
             mc.scrollLeft += e.deltaY;
           }, { passive: false, capture: true });
