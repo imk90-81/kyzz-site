@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
 
@@ -9,12 +10,12 @@ interface Props {
 
 const { title, description = 'Kyzz空间站 - 在技术宇宙中漂浮的前哨站' } = Astro.props;
 
+// 获取栏目数量（用于侧边栏）
+const dailyCount = (await getCollection('daily', ({ data }) => !data.draft).catch(() => [])).length;
+const blogCount = (await getCollection('blog', ({ data }) => !data.draft).catch(() => [])).length;
+const reportCount = (await getCollection('reports', ({ data }) => !data.draft).catch(() => [])).length;
+
 const currentPath = Astro.url.pathname;
-const themeMap: Record<string, { key: string; icon: string; label: string }> = {
-  cosmos: { key: 'cosmos', icon: '🌌', label: '宇宙' },
-  day: { key: 'day', icon: '☀️', label: '白昼' },
-  nebula: { key: 'nebula', icon: '🌠', label: '星云' },
-};
 ---
 
 <!doctype html>
@@ -31,91 +32,272 @@ const themeMap: Record<string, { key: string; icon: string; label: string }> = {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
     <ViewTransitions />
   </head>
-  <body class="min-h-screen bg-space-900 text-zinc-200 antialiased">
-    <!-- 顶部导航栏 -->
-    <header class="sticky top-0 z-50 border-b border-space-500/50 backdrop-blur-md" style="background: var(--color-header-bg);">
-      <nav class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-14 items-center justify-between">
-          <!-- 左侧导航 -->
-          <div class="flex items-center gap-6">
-            <a href="/" class="text-lg font-bold logo-brand hover:opacity-80 transition-opacity">K</a>
-            <div class="hidden sm:flex items-center gap-4">
-              <a href="/" class={`text-sm transition-colors ${currentPath === '/' ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>首页</a>
-              <a href="/blog" class={`text-sm transition-colors ${currentPath.startsWith('/blog') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>博客</a>
-              <a href="/daily" class={`text-sm transition-colors ${currentPath.startsWith('/daily') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>Daily</a>
-              <a href="/reports" class={`text-sm transition-colors ${currentPath.startsWith('/reports') ? 'text-cyber-400' : 'text-zinc-400 hover:text-zinc-200'}`}>Reports</a>
-            </div>
+  <body>
+    <div class="detail-container">
+      <!-- 左侧侧边栏（与首页一致） -->
+      <aside class="sidebar">
+        <div class="sidebar-content">
+          <div class="avatar">K</div>
+          <h1 class="site-name">Kyzz空间站</h1>
+          <p class="site-tagline">记录思考 · 分享成长</p>
+
+          <nav class="nav-section">
+            <div class="nav-title">导航</div>
+            <a href="/" class="nav-item">
+              <span class="nav-icon">🏠</span>
+              <span class="nav-label">首页</span>
+            </a>
+            <a href="/blog" class={`nav-item${currentPath.startsWith('/blog') ? ' active' : ''}`}>
+              <span class="nav-icon">📝</span>
+              <span class="nav-label">博客</span>
+              <span class="nav-count">{blogCount}</span>
+            </a>
+            <a href="/daily" class={`nav-item${currentPath.startsWith('/daily') ? ' active' : ''}`}>
+              <span class="nav-icon">📰</span>
+              <span class="nav-label">Daily</span>
+              <span class="nav-count">{dailyCount}</span>
+            </a>
+            <a href="/reports" class={`nav-item${currentPath.startsWith('/reports') ? ' active' : ''}`}>
+              <span class="nav-icon">📊</span>
+              <span class="nav-label">Reports</span>
+              <span class="nav-count">{reportCount}</span>
+            </a>
+            <button id="search-trigger-detail" class="nav-item">
+              <span class="nav-icon">🔍</span>
+              <span class="nav-label">搜索</span>
+            </button>
+          </nav>
+
+          <div class="theme-switcher">
+            <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
+            <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
+            <button class="theme-btn" data-theme="nebula" title="星云">🌠</button>
           </div>
 
-          <!-- 右侧工具 -->
-          <div class="flex items-center gap-3">
-            <!-- 搜索 -->
-            <button id="search-trigger" class="p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-space-600/50 transition-colors" aria-label="搜索">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </button>
-
-            <!-- 主题切换 -->
-            <div class="theme-switcher-compact">
-              <button class="theme-btn-compact active" data-theme="cosmos" title="宇宙">🌌</button>
-              <button class="theme-btn-compact" data-theme="day" title="白昼">☀️</button>
-              <button class="theme-btn-compact" data-theme="nebula" title="星云">🌠</button>
-            </div>
+          <div class="social-links">
+            <a href="mailto:" class="social-link" title="邮箱">📧</a>
+            <a href="https://github.com" target="_blank" class="social-link" title="GitHub">🐙</a>
           </div>
         </div>
-      </nav>
-    </header>
+      </aside>
 
-    <!-- 主内容区 -->
-    <main id="main-content" class="min-h-[calc(100vh-3.5rem)]">
-      <slot />
-    </main>
+      <!-- 右侧文章内容 -->
+      <main class="main-content">
+        <div class="article-wrapper">
+          <slot />
+        </div>
+      </main>
+    </div>
 
     <!-- AI 提示栏 -->
-    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-space-500/50 bg-space-900/95 backdrop-blur-sm ai-disclaimer-bar">
-      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-3 text-xs ai-disclaimer-text">
+    <div class="ai-disclaimer-bar">
+      <div class="ai-disclaimer-inner">
         <span class="ai-emoji">🤖</span>
-        <span>本站所有内容均为 <span class="ai-highlight font-medium">AI 生成</span>，仅供参考</span>
+        <span>本站所有内容均为 <span class="ai-highlight">AI 生成</span>，仅供参考</span>
       </div>
     </div>
 
     <style>
-      .theme-switcher-compact {
-        display: flex;
-        gap: 4px;
-        padding: 4px;
-        background: var(--color-border);
-        border-radius: 6px;
+      /* ===== 容器 ===== */
+      .detail-container {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        min-height: 100vh;
+        background: var(--color-bg);
       }
 
-      .theme-btn-compact {
-        padding: 4px 8px;
-        border-radius: 4px;
+      /* ===== 侧边栏 ===== */
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        border-right: 1px solid var(--color-border);
+        background: var(--color-bg-secondary);
+        padding: 24px 12px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #00e5ff, #6366f1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 14px;
+      }
+
+      .site-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-text);
+        margin-bottom: 4px;
+      }
+
+      .site-tagline {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      .nav-section { margin-bottom: 16px; }
+
+      .nav-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--color-text-secondary);
+        margin-bottom: 8px;
+        padding-left: 10px;
+        opacity: 0.6;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 9px 12px;
+        border-radius: 8px;
+        margin-bottom: 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        border: none;
+        background: none;
+        width: 100%;
+        font-size: 13px;
+        font-family: inherit;
+      }
+
+      .nav-item:hover { background: var(--color-border); color: var(--color-text); }
+
+      .nav-item.active {
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(99, 102, 241, 0.08));
+        color: var(--color-accent);
+      }
+
+      .nav-icon { width: 18px; margin-right: 10px; font-size: 15px; }
+      .nav-label { flex: 1; }
+
+      .nav-count {
+        font-size: 10px;
+        background: var(--color-border);
+        padding: 1px 7px;
+        border-radius: 10px;
+        color: var(--color-text-secondary);
+      }
+
+      .theme-switcher {
+        display: flex;
+        gap: 4px;
+        padding: 6px;
+        background: var(--color-border);
+        border-radius: 8px;
+        margin-top: auto;
+      }
+
+      .theme-btn {
+        flex: 1;
+        padding: 4px 6px;
+        border-radius: 5px;
         border: none;
         background: transparent;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s;
         font-size: 16px;
+        text-align: center;
       }
 
-      .theme-btn-compact:hover {
-        background: rgba(255, 255, 255, 0.05);
-      }
+      .theme-btn:hover { background: rgba(255, 255, 255, 0.05); }
 
-      .theme-btn-compact.active {
+      .theme-btn.active {
         background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(99, 102, 241, 0.15));
         box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+        justify-content: center;
+      }
+
+      .social-link {
+        font-size: 16px;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+        text-decoration: none;
+      }
+
+      .social-link:hover { opacity: 1; }
+
+      /* ===== 右侧主内容 ===== */
+      .main-content {
+        flex: 1;
+        min-height: 100vh;
+        padding-bottom: 40px;
+      }
+
+      .article-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* ===== AI 提示栏 ===== */
+      .ai-disclaimer-bar {
+        position: fixed;
+        bottom: 0;
+        left: 220px;
+        right: 0;
+        z-index: 40;
+        border-top: 1px solid var(--color-border);
+        background: color-mix(in srgb, var(--color-bg) 95%, transparent);
+        backdrop-filter: blur(8px);
+      }
+
+      .ai-disclaimer-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--color-text-secondary);
+      }
+
+      .ai-emoji { font-size: 14px; }
+      .ai-highlight { font-weight: 500; color: var(--color-accent); }
+
+      /* ===== 响应式 ===== */
+      @media (max-width: 900px) {
+        .detail-container { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .ai-disclaimer-bar { left: 0; }
+        .article-wrapper { padding: 0 16px; }
       }
     </style>
 
     <script>
       // 主题切换
-      document.querySelectorAll('.theme-btn-compact').forEach(btn => {
+      document.querySelectorAll('.theme-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          const theme = this.getAttribute('data-theme') || 'cosmos';
-
-          document.querySelectorAll('.theme-btn-compact').forEach(b => b.classList.remove('active'));
+          var theme = this.getAttribute('data-theme') || 'cosmos';
+          document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
           this.classList.add('active');
 
           if (theme === 'cosmos') {
@@ -123,26 +305,23 @@ const themeMap: Record<string, { key: string; icon: string; label: string }> = {
           } else {
             document.documentElement.setAttribute('data-theme', theme);
           }
-
-          try {
-            localStorage.setItem('theme', theme);
-          } catch (e) {}
+          try { localStorage.setItem('theme', theme); } catch (e) {}
         });
       });
 
       // 初始化主题
       try {
-        const savedTheme = localStorage.getItem('theme') || 'cosmos';
-        const btn = document.querySelector(`.theme-btn-compact[data-theme="${savedTheme}"]`);
+        var saved = localStorage.getItem('theme') || 'cosmos';
+        var btn = document.querySelector('.theme-btn[data-theme="' + saved + '"]');
         if (btn) {
-          document.querySelectorAll('.theme-btn-compact').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
           btn.classList.add('active');
         }
       } catch (e) {}
 
       // 搜索触发
-      document.getElementById('search-trigger')?.addEventListener('click', () => {
-        const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
+      document.getElementById('search-trigger-detail')?.addEventListener('click', function() {
+        var event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
         document.dispatchEvent(event);
       });
     </script>
