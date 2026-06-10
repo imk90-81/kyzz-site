@@ -1,7 +1,7 @@
 ---
-title: "AI Agent 客户端应用比对报告（2026年6月）"
-description: "12 款主流 AI Agent 产品多维横向比对，覆盖能力边界、交互体验、生态扩展性等核心维度"
-pubDate: 2026-06-04
+title: "WorkBuddy、QClaw、Marvis：腾讯三款 AI 智能体客户端的定位分野与技术路线对比"
+description: "腾讯三款 AI 智能体客户端（WorkBuddy、QClaw、Marvis）的定位分野、技术路线与产品策略深度对比分析"
+pubDate: 2026-06-10
 tags:
   - AI Agent
   - 产品对比
