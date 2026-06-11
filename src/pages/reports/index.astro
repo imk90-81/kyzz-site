@@ -29,7 +29,7 @@ const formatDate = (date: Date) => {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reportEntries.map(entry => (
             <a
-              href={`/reports/${entry.slug}`}
+              href={`/reports/${entry.slug}/`}
               class="block rounded-xl overflow-hidden border border-space-500/50 bg-space-700/20 hover:border-purple-500/30 hover:bg-space-700/40 transition-all duration-300 group"
             >
               <div class="p-6">

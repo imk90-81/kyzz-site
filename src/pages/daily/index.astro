@@ -26,7 +26,7 @@ const formatDate = (date: Date) => {
     <div class="flex flex-col gap-4">
       {dailyEntries.map(entry => (
         <a
-          href={`/daily/${entry.slug}`}
+          href={`/daily/${entry.slug}/`}
           class="block rounded-xl border border-space-500/30 bg-space-900/20 p-5 sm:p-6 transition-all duration-300 hover:border-cyber-500/30 hover:bg-space-900/40 hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(0,229,255,0.05)]"
         >
           {/* Card Top */}

@@ -111,7 +111,7 @@ function getGradient(index: number): string {
           </div>
           <div class="cards-list">
             {dailyEntries.map((entry, i) => (
-              <a href={`/daily/${entry.slug}`} class="card">
+              <a href={`/daily/${entry.slug}/`} class="card">
                 <div class="card-image" style={`background: ${getGradient(i)};`}>
                   <div class="card-pattern"></div>
                   <div class="card-image-label">
@@ -146,7 +146,7 @@ function getGradient(index: number): string {
           </div>
           <div class="cards-list">
             {reportEntries.map((entry, i) => (
-              <a href={`/reports/${entry.slug}`} class="card">
+              <a href={`/reports/${entry.slug}/`} class="card">
                 <div class="card-image" style={`background: ${getGradient(i + 3)};`}>
                   <div class="card-pattern"></div>
                   <div class="card-image-label">
@@ -181,7 +181,7 @@ function getGradient(index: number): string {
           </div>
           <div class="cards-list">
             {blogPosts.map((post, i) => (
-              <a href={`/blog/${post.slug}`} class="card">
+              <a href={`/blog/${post.slug}/`} class="card">
                 <div class="card-image" style={`background: ${getGradient(i + 6)};`}>
                   <div class="card-pattern"></div>
                   <div class="card-image-label">
