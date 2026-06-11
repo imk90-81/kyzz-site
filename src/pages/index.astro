@@ -55,7 +55,7 @@ function getGradient(index: number): string {
       <!-- 左侧个人信息区 -->
       <aside class="sidebar">
         <div class="sidebar-content">
-          <div class="avatar">K</div>
+          <img class="avatar" src="/images/avatar.jpg" alt="头像" />
           <h1 class="site-name">Kyzz空间站</h1>
           <p class="site-tagline">记录思考 · 分享成长</p>
 
@@ -244,14 +244,8 @@ function getGradient(index: number): string {
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+        object-fit: cover;
         margin: 0 auto 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        font-weight: bold;
-        color: #fff;
         box-shadow: 0 0 24px rgba(0, 229, 255, 0.2);
       }
 
