@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
+import Search from '../components/Search.astro';
 
 interface Props {
   title: string;
@@ -325,5 +326,6 @@ const currentPath = Astro.url.pathname;
         document.dispatchEvent(event);
       });
     </script>
+    <Search />
   </body>
 </html>

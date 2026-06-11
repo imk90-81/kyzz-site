@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
+import Search from '../components/Search.astro';
 import { getCollection } from 'astro:content';
 
 const dailyEntries = (await getCollection('daily', ({ data }) => !data.draft).catch(() => []))
@@ -654,5 +655,6 @@ function getGradient(index: number): string {
         });
       })();
     </script>
+    <Search />
   </body>
 </html>
