@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM日记 EP1 · 国企PM的AI造工具实录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #2d3561 0%, #c94b4b 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3561 0%, #c94b4b 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 60px;
+        }
+
+        .hero-quote {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f9f5f0 0%, #faf0f0 100%);
+            border-left: 4px solid #c94b4b;
+            border-radius: 4px;
+            line-height: 1.8;
+        }
+
+        .pain-points {
+            background: #2d3561;
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .pain-points h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .pain-points li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+            list-style: none;
+        }
+
+        .pain-points li::before {
+            content: "😫";
+            position: absolute;
+            left: -25px;
+        }
+
+        .tool-section {
+            margin: 40px 0;
+        }
+
+        .tool-section h2 {
+            font-size: 1.8em;
+            color: #2d3561;
+            margin-bottom: 20px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:nth-child(1) { border-left-color: #667eea; }
+        .feature-card:nth-child(2) { border-left-color: #f093fb; }
+        .feature-card:nth-child(3) { border-left-color: #4facfe; }
+        .feature-card:nth-child(4) { border-left-color: #43e97b; }
+        .feature-card:nth-child(5) { border-left-color: #fa709a; }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .timeline-badge {
+            display: inline-block;
+            background: #2d3561;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .quote-block {
+            background: linear-gradient(135deg, #f9f5f0 0%, #faf0f0 100%);
+            border-left: 4px solid #c94b4b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #2d3561 0%, #c94b4b 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .conclusion h3 {
+            font-size: 1.6em;
+            margin-bottom: 20px;
+        }
+
+        .conclusion p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(45,53,97,0.1);
+            color: #2d3561;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .author-note {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .series-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d3561 0%, #c94b4b 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+
+        .series-link:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">📓 PM日记 · 系列第1篇</div>
+            <h1>国企PM的AI造工具实录</h1>
+            <p class="subtitle">一个不会写代码的项目经理，用Vibe Coding从零打造政府信息化项目助手</p>
+        </div>
+
+        <div class="content">
+            <div class="hero-quote">
+                <p>在国企做政府信息化项目管理，<strong>最痛苦的不是项目本身</strong>，而是被各种管理办法和流程淹没。</p>
+                <p style="margin-top: 10px;">集团的项目管理办法厚厚一沓，每次想找某个规定要翻半天文档。项目上的工作更是繁杂——周报、月报、各种审批流程、验收材料清单……</p>
+                <p style="margin-top: 10px;">最崩溃的是，这些东西散落在Excel、Word、微信群、邮件里，<strong>找起来像大海捞针</strong>。</p>
+                <p style="margin-top: 15px; font-weight: 600; color: #c94b4b;">👆 以上，是作者过去几年的真实工作状态。</p>
+            </div>
+
+            <div class="pain-points">
+                <h2>🔧 试过的工具，都不尽人意</h2>
+                <ul style="padding-left: 30px;">
+                    <li><strong>飞书多维表格</strong>：功能强大，但学习成本高</li>
+                    <li><strong>WPS</strong>：太通用，不够贴合政府项目实际场景</li>
+                    <li><strong>Notion</strong>：数据安全有顾虑，不敢把项目信息往上放</li>
+                </ul>
+                <p style="margin-top: 20px; font-style: italic; opacity: 0.9;">要么功能太复杂，要么不贴合场景，要么数据不安全……</p>
+            </div>
+
+            <div class="tool-section">
+                <h2>💡 灵感一闪：让AI帮我造工具</h2>
+                <div class="quote-block">
+                    <p>直到有一天，我在跟AI聊天的时候突然冒出一个念头：<br>
+                    <strong style="font-size: 1.2em;">"能不能让AI帮我做一个专门给政府信息化项目用的管理工具？"</strong></p>
+                </div>
+                <p style="margin: 20px 0; line-height: 1.8;">
+                    对，作者<strong>一行代码都不会写</strong>。但他迷上了 <strong>Vibe Coding</strong>——用自然语言描述需求，让AI生成代码。
+                </p>
+                <p style="margin: 20px 0; line-height: 1.8;">
+                    心血来潮，说干就干：做一个PC端的项目管理应用。
+                </p>
+
+                <div class="timeline-badge">⏱️ 开发时间：约1周</div>
+                <p style="margin: 10px 0; line-height: 1.8;">
+                    「<strong>政府信息化项目助手</strong>」的雏形已经跑起来了。
+                </p>
+            </div>
+
+            <div class="tool-section">
+                <h2>🛠️ 目前已实现的 5 大核心功能</h2>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>项目总览仪表盘</h3>
+                        <p>一眼看清所有项目状态、待办数量、进度分布，告别信息碎片化</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📁</div>
+                        <h3>项目管理</h3>
+                        <p>每个项目的业主单位、类型、预算、时间线，卡片式展示，信息清晰直观</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h3>待办助手</h3>
+                        <p>用四象限法则管理任务，重要紧急一目了然，优先级管理从此不再混乱</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📄</div>
+                        <h3>文档分类管理</h3>
+                        <p>按项目关联文档，支持标签和阶段管理，再也不用满硬盘找文件</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🏆</div>
+                        <h3>验收准备清单</h3>
+                        <p>六阶段追踪验收材料，从模板一键初始化，告别遗漏和慌乱</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conclusion">
+                <h3>✨ 当混乱终于被理顺</h3>
+                <p>
+                    说实话，界面还很粗糙，功能也还在完善中。<br>
+                    但当作者第一次在这个工具里看到：
+                </p>
+                <p style="margin: 20px 0; font-size: 1.15em;">
+                    自己管理的项目整整齐齐地列出来，<br>
+                    待办事项按优先级排好，<br>
+                    文档按阶段分类……
+                </p>
+                <p style="font-size: 1.2em; font-weight: 600;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 10px 25px; border-radius: 8px;">
+                        那种"混乱终于被理顺"的感觉，真的有点上头。
+                    </span>
+                </p>
+            </div>
+
+            <div class="author-note">
+                <p style="font-size: 1.1em; line-height: 1.8; color: #555;">
+                    这个系列作者会持续更新，记录一个<strong>不会写代码的国企PM</strong>，<br>
+                    怎么用AI从零造一个项目管理工具的全过程。
+                </p>
+                <p style="margin-top: 15px; color: #888; font-style: italic;">
+                    如果你也在体制内做项目管理，被繁杂的流程困扰，欢迎关注这个系列。<br>
+                    说不定作者的折腾过程，能给你一些启发。
+                </p>
+                <div style="margin-top: 25px;">
+                    <span class="tag">VibeCoding</span>
+                    <span class="tag">国企PM</span>
+                    <span class="tag">项目管理</span>
+                    <span class="tag">AI造工具</span>
+                    <span class="tag">政府信息化</span>
+                    <span class="tag">零代码</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 50px 0 20px; padding: 20px; background: #f9f9f9; border-radius: 12px;">
+                <p style="color: #2d3561; font-weight: 600; font-size: 1.1em;">📚 系列文章</p>
+                <div style="margin-top: 15px;">
+                    <a href="#" class="series-link">EP1 · AI造工具实录（当前）</a>
+                    <a href="#" class="series-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">EP2 · 从5个功能到11个模块 →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
