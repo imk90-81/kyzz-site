@@ -1,22 +1,41 @@
 ---
 import { getCollection } from 'astro:content';
+import fs from 'fs';
+import path from 'path';
 import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports', ({ data }) => !data.draft).catch(() => []);
-  return reports.map((report) => ({
-    params: { slug: report.slug },
-    props: {
-      title: report.data.title,
-      description: report.data.description,
-      pubDate: report.data.pubDate,
-      tags: report.data.tags || [],
-    },
+  
+  const paths = await Promise.all(reports.map(async (report) => {
+    // 读取对应的 HTML 文件内容
+    let htmlContent = '';
+    try {
+      const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
+      const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
+      // 提取 body 内容
+      const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      htmlContent = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+    } catch (e) {
+      console.error(`[Reports] Failed to read HTML for ${report.slug}:`, e instanceof Error ? e.message : String(e));
+    }
+
+    return {
+      params: { slug: report.slug },
+      props: {
+        title: report.data.title,
+        description: report.data.description,
+        pubDate: report.data.pubDate,
+        tags: report.data.tags || [],
+        htmlContent,
+      },
+    };
   }));
+
+  return paths;
 }
 
-const { title, description, pubDate, tags = [] } = Astro.props;
-const reportUrl = `/reports/${Astro.params.slug}.html`;
+const { title, description, pubDate, tags = [], htmlContent } = Astro.props;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', {
@@ -53,16 +72,15 @@ const formatDate = (date: Date) => {
       )}
     </div>
 
-    <!-- iframe 占满剩余高度 -->
+    <!-- 报告内容 - 直接渲染 HTML -->
     <div class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
-      <div class="w-full h-full min-h-[60vh] rounded-xl overflow-hidden border border-space-500/50 bg-white">
-        <iframe
-          src={reportUrl}
-          title={title}
-          class="w-full h-full"
-          style="border: none; display: block;"
-        />
-      </div>
+      {htmlContent ? (
+        <div class="report-content prose-kyzz" set:html={htmlContent} />
+      ) : (
+        <div class="text-center py-20 text-zinc-500">
+          <p>报告内容加载失败</p>
+        </div>
+      )}
     </div>
   </div>
 </DetailLayout>
