@@ -85,8 +85,9 @@
       if (isLoading) return;
       isLoading = true;
       import('/pagefind/pagefind.js')
+        .then(function (mod) { return mod.default || mod; })
         .then(function (pf) { return pf.init(); })
-        .then(function () {
+        .then(function (pf) {
           pagefind = pf;
           isLoading = false;
           cb && cb(pagefind);
