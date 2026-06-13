@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import fs from 'fs';
 import path from 'path';
 import PostHtmlLayout from '../../layouts/PostHtmlLayout.astro';
+import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog', ({ data }) => !data.draft).catch(() => []));
@@ -28,17 +29,21 @@ export async function getStaticPaths() {
 }
 
 const { post, htmlContent } = Astro.props;
-const { title, description, pubDate, tags = [], heroImage } = post.data;
+const { title, description, pubDate, tags = [], heroImage, fullImage } = post.data;
 ---
 
-<PostHtmlLayout
-  title={title}
-  description={description}
-  pubDate={pubDate}
-  tags={tags}
-  heroImage={heroImage}
-  htmlContent={htmlContent}
-  slug={post.slug}
->
-  {!htmlContent && <p class="text-zinc-400 text-center py-8">文章内容加载失败</p>}
-</PostHtmlLayout>
+{fullImage ? (
+  <DetailLayout title={title} description={description} fullImage={fullImage} />
+) : (
+  <PostHtmlLayout
+    title={title}
+    description={description}
+    pubDate={pubDate}
+    tags={tags}
+    heroImage={heroImage}
+    htmlContent={htmlContent}
+    slug={post.slug}
+  >
+    {!htmlContent && <p class="text-zinc-400 text-center py-8">文章内容加载失败</p>}
+  </PostHtmlLayout>
+)}

@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DailyLayout from '../../layouts/DailyLayout.astro';
+import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const dailyEntries = await getCollection('daily', ({ data }) => !data.draft);
@@ -13,15 +14,20 @@ export async function getStaticPaths() {
         description: entry.data.description,
         pubDate: entry.data.pubDate,
         source: entry.data.source,
+        fullImage: entry.data.fullImage || undefined,
         Content,
       },
     };
   }));
 }
 
-const { title, description, pubDate, source, Content } = Astro.props;
+const { title, description, pubDate, source, fullImage, Content } = Astro.props;
 ---
 
-<DailyLayout title={title} description={description} pubDate={pubDate} source={source}>
-  <Content />
-</DailyLayout>
+{fullImage ? (
+  <DetailLayout title={title} description={description} fullImage={fullImage} />
+) : (
+  <DailyLayout title={title} description={description} pubDate={pubDate} source={source}>
+    <Content />
+  </DailyLayout>
+)}

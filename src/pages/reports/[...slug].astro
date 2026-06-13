@@ -6,14 +6,12 @@ import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports', ({ data }) => !data.draft).catch(() => []);
-  
+
   const paths = await Promise.all(reports.map(async (report) => {
-    // 读取对应的 HTML 文件内容
     let htmlContent = '';
     try {
       const htmlPath = path.join(process.cwd(), 'public', 'reports', `${report.slug}.html`);
       const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
-      // 提取 body 内容
       const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
       htmlContent = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
     } catch (e) {
@@ -27,6 +25,7 @@ export async function getStaticPaths() {
         description: report.data.description,
         pubDate: report.data.pubDate,
         tags: report.data.tags || [],
+        fullImage: report.data.fullImage || undefined,
         htmlContent,
       },
     };
@@ -35,7 +34,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { title, description, pubDate, tags = [], htmlContent } = Astro.props;
+const { title, description, pubDate, tags = [], htmlContent, fullImage } = Astro.props;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', {
@@ -47,40 +46,44 @@ const formatDate = (date: Date) => {
 };
 ---
 
-<DetailLayout title={title} description={description}>
-  <div class="flex flex-col min-h-[calc(100vh-3.5rem)] pt-4 pb-20">
-    <!-- 报告信息头部 -->
-    <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
-      <div class="flex items-center gap-2 mb-2">
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-          </svg>
-          REPORT
-        </span>
-        <span class="text-xs text-zinc-500 font-mono">{formatDate(pubDate)}</span>
+{fullImage ? (
+  <DetailLayout title={title} description={description} fullImage={fullImage} />
+) : (
+  <DetailLayout title={title} description={description}>
+    <div class="flex flex-col min-h-[calc(100vh-3.5rem)] pt-4 pb-20">
+      <!-- 报告信息头部 -->
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+            REPORT
+          </span>
+          <span class="text-xs text-zinc-500 font-mono">{formatDate(pubDate)}</span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">{title}</h1>
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-2">
+            {tags.map(tag => (
+              <span class="text-xs font-mono text-purple-400/70 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">{title}</h1>
-      {tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mt-2">
-          {tags.map(tag => (
-            <span class="text-xs font-mono text-purple-400/70 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
 
-    <!-- 报告内容 - 直接渲染 HTML -->
-    <div class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
-      {htmlContent ? (
-        <div class="report-content prose-kyzz" set:html={htmlContent} />
-      ) : (
-        <div class="text-center py-20 text-zinc-500">
-          <p>报告内容加载失败</p>
-        </div>
-      )}
+      <!-- 报告内容 - 直接渲染 HTML -->
+      <div class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-4">
+        {htmlContent ? (
+          <div class="report-content prose-kyzz" set:html={htmlContent} />
+        ) : (
+          <div class="text-center py-20 text-zinc-500">
+            <p>报告内容加载失败</p>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-</DetailLayout>
+  </DetailLayout>
+)}
