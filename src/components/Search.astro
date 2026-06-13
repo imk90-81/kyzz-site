@@ -194,8 +194,10 @@
         e.preventDefault();
         activeIndex = Math.max(activeIndex - 1, -1);
         updateActive(items);
-      } else if (e.key === 'Enter' && activeIndex >= 0 && items[activeIndex]) {
+      } else if (e.key === 'Enter') {
         e.preventDefault();
+        if (items.length === 0) return;
+        if (activeIndex < 0) activeIndex = 0;
         closeModal();
         setTimeout(function () { window.location.href = items[activeIndex].getAttribute('href'); }, 100);
       }
