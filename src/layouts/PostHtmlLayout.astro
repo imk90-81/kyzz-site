@@ -69,12 +69,6 @@ if (htmlContent) {
 
   <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16 pb-20">
     <header class="mb-10 sm:mb-14">
-      {heroImage && (
-        <div class="mb-8 rounded-xl overflow-hidden border border-space-500/30">
-          <img src={heroImage} alt={title} class="w-full h-auto" loading="eager" />
-        </div>
-      )}
-
       {tags.length > 0 && (
         <div class="mb-4">
           <TagList tags={tags} />
@@ -131,6 +125,17 @@ if (htmlContent) {
       <div class="prose-kyzz" set:html={htmlContent} />
     ) : (
       <slot />
+    )}
+
+    <!-- 头图在最下方 -->
+    {heroImage && (
+      <div class="mt-12 rounded-xl overflow-hidden border border-space-500/30">
+        <img src={heroImage} alt={title} class="w-full h-auto" loading="eager" />
+      </div>
+    )}
+
+    {!htmlContent && !heroImage && (
+      <p class="text-center py-12 text-zinc-500 italic">无正文内容</p>
     )}
 
     <footer class="mt-12 pt-8 border-t border-space-500/50">
