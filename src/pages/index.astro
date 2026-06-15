@@ -16,6 +16,12 @@ const blogPosts = (await getCollection('blog', ({ data }) => !data.draft).catch(
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 10);
 
+const vibecodingEntries = (await getCollection('vibecoding', ({ data }) => !data.draft).catch(() => []))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 10);
+
+const vibecodingCount = vibecodingEntries.length;
+
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
 };
@@ -79,6 +85,11 @@ function getGradient(index: number): string {
               <span class="nav-icon">📊</span>
               <span class="nav-label">Reports</span>
               <span class="nav-count">{reportEntries.length}</span>
+            </a>
+            <a href="/vibecoding" class="nav-item">
+              <span class="nav-icon">⚡</span>
+              <span class="nav-label">VibeCoding</span>
+              <span class="nav-count">{vibecodingCount}</span>
             </a>
             <button id="search-trigger" class="nav-item">
               <span class="nav-icon">🔍</span>
@@ -196,6 +207,41 @@ function getGradient(index: number): string {
                   {post.data.tags && post.data.tags.length > 0 && (
                     <div class="card-tags">
                       {post.data.tags.slice(0, 3).map(tag => (
+                        <span class="card-tag-inline">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- VibeCoding 栏目 -->
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">⚡</span>
+              VibeCoding · AI编程记录
+            </h2>
+            <a href="/vibecoding" class="view-all">全部 →</a>
+          </div>
+          <div class="cards-list">
+            {vibecodingEntries.map((entry, i) => (
+              <a href={`/vibecoding/${entry.slug}/`} class="card">
+                <div class="card-image" style={`background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);`}>
+                  <div class="card-pattern"></div>
+                  <div class="card-image-label">
+                    <span class="card-image-date">{formatDate(entry.data.pubDate)}</span>
+                    <span class="card-image-type">VIBE</span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h3 class="card-title">{entry.data.title}</h3>
+                  <p class="card-desc">{entry.data.description}</p>
+                  {entry.data.tags && entry.data.tags.length > 0 && (
+                    <div class="card-tags">
+                      {entry.data.tags.slice(0, 3).map(tag => (
                         <span class="card-tag-inline">#{tag}</span>
                       ))}
                     </div>

@@ -40,4 +40,16 @@ const reports = defineCollection({
   }),
 });
 
-export const collections = { blog, daily, reports };
+const vibecoding = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    fullImage: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { blog, daily, reports, vibecoding };

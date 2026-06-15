@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const entries = (await getCollection('vibecoding', ({ data }) => !data.draft).catch(() => []))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+};
+---
+
+<BaseLayout title="VibeCoding" description="VibeCoding 实践记录，用 AI 编程的日常">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-16">
+    {/* Page Label */}
+    <div class="flex items-center gap-2 mb-4">
+      <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+      <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase">VibeCoding</span>
+    </div>
+
+    {/* Page Title */}
+    <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">VibeCoding</h1>
+    <p class="text-zinc-400 mb-10">用 AI 编程的日常，记录每一次调教模型的经历</p>
+
+    {/* Card List */}
+    <div class="flex flex-col gap-4">
+      {entries.map(entry => (
+        <a
+          href={`/vibecoding/${entry.slug}/`}
+          class="block rounded-xl border border-green-500/30 bg-space-900/20 p-5 sm:p-6 transition-all duration-300 hover:border-green-500/30 hover:bg-space-900/40 hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(34,197,94,0.05)]"
+        >
+          {/* Card Top */}
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-mono text-zinc-500">{formatDate(entry.data.pubDate)}</span>
+            <span class="text-[0.625rem] font-bold tracking-widest uppercase px-2 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">VIBE</span>
+          </div>
+
+          {/* Card Title */}
+          <div class="text-lg font-bold text-white mb-2">{entry.data.title}</div>
+
+          {/* Card Excerpt */}
+          <div class="text-sm text-zinc-400 leading-relaxed line-clamp-2">{entry.data.description}</div>
+
+          {/* Card Tags */}
+          {entry.data.tags && entry.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-4">
+              {entry.data.tags.slice(0, 5).map(tag => (
+                <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-green-500/5 border border-green-500/15 text-green-400/70">#{tag}</span>
+              ))}
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+
+    {/* Empty State */}
+    {entries.length === 0 && (
+      <div class="text-center py-16 text-zinc-500">
+        <p class="text-lg mb-2">暂无记录</p>
+        <p class="text-sm">VibeCoding 之旅即将开始...</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>
