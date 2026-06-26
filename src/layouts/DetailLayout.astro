@@ -42,7 +42,7 @@ const currentPath = Astro.url.pathname;
         <div class="sidebar-content">
           <img class="avatar" src="/images/avatar.jpg" alt="头像" />
           <h1 class="site-name">Kyzz空间站</h1>
-          <p class="site-tagline">🤖 🏀 💰 🎬 🎵</p>
+          <p class="site-tagline"><span id="live-clock" class="live-clock">--</span></p>
 
           <nav class="nav-section">
             <div class="nav-title">导航</div>
@@ -157,6 +157,12 @@ const currentPath = Astro.url.pathname;
         color: var(--color-text-secondary);
         text-align: left;
         margin-bottom: 20px;
+      }
+      .live-clock {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
       }
 
       .nav-section { margin-bottom: 16px; }
@@ -310,6 +316,33 @@ const currentPath = Astro.url.pathname;
       }
     </style>
 
+    <script is:inline>
+      (function() {
+        var weekMap = ['日', '一', '二', '三', '四', '五', '六'];
+        function pad(n) { return n < 10 ? '0' + n : '' + n; }
+        function formatNow() {
+          var d = new Date();
+          return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+            + ' 星期' + weekMap[d.getDay()]
+            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+        }
+        function startClock() {
+          var el = document.getElementById('live-clock');
+          if (!el) return;
+          el.textContent = formatNow();
+          if (el._timer) clearInterval(el._timer);
+          el._timer = setInterval(function() { el.textContent = formatNow(); }, 1000);
+        }
+        startClock();
+        document.addEventListener('astro:page-load', function() {
+          var el = document.getElementById('live-clock');
+          if (el && !el._timer) {
+            el.textContent = formatNow();
+            el._timer = setInterval(function() { el.textContent = formatNow(); }, 1000);
+          }
+        });
+      })();
+    </script>
     <script>
       // 主题切换
       document.querySelectorAll('.theme-btn').forEach(function(btn) {
