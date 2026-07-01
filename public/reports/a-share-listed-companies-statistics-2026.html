@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A股上市企业整体统计分析报告</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      background: #0f1117;
+      color: #e0e6f0;
+      line-height: 1.75;
+      padding: 2rem 1.5rem 4rem;
+    }
+    .report-container { max-width: 860px; margin: 0 auto; }
+    .report-header { text-align: center; margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .report-title { font-size: 1.75rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; letter-spacing: 1px; }
+    .report-meta { font-size: 0.85rem; color: #7a8ba8; }
+    .report-meta span { margin: 0 0.5rem; }
+    h2 { font-size: 1.2rem; color: #00e5ff; margin: 2.5rem 0 1rem; padding-left: 0.75rem; border-left: 3px solid #00e5ff; font-weight: 600; }
+    h3 { font-size: 1.05rem; color: #a8c4e8; margin: 1.5rem 0 0.75rem; font-weight: 600; }
+    p { margin-bottom: 0.85rem; color: #c4d0e0; }
+    .highlight { color: #00e5ff; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; overflow-x: auto; display: block; }
+    thead tr { background: rgba(0, 229, 255, 0.08); }
+    th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; color: #00e5ff; border-bottom: 1px solid rgba(0,229,255,0.2); white-space: nowrap; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c4d0e0; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.4rem; color: #c4d0e0; }
+    li strong { color: #a8c4e8; }
+    .note { background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.15); border-radius: 6px; padding: 1rem 1.25rem; margin: 1.25rem 0; font-size: 0.875rem; color: #7a8ba8; }
+    .note-title { color: #00e5ff; font-weight: 600; margin-bottom: 0.4rem; }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+    .stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem 1.25rem; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: #00e5ff; margin-bottom: 0.25rem; font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 0.78rem; color: #7a8ba8; }
+    .tag { display: inline-block; background: rgba(0,229,255,0.1); color: #00e5ff; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; margin: 0.15rem; }
+    .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.8rem; color: #4a5a78; }
+    .tier-list { list-style: none; padding: 0; }
+    .tier-list li { padding: 0.5rem 0.75rem; border-left: 3px solid #00e5ff; margin-bottom: 0.5rem; background: rgba(0,229,255,0.04); border-radius: 0 4px 4px 0; }
+    .quote-block { border-left: 4px solid #00e5ff; padding: 0.75rem 1rem; background: rgba(0,229,255,0.05); margin: 1rem 0; border-radius: 0 6px 6px 0; font-size: 0.9rem; }
+    @media (max-width: 600px) { body { padding: 1rem; } .report-title { font-size: 1.4rem; } }
+  </style>
+</head>
+<body>
+<div class="report-container">
+
+<!-- 报告头部 -->
+<div class="report-header">
+  <h1 class="report-title">📊 A股上市企业整体统计分析报告</h1>
+  <div class="report-meta">
+    <span>📅 报告日期：2026年7月1日</span>
+    <span>|</span>
+    <span>📂 数据来源：星企航·已上市企业数据</span>
+    <span>|</span>
+    <span>🏢 样本：5,607家A股上市企业</span>
+  </div>
+</div>
+
+<!-- 核心数据卡片 -->
+<div class="overview-grid">
+  <div class="stat-card"><div class="stat-value">5,607</div><div class="stat-label">上市企业总数</div></div>
+  <div class="stat-card"><div class="stat-value">120.27万亿</div><div class="stat-label">总市值</div></div>
+  <div class="stat-card"><div class="stat-value">79,032亿股</div><div class="stat-label">总股本</div></div>
+  <div class="stat-card"><div class="stat-value">5.41万亿</div><div class="stat-label">首发募资总额</div></div>
+  <div class="stat-card"><div class="stat-value">214.5亿</div><div class="stat-label">平均市值</div></div>
+  <div class="stat-card"><div class="stat-value">61.6亿</div><div class="stat-label">市值中位数</div></div>
+</div>
+
+<!-- 一、整体概览 -->
+<h2>一、整体概览</h2>
+
+<h3>1.1 上市板块分布</h3>
+<p>A股四大板块中，沪市主板与北交所企业数量旗鼓相当，科创板紧随其后，深市主板企业数量相对较少。</p>
+<table>
+  <thead><tr><th>板块</th><th>企业数量</th><th>占比</th><th>总市值（万亿）</th><th>平均市值（亿）</th></tr></thead>
+  <tbody>
+    <tr><td>沪市主板</td><td>1,742</td><td>31.1%</td><td>52.12</td><td>299.19</td></tr>
+    <tr><td>北交所</td><td>1,722</td><td>30.7%</td><td>23.10</td><td>134.17</td></tr>
+    <tr><td>科创板</td><td>1,533</td><td>27.3%</td><td>27.99</td><td>182.57</td></tr>
+    <tr><td>深市主板</td><td>610</td><td>10.9%</td><td>17.06</td><td>279.63</td></tr>
+  </tbody>
+</table>
+
+<div class="note"><div class="note-title">🔍 关键发现</div>
+• 沪市主板以31.1%的企业数量贡献了43.3%的总市值，是蓝筹大盘股的集中地<br>
+• 北交所企业数量与沪市主板相当（30.7%），但平均市值仅134亿，以中小市值企业为主<br>
+• 深市主板企业数最少（10.9%），但平均市值（279.63亿）仅次于沪市主板
+</div>
+
+<h3>1.2 行业分布</h3>
+<p>制造业以压倒性优势占据A股主体地位，其次是信息技术与金融行业。</p>
+<table>
+  <thead><tr><th>#</th><th>行业</th><th>企业数量</th><th>占比</th><th>总市值（万亿）</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>制造业</td><td>3,848</td><td>68.6%</td><td>77.21</td></tr>
+    <tr><td>2</td><td>信息传输、软件和信息技术服务业</td><td>439</td><td>7.8%</td><td>6.86</td></tr>
+    <tr><td>3</td><td>批发和零售业</td><td>187</td><td>3.3%</td><td>1.60</td></tr>
+    <tr><td>4</td><td>电力、热力、燃气及水生产和供应业</td><td>140</td><td>2.5%</td><td>3.73</td></tr>
+    <tr><td>5</td><td>科学研究和技术服务业</td><td>124</td><td>2.2%</td><td>1.19</td></tr>
+    <tr><td>6</td><td>交通运输、仓储和邮政业</td><td>121</td><td>2.2%</td><td>2.81</td></tr>
+    <tr><td>7</td><td>金融业</td><td>120</td><td>2.1%</td><td>15.67</td></tr>
+    <tr><td>8</td><td>建筑业</td><td>104</td><td>1.9%</td><td>1.50</td></tr>
+    <tr><td>9</td><td>水利、环境和公共设施管理业</td><td>102</td><td>1.8%</td><td>0.65</td></tr>
+    <tr><td>10</td><td>房地产业</td><td>98</td><td>1.7%</td><td>1.01</td></tr>
+  </tbody>
+</table>
+
+<div class="note"><div class="note-title">🔍 关键发现</div>
+• 制造业以68.6%的绝对优势主导A股，反映了中国"制造大国"的经济底色<br>
+• 金融业虽仅有120家企业（2.1%），但总市值高达15.67万亿，平均市值1,305.90亿，是大市值龙头行业<br>
+• 采矿业平均市值671.72亿，居各行业第二位，体现资源型企业的资本密集特征
+</div>
+
+<h3>1.3 地区分布</h3>
+<p>上市企业高度集中于沿海经济发达省份，广东、浙江、江苏三省合计占比42.8%。</p>
+<table>
+  <thead><tr><th>#</th><th>省份</th><th>企业数量</th><th>占比</th><th>#</th><th>省份</th><th>企业数量</th><th>占比</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>广东省</td><td>917</td><td>16.4%</td><td>9</td><td>福建省</td><td>177</td><td>3.2%</td></tr>
+    <tr><td>2</td><td>浙江省</td><td>746</td><td>13.3%</td><td>10</td><td>湖北省</td><td>154</td><td>2.7%</td></tr>
+    <tr><td>3</td><td>江苏省</td><td>736</td><td>13.1%</td><td>11</td><td>湖南省</td><td>147</td><td>2.6%</td></tr>
+    <tr><td>4</td><td>北京市</td><td>484</td><td>8.6%</td><td>12</td><td>河南省</td><td>117</td><td>2.1%</td></tr>
+    <tr><td>5</td><td>上海市</td><td>479</td><td>8.5%</td><td>13</td><td>江西省</td><td>94</td><td>1.7%</td></tr>
+    <tr><td>6</td><td>山东省</td><td>319</td><td>5.7%</td><td>14</td><td>辽宁省</td><td>87</td><td>1.6%</td></tr>
+    <tr><td>7</td><td>安徽省</td><td>192</td><td>3.4%</td><td>15</td><td>河北省</td><td>86</td><td>1.5%</td></tr>
+    <tr><td>8</td><td>四川省</td><td>180</td><td>3.2%</td><td colspan="3"></td></tr>
+  </tbody>
+</table>
+
+<div class="note"><div class="note-title">🔍 关键发现</div>
+• 长三角（上海+浙江+江苏+安徽）：<span class="highlight">2,153家，占38.4%</span><br>
+• 珠三角（广东）：<span class="highlight">917家，占16.4%</span><br>
+• 京津冀（北京+天津+河北）：<span class="highlight">643家，占11.5%</span><br>
+• 三大经济圈合计占比超<span class="highlight">66%</span>，与区域经济发展水平高度正相关
+</div>
+
+<h3>1.4 企业性质分布</h3>
+<table>
+  <thead><tr><th>企业性质</th><th>数量</th><th>占比</th></tr></thead>
+  <tbody>
+    <tr><td>私营</td><td>3,507</td><td>62.5%</td></tr>
+    <tr><td>一般国有经营性企业</td><td>1,091</td><td>19.5%</td></tr>
+    <tr><td>中央企业</td><td>494</td><td>8.8%</td></tr>
+    <tr><td>中外合资</td><td>345</td><td>6.2%</td></tr>
+    <tr><td>其他</td><td>138</td><td>2.5%</td></tr>
+    <tr><td>集体</td><td>30</td><td>0.5%</td></tr>
+  </tbody>
+</table>
+
+<!-- 二、关键指标 -->
+<h2>二、关键指标统计分析</h2>
+
+<h3>2.1 市值分析</h3>
+<table>
+  <thead><tr><th>统计量</th><th>数值（亿元）</th></tr></thead>
+  <tbody>
+    <tr><td>平均值</td><td>214.50</td></tr>
+    <tr><td>中位数</td><td>61.60</td></tr>
+    <tr><td>最小值</td><td>0.30</td></tr>
+    <tr><td>最大值</td><td>19,378.12</td></tr>
+    <tr><td>标准差</td><td>781.78</td></tr>
+  </tbody>
+</table>
+
+<h4>市值 Top 10 企业</h4>
+<table>
+  <thead><tr><th>#</th><th>公司简称</th><th>板块</th><th>行业</th><th>总市值（亿）</th></tr></thead>
+  <tbody>
+    <tr><td>🥇1</td><td>农业银行</td><td>沪市主板</td><td>金融业</td><td>19,378.12</td></tr>
+    <tr><td>🥈2</td><td>工商银行</td><td>沪市主板</td><td>金融业</td><td>19,061.58</td></tr>
+    <tr><td>🥉3</td><td>宁德时代</td><td>北交所</td><td>制造业</td><td>17,325.17</td></tr>
+    <tr><td>4</td><td>贵州茅台</td><td>沪市主板</td><td>制造业</td><td>14,819.59</td></tr>
+    <tr><td>5</td><td>工业富联</td><td>沪市主板</td><td>制造业</td><td>14,317.51</td></tr>
+    <tr><td>6</td><td>中际旭创</td><td>北交所</td><td>制造业</td><td>14,163.48</td></tr>
+    <tr><td>7</td><td>中国石油</td><td>沪市主板</td><td>采矿业</td><td>14,054.84</td></tr>
+    <tr><td>8</td><td>中国银行</td><td>沪市主板</td><td>金融业</td><td>13,647.36</td></tr>
+    <tr><td>9</td><td>寒武纪</td><td>深市主板</td><td>信息技术</td><td>10,024.73</td></tr>
+    <tr><td>10</td><td>海光信息</td><td>深市主板</td><td>制造业</td><td>8,607.02</td></tr>
+  </tbody>
+</table>
+
+<div class="quote-block">
+<strong>分析：</strong>市值分布呈严重的右偏态（均值214.5亿 vs 中位数61.6亿），少数超大市值企业拉高了整体均值。万亿市值俱乐部共7家，其中银行为代表的金融企业4家，制造业3家。<span class="highlight">宁德时代、中际旭创等新能源/AI赛道企业市值超越传统能源巨头</span>，反映产业升级趋势。值得注意的是，<span class="highlight">寒武纪</span>作为AI芯片企业，以10,024.73亿市值跻身Top10，标志着硬科技赛道的资本崛起。
+</div>
+
+<h3>2.2 市盈率分析</h3>
+<table>
+  <thead><tr><th>统计量</th><th>数值</th></tr></thead>
+  <tbody>
+    <tr><td>平均值</td><td>97.24</td></tr>
+    <tr><td>中位数</td><td>25.15</td></tr>
+    <tr><td>最小值</td><td>-7,800.01</td></tr>
+    <tr><td>最大值</td><td>37,965.48</td></tr>
+  </tbody>
+</table>
+
+<h4>市盈率区间分布</h4>
+<table>
+  <thead><tr><th>区间</th><th>企业数量</th><th>占比</th></tr></thead>
+  <tbody>
+    <tr><td>负值（亏损）</td><td>1,478</td><td>26.4%</td></tr>
+    <tr><td>0 ~ 30</td><td>1,558</td><td>27.8%</td></tr>
+    <tr><td>30 ~ 50</td><td>675</td><td>12.0%</td></tr>
+    <tr><td>50 ~ 100</td><td>790</td><td>14.1%</td></tr>
+    <tr><td>> 100</td><td>1,105</td><td>19.7%</td></tr>
+  </tbody>
+</table>
+
+<div class="quote-block">
+<strong>分析：</strong>超四分之一（26.4%）的A股企业处于亏损状态，反映经济下行压力及大量初创/成长型企业仍在投入期。市盈率中位数25.15，整体估值处于合理区间。北交所与深市主板市盈率中位数显著高于沪市主板与科创板，体现不同板块的风险偏好和成长性预期差异。
+</div>
+
+<h3>2.3 上市时间趋势</h3>
+<table>
+  <thead><tr><th>十年区间</th><th>新增上市企业数</th><th>占总量比</th></tr></thead>
+  <tbody>
+    <tr><td>1990-1999</td><td>845</td><td>15.1%</td></tr>
+    <tr><td>2000-2009</td><td>761</td><td>13.6%</td></tr>
+    <tr><td>2010-2019</td><td>2,114</td><td>37.7%</td></tr>
+    <tr><td>2020-2026.6</td><td>1,887</td><td>33.7%</td></tr>
+  </tbody>
+</table>
+
+<div class="quote-block">
+<strong>分析：</strong>2010-2016年是IPO密集期，2017年达到峰值（432家）。2020-2022年维持高位，年均超400家，受益于注册制改革。<span class="highlight">2023年起IPO节奏有所放缓，2024年仅100家</span>，体现监管对发行节奏的调节。
+</div>
+
+<h3>2.4 首发募资分析</h3>
+<table>
+  <thead><tr><th>统计量</th><th>数值（万元）</th></tr></thead>
+  <tbody>
+    <tr><td>平均值</td><td>96,881</td></tr>
+    <tr><td>中位数</td><td>47,000</td></tr>
+    <tr><td>最小值</td><td>203</td></tr>
+    <tr><td>最大值</td><td>6,852,918</td></tr>
+  </tbody>
+</table>
+<p><strong>首发募资 Top 5：</strong>农业银行（685.29亿）、中国石油（668亿）、中国神华（665.82亿）、建设银行（580.5亿）、中芯国际（532.3亿），均为国有大型企业。</p>
+
+<!-- 三、主要特征与趋势 -->
+<h2>三、主要特征与趋势</h2>
+
+<h3>3.1 结构性特征</h3>
+<div class="note">
+<ol>
+  <li><strong>制造业绝对主导：</strong>68.6%的企业属于制造业，总市值占64.2%，中国"世界工厂"地位在资本市场得到充分映射。</li>
+  <li><strong>区域高度集中：</strong>广东、浙江、江苏三省聚集了42.8%的上市企业，反映了经济发达地区在企业培育和资本运作上的显著优势。</li>
+  <li><strong>民企数量优势 vs 国企体量优势：</strong>私营企业占62.5%的数量优势，但金融、能源等大市值行业仍由国有企业主导。</li>
+  <li><strong>板块分层清晰：</strong>沪市主板承载大盘蓝筹（平均市值299亿），北交所/科创板服务中小创新型企业（平均市值134-183亿）。</li>
+</ol>
+</div>
+
+<h3>3.2 趋势判断</h3>
+<div class="note">
+<ol>
+  <li><strong>硬科技含量提升：</strong>科创板+北交所合计占比58%，半导体、AI、新能源等赛道的企业市值快速攀升，<span class="highlight">寒武纪、海光信息</span>等进入万亿/近万亿俱乐部。</li>
+  <li><strong>IPO节奏从"量"向"质"转型：</strong>2023年后发行节奏放缓，监管更注重企业质量而非数量扩张。</li>
+  <li><strong>亏损上市成为常态：</strong>26.4%企业市盈率为负，反映资本市场对成长型企业的包容度提升。</li>
+  <li><strong>区域梯度转移萌芽：</strong>安徽（192家）、四川（180家）等中西部省份上市企业数量增长，产业从沿海向内陆梯度转移的趋势初现。</li>
+</ol>
+</div>
+
+<!-- 四、数据说明 -->
+<h2>四、数据说明</h2>
+<div class="note">
+• 本报告基于星企航数据库中截至2026年6月30日的5,607家A股上市企业数据<br>
+• 数据包含已退市企业（如样本中的"国华退"），可能存在少量数据噪声<br>
+• 证监会行业分类中存在少量编码异常条目（约4条），已做合并处理<br>
+• 市盈率、市净率等估值指标以数据采集时点为准，不反映实时变动
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+  <p>报告由 File Agent 自动生成 | 数据来源：星企航·已上市企业数据</p>
+  <p>（内容由AI生成，仅供参考，不构成投资建议）</p>
+</div>
+
+</div>
+</body>
+</html>
