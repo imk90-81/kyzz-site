@@ -710,6 +710,20 @@ function getGradient(index: number): string {
           }
         } catch (e) {}
 
+        // 访问量统计
+        (function loadStats() {
+          var totalEl = document.getElementById('stats-total');
+          var todayEl = document.getElementById('stats-today');
+          if (!totalEl || !todayEl) return;
+          fetch('/api/stats')
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+              if (d.total >= 0) totalEl.textContent = d.total.toLocaleString();
+              if (d.today >= 0) todayEl.textContent = d.today.toLocaleString();
+            })
+            .catch(function() {});
+        })();
+
         startClock();
         // 搜索
         document.getElementById('search-trigger')?.addEventListener('click', function() {

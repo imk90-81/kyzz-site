@@ -76,6 +76,18 @@ const currentPath = Astro.url.pathname;
             </button>
           </nav>
 
+          <div class="stats-section">
+            <div class="stats-title">访问统计</div>
+            <div class="stats-row">
+              <span class="stats-label">历史总量</span>
+              <span class="stats-value" id="stats-total">--</span>
+            </div>
+            <div class="stats-row">
+              <span class="stats-label">今日访问</span>
+              <span class="stats-value" id="stats-today">--</span>
+            </div>
+          </div>
+
           <div class="theme-switcher">
             <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
             <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
@@ -333,6 +345,20 @@ const currentPath = Astro.url.pathname;
           if (el._timer) clearInterval(el._timer);
           el._timer = setInterval(function() { el.textContent = formatNow(); }, 1000);
         }
+        // 访问量统计
+        (function loadStats() {
+          var totalEl = document.getElementById('stats-total');
+          var todayEl = document.getElementById('stats-today');
+          if (!totalEl || !todayEl) return;
+          fetch('/api/stats')
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+              if (d.total >= 0) totalEl.textContent = d.total.toLocaleString();
+              if (d.today >= 0) todayEl.textContent = d.today.toLocaleString();
+            })
+            .catch(function() {});
+        })();
+
         startClock();
         document.addEventListener('astro:page-load', function() {
           var el = document.getElementById('live-clock');
