@@ -13,6 +13,11 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
     sitemap(),
+    cloudflare({
+      functions: {
+        directory: './functions',
+      },
+    }),
   ],
   markdown: {
     shikiConfig: {
