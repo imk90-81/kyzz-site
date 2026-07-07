@@ -97,6 +97,18 @@ function getGradient(index: number): string {
             </button>
           </nav>
 
+          <div class="stats-section">
+            <div class="stats-title">访问统计</div>
+            <div class="stats-row">
+              <span class="stats-label">历史总量</span>
+              <span class="stats-value" id="stats-total">--</span>
+            </div>
+            <div class="stats-row">
+              <span class="stats-label">今日访问</span>
+              <span class="stats-value" id="stats-today">--</span>
+            </div>
+          </div>
+
           <div class="theme-switcher">
             <button class="theme-btn active" data-theme="cosmos" title="宇宙">🌌</button>
             <button class="theme-btn" data-theme="day" title="白昼">☀️</button>
@@ -364,6 +376,38 @@ function getGradient(index: number): string {
         padding: 1px 7px;
         border-radius: 10px;
         color: var(--color-text-secondary);
+      }
+
+      /* ===== 访问统计 ===== */
+      .stats-section {
+        padding: 12px 14px;
+        margin-top: auto;
+        background: var(--color-border);
+        border-radius: 8px;
+        font-size: 12px;
+      }
+
+      .stats-title {
+        font-size: 11px;
+        color: var(--color-text-secondary);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 3px 0;
+      }
+
+      .stats-label { color: var(--color-text-secondary); }
+
+      .stats-value {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--color-accent);
+        font-weight: 600;
       }
 
       /* ===== 主题切换 ===== */
