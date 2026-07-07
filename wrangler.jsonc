@@ -1,7 +1,15 @@
 {
   "name": "kyzz-site",
+  "main": "worker.js",
   "compatibility_date": "2026-07-07",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KYZZ_KV",
+      "id": "98f44a343f9f4e8ca4fa99b58e4c526a"
+    }
+  ]
 }

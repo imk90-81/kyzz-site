@@ -12,19 +12,28 @@
 - **显示 (Worker)** → 需要 `wrangler.jsonc`，Deploy command 默认是 `npx wrangler deploy`
 - **显示 (Pages)** → 纯静态，Deploy command 留空
 
-### 纯静态站点的 wrangler.jsonc
+### 当前 wrangler.jsonc（Worker + KV + 静态资源）
 
 ```jsonc
 {
   "name": "kyzz-site",
+  "main": "worker.js",
   "compatibility_date": "2026-07-07",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KYZZ_KV",
+      "id": "98f44a343f9f4e8ca4fa99b58e4c526a"
+    }
+  ]
 }
 ```
 
-> ⚠ assets-only Worker 模式下不能写 `"binding"` 字段
+> ⚠ 纯静态站点用 assets-only 模式（无 main/binding/kv_namespaces），加 KV 后必须升为 Worker 模式。
+> Worker 模式下 `functions/` 目录无效，所有服务端逻辑写在 `worker.js`。
 
 ### 部署失败排查顺序
 
