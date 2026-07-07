@@ -19,7 +19,10 @@ const vibecodingEntries = (await getCollection('vibecoding', ({ data }) => !data
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 10);
 
-const vibecodingCount = vibecodingEntries.length;
+// 侧边栏栏目总数（完整集合，非切片）
+const blogCount = (await getCollection('blog', ({ data }) => !data.draft).catch(() => [])).length;
+const dailyCount = (await getCollection('daily', ({ data }) => !data.draft).catch(() => [])).length;
+const vibecodingCount = (await getCollection('vibecoding', ({ data }) => !data.draft).catch(() => [])).length;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });

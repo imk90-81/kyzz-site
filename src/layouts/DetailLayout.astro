@@ -77,7 +77,6 @@ const currentPath = Astro.url.pathname;
           </nav>
 
           <div class="stats-section">
-            <div class="stats-title">访问统计</div>
             <div class="stats-row">
               <span class="stats-label">历史总量</span>
               <span class="stats-value" id="stats-total">--</span>
@@ -222,6 +221,27 @@ const currentPath = Astro.url.pathname;
         padding: 1px 7px;
         border-radius: 10px;
         color: var(--color-text-secondary);
+      }
+
+      /* ===== 访问统计 ===== */
+      .stats-section {
+        padding: 4px 14px 8px;
+        font-size: 12px;
+      }
+
+      .stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 3px 0;
+      }
+
+      .stats-label { color: var(--color-text-secondary); }
+
+      .stats-value {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--color-accent);
+        font-weight: 600;
       }
 
       .theme-switcher {

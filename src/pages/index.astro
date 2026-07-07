@@ -20,7 +20,11 @@ const vibecodingEntries = (await getCollection('vibecoding', ({ data }) => !data
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 10);
 
-const vibecodingCount = vibecodingEntries.length;
+// 侧边栏栏目总数（完整集合，非切片）
+const blogCount = (await getCollection('blog', ({ data }) => !data.draft).catch(() => [])).length;
+const dailyCount = (await getCollection('daily', ({ data }) => !data.draft).catch(() => [])).length;
+const reportCount = (await getCollection('reports', ({ data }) => !data.draft).catch(() => [])).length;
+const vibecodingCount = (await getCollection('vibecoding', ({ data }) => !data.draft).catch(() => [])).length;
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
@@ -74,17 +78,17 @@ function getGradient(index: number): string {
             <a href="/blog" class="nav-item">
               <span class="nav-icon">📝</span>
               <span class="nav-label">博客</span>
-              <span class="nav-count">{blogPosts.length}</span>
+              <span class="nav-count">{blogCount}</span>
             </a>
             <a href="/daily" class="nav-item">
               <span class="nav-icon">📰</span>
               <span class="nav-label">Daily</span>
-              <span class="nav-count">{dailyEntries.length}</span>
+              <span class="nav-count">{dailyCount}</span>
             </a>
             <a href="/reports" class="nav-item">
               <span class="nav-icon">📊</span>
               <span class="nav-label">Reports</span>
-              <span class="nav-count">{reportEntries.length}</span>
+              <span class="nav-count">{reportCount}</span>
             </a>
             <a href="/vibecoding" class="nav-item">
               <span class="nav-icon">⚡</span>
@@ -98,7 +102,6 @@ function getGradient(index: number): string {
           </nav>
 
           <div class="stats-section">
-            <div class="stats-title">访问统计</div>
             <div class="stats-row">
               <span class="stats-label">历史总量</span>
               <span class="stats-value" id="stats-total">--</span>
@@ -380,19 +383,8 @@ function getGradient(index: number): string {
 
       /* ===== 访问统计 ===== */
       .stats-section {
-        padding: 12px 14px;
-        margin-top: auto;
-        background: var(--color-border);
-        border-radius: 8px;
+        padding: 4px 14px 8px;
         font-size: 12px;
-      }
-
-      .stats-title {
-        font-size: 11px;
-        color: var(--color-text-secondary);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
       }
 
       .stats-row {
