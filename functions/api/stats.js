@@ -31,7 +31,7 @@ export async function onRequest(context) {
     await kv.put(todayKey, todayCount.toString(), { expirationTtl: 86400 * 2 });
 
     total = await kv.get(totalKey);
-    total = total ? parseInt(total, 10) + 1 : total;
+    total = total ? parseInt(total, 10) + 1 : 1;
     await kv.put(totalKey, total.toString());
   } catch (e) {
     total = -1;
