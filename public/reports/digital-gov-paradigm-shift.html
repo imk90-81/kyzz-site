@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>解析数字政府：从电子政务到数智治理的范式跃迁</title>
+<style>
+:root {
+  --blue-900: #0a1628; --blue-800: #0f2440; --blue-700: #1a3a5c;
+  --blue-600: #1e4d8c; --blue-500: #2563eb; --blue-400: #3b82f6;
+  --blue-300: #60a5fa; --blue-200: #93c5fd; --blue-100: #dbeafe;
+  --blue-50: #eff6ff;
+  --warm-500: #f59e0b; --warm-400: #fbbf24; --warm-300: #fcd34d;
+  --warm-100: #fef3c7;
+  --gray-900: #111827; --gray-700: #374151; --gray-600: #4b5563;
+  --gray-500: #6b7280; --gray-400: #9ca3af; --gray-300: #d1d5db;
+  --gray-200: #e5e7eb; --gray-100: #f3f4f6; --gray-50: #f9fafb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color: var(--gray-900); background: var(--gray-50); line-height:1.8; font-size:17px;
+}
+.container { max-width:900px; margin:0 auto; padding:0 24px; }
+
+/* 封面 */
+.cover {
+  background: linear-gradient(160deg, var(--blue-900) 0%, var(--blue-700) 40%, var(--blue-600) 100%);
+  color:#fff; padding:80px 32px 100px; text-align:center; position:relative; overflow:hidden;
+}
+.cover::before {
+  content:''; position:absolute; top:-50%; right:-20%; width:600px; height:600px;
+  border-radius:50%; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+}
+.cover::after {
+  content:''; position:absolute; bottom:-30%; left:-10%; width:400px; height:400px;
+  border-radius:50%; background: radial-gradient(circle, rgba(147,197,253,0.1) 0%, transparent 70%);
+}
+.cover-content { position:relative; z-index:1; }
+.cover .tag {
+  display:inline-block; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25);
+  padding:6px 20px; border-radius:24px; font-size:14px; letter-spacing:3px; margin-bottom:32px;
+}
+.cover h1 { font-size:clamp(28px,5vw,46px); font-weight:800; margin-bottom:20px; letter-spacing:1px; }
+.cover .subtitle { font-size:18px; color:rgba(255,255,255,0.75); margin-bottom:40px; }
+.cover .meta { font-size:14px; color:rgba(255,255,255,0.55); border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; }
+.cover .divider {
+  width:60px; height:4px; background:var(--warm-500); margin:0 auto 24px; border-radius:2px;
+}
+
+/* 通用区块 */
+.section { padding:64px 0; }
+.section:nth-child(even) { background:#fff; }
+.section:nth-child(odd) { background:var(--gray-50); }
+.section-title {
+  font-size:28px; font-weight:700; color:var(--blue-900); margin-bottom:12px;
+  padding-bottom:16px; border-bottom:3px solid var(--blue-200); position:relative;
+}
+.section-title::after {
+  content:''; position:absolute; bottom:-3px; left:0; width:64px; height:3px; background:var(--blue-500);
+}
+.section-subtitle { font-size:18px; color:var(--gray-600); margin-bottom:40px; }
+h2 { font-size:clamp(24px,4vw,36px); font-weight:700; color:var(--blue-900); margin-bottom:8px; }
+h3 { font-size:20px; font-weight:600; color:var(--blue-800); margin:32px 0 12px; }
+h4 { font-size:17px; font-weight:600; color:var(--gray-700); margin:24px 0 8px; }
+p { margin-bottom:16px; }
+strong { color:var(--blue-800); }
+
+/* 对比表格 */
+.compare-table {
+  width:100%; border-collapse:collapse; margin:24px 0 32px; font-size:15px;
+  border-radius:8px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+.compare-table thead { background:var(--blue-600); color:#fff; }
+.compare-table th { padding:14px 20px; text-align:left; font-weight:600; }
+.compare-table td { padding:12px 20px; border-bottom:1px solid var(--gray-200); }
+.compare-table tbody tr { background:#fff; }
+.compare-table tbody tr:nth-child(even) { background:var(--blue-50); }
+.compare-table td:first-child { font-weight:600; color:var(--blue-700); width:18%; }
+
+/* 数据表 */
+.data-table {
+  width:100%; border-collapse:collapse; margin:24px 0 32px; font-size:15px;
+  border-radius:8px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+.data-table thead { background:var(--blue-700); color:#fff; }
+.data-table th { padding:14px 18px; text-align:left; font-weight:600; }
+.data-table td { padding:12px 18px; border-bottom:1px solid var(--gray-200); }
+.data-table tbody tr { background:#fff; }
+.data-table tbody tr:nth-child(even) { background:var(--blue-50); }
+.data-table td:first-child { font-weight:600; color:var(--blue-700); }
+
+/* 卡片 */
+.card {
+  background:#fff; border-radius:12px; padding:28px; margin:24px 0;
+  box-shadow:0 2px 16px rgba(0,0,0,0.05); border-left:4px solid var(--blue-500);
+}
+.card.warm { border-left-color:var(--warm-500); background:var(--warm-100); }
+.card-title { font-size:18px; font-weight:700; color:var(--blue-800); margin-bottom:12px; }
+
+/* 引用块 */
+blockquote {
+  border-left:4px solid var(--blue-400); background:var(--blue-50);
+  padding:16px 24px; margin:24px 0; border-radius:0 8px 8px 0; font-size:15px;
+  color:var(--gray-700);
+}
+
+/* 图表容器 */
+.chart-container {
+  background:#fff; border-radius:12px; padding:32px 24px; margin:32px 0;
+  box-shadow:0 2px 16px rgba(0,0,0,0.05); overflow-x:auto;
+}
+.chart-container h4 { text-align:center; color:var(--blue-700); margin-bottom:20px; font-size:18px; }
+.chart-container svg { display:block; margin:0 auto; max-width:100%; }
+.chart-container canvas { display:block; margin:0 auto; max-width:100%; }
+
+/* 时间轴 */
+.timeline-svg { width:100%; }
+
+/* 步骤卡片 */
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; margin:32px 0; }
+.step {
+  background:#fff; border-radius:12px; padding:24px 20px; text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,0.05); border-top:4px solid var(--blue-500);
+  transition:transform 0.2s;
+}
+.step:hover { transform:translateY(-4px); }
+.step-num { font-size:36px; font-weight:800; color:var(--blue-200); }
+.step-title { font-size:16px; font-weight:700; color:var(--blue-800); margin:12px 0 8px; }
+.step-desc { font-size:13px; color:var(--gray-500); }
+
+/* Footer */
+.footer {
+  background:var(--blue-900); color:rgba(255,255,255,0.6); text-align:center;
+  padding:40px 24px; font-size:13px;
+}
+.footer strong { color:rgba(255,255,255,0.85); }
+
+/* 响应式 */
+@media (max-width:640px) {
+  .section { padding:40px 0; }
+  .cover { padding:48px 20px 60px; }
+  .compare-table,.data-table { font-size:13px; }
+  .compare-table th,.compare-table td,.data-table th,.data-table td { padding:8px 10px; }
+  .steps { grid-template-columns:1fr 1fr; }
+  .chart-container { padding:20px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 封面 ========== -->
+<div class="cover">
+  <div class="cover-content">
+    <div class="tag">研 究 报 告</div>
+    <h1>解析数字政府</h1>
+    <div class="divider"></div>
+    <p class="subtitle">从电子政务到数智治理的范式跃迁</p>
+    <div class="meta">生成日期：2026-07-06</div>
+  </div>
+</div>
+
+<!-- ========== 引言 ========== -->
+<div class="section">
+<div class="container">
+
+<h2 class="section-title">引言：什么是"数字政府"？</h2>
+
+<p>如果你在 20 年前问一位政府工作人员"你们单位的信息化做得怎么样"，他大概率会指向办公室里的电脑和打印机，告诉你"现在文件都在电脑上写了，不用手抄了"。但如果你今天再问同样的问题，答案可能完全不同——他可能会打开手机上的政务 App，向你展示如何用几分钟完成一项过去需要跑三四个窗口、盖五六个章才能办成的事。这背后折射的，正是从"电子政务"到"数字政府"的一场深刻变革。</p>
+
+<p>2025 年，党的二十届四中全会通过的《中共中央关于制定国民经济和社会发展第十五个五年规划的建议》明确提出<strong>"深入推进数字中国建设"</strong>，将数字政府列为国家治理现代化的关键支柱。同年底，国家数据局局长刘烈宏在署名文章《奋力谱写"十五五"数字中国建设新篇章》中进一步指出，要"找准数据工作在推进中国式现代化新征程中的历史定位"。这意味着，数字政府已不仅是技术部门的事，而是上升到国家治理顶层设计的核心议题。</p>
+
+<p>那么，究竟什么是"数字政府"？它与我们更常听到的"电子政务"又有什么不同？</p>
+
+<p><strong>电子政务 ≈ "把纸变成电"</strong>。它的核心任务是将政府内部的纸质文件、手工流程搬到电脑和网络上，实现办公自动化和信息数字化。你可以把它理解成政府给自己买了一套"高级文具"——打字更快了、存档更方便了、文件传递不用跑腿了。它本质上是一种<strong>工具升级</strong>：政府的组织架构、办事流程、决策逻辑并没有发生根本改变，只是执行手段从"手工"变成了"电子"。</p>
+
+<p><strong>数字政府 ≠ 电子政务的升级版，而是一场"范式革命"</strong>。它不以"把纸变成电"为终点，而是以<strong>数据</strong>为核心生产要素，重新设计政府的业务流程、组织结构和服务模式。打个比方：电子政务像是把马车的轮子换成橡胶轮胎——马车还是马车，但跑得更顺了；数字政府则像是直接发明了汽车——它不再依赖"马"这个动力源，而是用发动机（数据）驱动，从根本上改变了出行（治理）的方式。</p>
+
+<p>两者的关键区别可以通过下表直观对比：</p>
+
+<table class="compare-table">
+<thead><tr><th>维度</th><th>电子政务</th><th>数字政府</th></tr></thead>
+<tbody>
+<tr><td>核心理念</td><td>办公自动化、无纸化</td><td>数据驱动、整体协同、智能决策</td></tr>
+<tr><td>关注焦点</td><td>政府"内部"如何更高效地办事</td><td>政府"如何"更好地服务公众与企业</td></tr>
+<tr><td>技术角色</td><td>工具——提升既有流程的效率</td><td>引擎——重塑业务流程和治理逻辑</td></tr>
+<tr><td>组织结构</td><td>条块分割、部门各自建设</td><td>跨部门协同、平台化一体化</td></tr>
+<tr><td>数据定位</td><td>信息化的副产品</td><td>核心生产要素和治理资源</td></tr>
+<tr><td>典型特征</td><td>"政府上网"、网站发布信息</td><td>"一网通办"、"最多跑一次"、AI 辅助决策</td></tr>
+</tbody>
+</table>
+
+<p>由此不难理解：电子政务的关键词是"信息化"——让政府用上计算机和网络；数字政府的关键词则是"整体化、智能化、数据化"——让政府像有机生命体一样协同运转。如果说电子政务解决的是"效率问题"（怎样办得更快），数字政府解决的则是"范式问题"（怎样治理得更好）。</p>
+
+<p>正因如此，从全球范围来看，数字政府建设已成为衡量一个国家治理现代化水平的重要标尺。中国在这场治理范式变革中，经历了从追赶到并跑再到局部领跑的历程。接下来的三章，我们将沿着历史脉络、现实图景和未来方向三条线索，完整解读这场正在发生的"范式跃迁"。</p>
+
+</div>
+</div>
+
+<!-- ========== 第一章 ========== -->
+<div class="section">
+<div class="container">
+
+<h2 class="section-title">第一章：数字政府的演进脉络</h2>
+<p class="section-subtitle">如果把中国数字政府的建设历程比作一个人的成长，那么它大致经历了"婴儿学步（信息化）→ 少年长骨（系统化）→ 青年通络（协同化）→ 成年开智（智能化）"四个阶段。</p>
+
+<!-- ===== 图表1：数字政府演进时间轴 ===== -->
+<div class="chart-container">
+<h4>数字政府演进时间轴（1990s — 2025+）</h4>
+<svg viewBox="0 0 820 300" class="timeline-svg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="33%" stop-color="#2563eb"/>
+      <stop offset="66%" stop-color="#1e4d8c"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/></filter>
+  </defs>
+
+  <!-- 主轴线 -->
+  <line x1="60" y1="120" x2="780" y2="120" stroke="url(#lineGrad)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 节点1：萌芽期 -->
+  <circle cx="100" cy="120" r="16" fill="#93c5fd" stroke="#2563eb" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="40" y="20" width="140" height="50" rx="8" fill="#dbeafe"/>
+  <text x="110" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a5f">电子政务萌芽期</text>
+  <text x="110" y="58" text-anchor="middle" font-size="11" fill="#4b5563">1990s — 2001</text>
+  <text x="110" y="170" text-anchor="middle" font-size="11" fill="#6b7280">三金工程</text>
+  <text x="110" y="186" text-anchor="middle" font-size="11" fill="#6b7280">政府上网工程</text>
+  <line x1="110" y1="136" x2="110" y2="160" stroke="#93c5fd" stroke-width="1"/>
+
+  <!-- 节点2：发展期 -->
+  <circle cx="300" cy="120" r="16" fill="#60a5fa" stroke="#2563eb" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="230" y="20" width="140" height="50" rx="8" fill="#dbeafe"/>
+  <text x="300" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a5f">电子政务发展期</text>
+  <text x="300" y="58" text-anchor="middle" font-size="11" fill="#4b5563">2002 — 2016</text>
+  <text x="300" y="170" text-anchor="middle" font-size="11" fill="#6b7280">两网一站四库十二金</text>
+  <text x="300" y="186" text-anchor="middle" font-size="11" fill="#6b7280">行业信息化全面建设</text>
+  <line x1="300" y1="136" x2="300" y2="160" stroke="#60a5fa" stroke-width="1"/>
+
+  <!-- 节点3：改革期 -->
+  <circle cx="520" cy="120" r="16" fill="#3b82f6" stroke="#1e4d8c" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="440" y="20" width="160" height="50" rx="8" fill="#dbeafe"/>
+  <text x="520" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a5f">互联网+政务服务改革</text>
+  <text x="520" y="58" text-anchor="middle" font-size="11" fill="#4b5563">2015 — 2018</text>
+  <text x="520" y="170" text-anchor="middle" font-size="11" fill="#6b7280">最多跑一次 · 一网通办</text>
+  <text x="520" y="186" text-anchor="middle" font-size="11" fill="#6b7280">跨部门数据共享协同</text>
+  <line x1="520" y1="136" x2="520" y2="160" stroke="#3b82f6" stroke-width="1"/>
+
+  <!-- 节点4：起飞期 -->
+  <circle cx="720" cy="120" r="20" fill="#2563eb" stroke="#0a1628" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="645" y="20" width="150" height="50" rx="8" fill="#dbeafe"/>
+  <text x="720" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a5f">数字政府起飞期</text>
+  <text x="720" y="58" text-anchor="middle" font-size="11" fill="#4b5563">2019 — 至今</text>
+  <text x="720" y="170" text-anchor="middle" font-size="11" fill="#6b7280">十九届四中全会定调</text>
+  <text x="720" y="186" text-anchor="middle" font-size="11" fill="#6b7280">AI大模型深度融合</text>
+  <line x1="720" y1="140" x2="720" y2="160" stroke="#2563eb" stroke-width="1"/>
+
+  <!-- 阶段标签 -->
+  <text x="100" y="220" text-anchor="middle" font-size="13" font-weight="700" fill="#3b82f6">信息化</text>
+  <text x="300" y="220" text-anchor="middle" font-size="13" font-weight="700" fill="#2563eb">系统化</text>
+  <text x="520" y="220" text-anchor="middle" font-size="13" font-weight="700" fill="#1e4d8c">协同化</text>
+  <text x="720" y="220" text-anchor="middle" font-size="13" font-weight="700" fill="#0a1628">智能化</text>
+
+  <!-- 箭头标注 -->
+  <text x="200" y="270" text-anchor="middle" font-size="11" fill="#9ca3af">技术工具论</text>
+  <text x="620" y="270" text-anchor="middle" font-size="11" fill="#9ca3af">治理范式论</text>
+  <line x1="260" y1="264" x2="560" y2="264" stroke="#d1d5db" stroke-width="1" marker-end="url(#arrow)"/>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#d1d5db"/></marker></defs>
+</svg>
+</div>
+
+<h3>1.1 电子政务萌芽期（1990s—2001）：铺路架桥，让政府"触网"</h3>
+<p>上世纪 90 年代初，当互联网在全球刚刚兴起时，中国政府就开始意识到信息技术对国家治理的潜在价值。这一时期的核心任务是<strong>基础设施建设和办公自动化</strong>，关键词只有三个字：<strong>信息化</strong>。</p>
+<p>标志性事件是 1993 年启动的<strong>"三金工程"</strong>——<strong>金桥工程</strong>（国家公用经济信息通信网）、<strong>金卡工程</strong>（电子货币及银行卡应用）和<strong>金关工程</strong>（对外经贸信息化）。这三项工程虽然名字听起来像是"修桥、办卡、报关"，实际上是中国政府第一次系统性地将信息技术引入国民经济管理领域。</p>
+<p>1999 年，当时的国家经贸委和中国电信联合 40 多个部委发起<strong>"政府上网工程"</strong>，目标是推动各级政府在互联网上建立门户网站。到 2000 年底，以 gov.cn 域名注册的政府网站已近 3000 个。不过，当时的政府网站更像是一块"电子公告栏"——发布政策文件、领导讲话和工作动态，鲜有在线办事功能。如果用一句话概括：<strong>政府开始"上网"了，但还没有"在线"</strong>。</p>
+
+<h3>1.2 电子政务发展期（2002—2016）：立柱架梁，构建"十二金"体系</h3>
+<p>2002 年是一个关键转折年。这一年，国家信息化领导小组审议通过了<strong>《关于我国电子政务建设指导意见》</strong>（中办发 17 号文件），首次从国家层面系统规划了电子政务建设的顶层蓝图。文件提出<strong>"两网、一站、四库、十二金"</strong>的总体框架，标志着中国电子政务从"各自探索"进入"统一规划、全面建设"的阶段。</p>
+
+<div class="card">
+<div class="card-title">"两网、一站、四库、十二金"框架</div>
+<ul style="list-style:none;padding:0;margin:0;">
+<li style="padding:6px 0;">▸ <strong>两网</strong>：政务内网 + 政务外网（分别承载涉密与非涉密业务）</li>
+<li style="padding:6px 0;">▸ <strong>一站</strong>：政府门户网站（统一对外窗口）</li>
+<li style="padding:6px 0;">▸ <strong>四库</strong>：人口、法人单位、自然资源和空间地理、宏观经济四大基础数据库</li>
+<li style="padding:6px 0;">▸ <strong>十二金</strong>：金关、金税、金财、金审、金盾、金保、金农、金水、金质、金教、金卫、金旅等 12 个重点业务系统</li>
+</ul>
+</div>
+
+<p>这一阶段，"电子政务"一词高频出现在各类政策文件中，但建设的重心明显偏重于<strong>行业和部门内部的信息系统</strong>。成绩是显著的：到 2010 年前后，金税工程使税收征管效率发生质的飞跃，金盾工程支撑了社会治安的信息化防控。但问题也开始显现：<strong>"信息孤岛"和"数据烟囱"</strong>——各部门的系统互不联通，数据无法共享，百姓办一件事仍然要在不同窗口之间来回奔波。</p>
+
+<h3>1.3 "互联网+政务服务"改革期（2015—2018）：打通壁垒，让数据"跑起来"</h3>
+<p>2015 年，国务院发布<strong>《关于积极推进"互联网+"行动的指导意见》</strong>，首次将互联网思维系统引入政务服务领域。这一时期的标志性实践有两个：</p>
+<p><strong>浙江："最多跑一次"</strong>——2016 年底率先提出，核心逻辑是让数据代替人跑腿。到 2017 年底，事项覆盖率达 80% 以上。</p>
+<p><strong>上海："一网通办"</strong>——2018 年推出，将数千个审批和服务事项整合到统一在线平台，实现"进一扇门、办所有事"。</p>
+<p>这一阶段的关键转变在于：建设的重心从"政府内部办公"转向"对外服务体验"，从"各自为政"转向"协同作战"。数据不再只是各部门自己存着的"档案"，而是开始流动起来成为服务公众的"活水"。</p>
+
+<h3>1.4 数字政府确立与起飞期（2019 至今）：顶层定调，全面拥抱"数智化"</h3>
+<p>2019 年是具有历史转折意义的一年。当年 10 月，<strong>党的十九届四中全会</strong>通过了《中共中央关于坚持和完善中国特色社会主义制度、推进国家治理体系和治理能力现代化若干重大问题的决定》，<strong>首次在中央全会层面明确提出"推进数字政府建设"</strong>。</p>
+<p>2022 年 6 月，国务院印发<strong>《关于加强数字政府建设的指导意见》</strong>（国发〔2022〕14 号），这是中国数字政府建设领域首部国家级顶层设计文件，系统提出了"五大体系"框架。</p>
+<p>进入 2025 年，数字政府建设再次提速。10 月，中央网信办、国家发展改革委联合印发<strong>《政务领域人工智能大模型部署应用指引》</strong>，明确了 12 个应用场景并确立"辅助型"定位和"集约化"部署原则。这标志着中国数字政府建设正式从"数字化"迈入<strong>"数智化"</strong>（数字+智能）的新阶段。</p>
+
+</div>
+</div>
+
+<!-- ========== 第二章 ========== -->
+<div class="section">
+<div class="container">
+
+<h2 class="section-title">第二章：数字政府的建设蓝图与现状评估</h2>
+<p class="section-subtitle">顶层设计画了怎样的蓝图？实际建设到了什么水平？哪些地方走在前面？还存在哪些短板？</p>
+
+<h3>2.1 "五大体系"框架：数字政府的"人体构造"</h3>
+<p>2022 年 6 月，国务院印发的<strong>《关于加强数字政府建设的指导意见》</strong>系统提出了构建数字政府建设的<strong>"五大体系"</strong>。为了让这个相对抽象的政策框架更容易理解，我们可以把它比作一个人的身体构造：</p>
+
+<!-- ===== 图表2：五大体系架构图（人体比喻） ===== -->
+<div class="chart-container">
+<h4>五大体系架构图 —— "数字政府的有机体"</h4>
+<svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="brainGrad"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#0a1628"/></radialGradient>
+    <radialGradient id="heartGrad"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#7f1d1d"/></radialGradient>
+    <linearGradient id="limbGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#1e4d8c"/></linearGradient>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#93c5fd"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+    <filter id="softShadow"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.12"/></filter>
+  </defs>
+
+  <!-- 背景人体轮廓 -->
+  <ellipse cx="360" cy="260" rx="180" ry="210" fill="none" stroke="#dbeafe" stroke-width="1" stroke-dasharray="8 4" opacity="0.6"/>
+
+  <!-- 大脑（平台支撑） -->
+  <ellipse cx="360" cy="85" rx="72" ry="52" fill="url(#brainGrad)" filter="url(#softShadow)" opacity="0.92"/>
+  <text x="360" y="78" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">大脑</text>
+  <text x="360" y="98" text-anchor="middle" font-size="12" fill="#93c5fd">平台支撑体系</text>
+
+  <!-- 免疫系统（安全） -->
+  <path d="M 360 140 Q 440 180 440 240 Q 440 300 360 380 Q 280 300 280 240 Q 280 180 360 140Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 3" opacity="0.7"/>
+  <text x="480" y="255" font-size="12" font-weight="700" fill="#d97706">免疫系统</text>
+  <text x="480" y="272" font-size="10" fill="#b45309">安全保障体系</text>
+
+  <!-- 骨架（制度规则） -->
+  <line x1="260" y1="180" x2="460" y2="180" stroke="#6b7280" stroke-width="2.5" opacity="0.6"/>
+  <line x1="360" y1="180" x2="360" y2="440" stroke="#6b7280" stroke-width="2.5" opacity="0.6"/>
+  <line x1="260" y1="300" x2="460" y2="300" stroke="#6b7280" stroke-width="2" opacity="0.4"/>
+  <line x1="260" y1="400" x2="460" y2="400" stroke="#6b7280" stroke-width="2" opacity="0.4"/>
+  <text x="530" y="360" font-size="12" font-weight="700" fill="#4b5563">骨架</text>
+  <text x="530" y="377" font-size="10" fill="#6b7280">制度规则体系</text>
+
+  <!-- 血液（数据资源） -->
+  <path d="M 360 220 Q 340 250 360 280 Q 380 250 360 220Z" fill="#ef4444" opacity="0.8" filter="url(#softShadow)"/>
+  <text x="432" y="245" font-size="12" font-weight="700" fill="#dc2626">血液</text>
+  <text x="432" y="262" font-size="10" fill="#b91c1c">数据资源体系</text>
+
+  <!-- 四肢（履职能力） -->
+  <!-- 左臂 -->
+  <rect x="150" y="180" width="30" height="120" rx="15" fill="url(#limbGrad)" filter="url(#softShadow)" opacity="0.85"/>
+  <text x="165" y="235" text-anchor="middle" font-size="10" fill="#fff" font-weight="600" transform="rotate(-90,165,235)">左臂 · 经济调节</text>
+  <!-- 右臂 -->
+  <rect x="540" y="180" width="30" height="120" rx="15" fill="url(#limbGrad)" filter="url(#softShadow)" opacity="0.85"/>
+  <text x="555" y="235" text-anchor="middle" font-size="10" fill="#fff" font-weight="600" transform="rotate(90,555,235)">右臂 · 市场监管</text>
+  <!-- 左腿 -->
+  <rect x="270" y="420" width="28" height="80" rx="14" fill="url(#bodyGrad)" filter="url(#softShadow)" opacity="0.85"/>
+  <text x="284" y="455" text-anchor="middle" font-size="10" fill="#fff" font-weight="600" transform="rotate(-90,284,455)">左腿 · 社会管理</text>
+  <!-- 右腿 -->
+  <rect x="422" y="420" width="28" height="80" rx="14" fill="url(#bodyGrad)" filter="url(#softShadow)" opacity="0.85"/>
+  <text x="436" y="455" text-anchor="middle" font-size="10" fill="#fff" font-weight="600" transform="rotate(90,436,455)">右腿 · 公共服务</text>
+
+  <!-- 总标签 -->
+  <text x="360" y="478" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a5f">四肢 — 政府数字化履职能力体系</text>
+
+  <!-- 连接线示意 -->
+  <line x1="360" y1="137" x2="360" y2="175" stroke="#93c5fd" stroke-width="1.5" opacity="0.5"/>
+  <line x1="360" y1="280" x2="360" y2="300" stroke="#ef4444" stroke-width="1" opacity="0.4"/>
+
+  <!-- 图例说明 -->
+  <rect x="44" y="40" width="12" height="12" rx="6" fill="#2563eb"/>
+  <text x="62" y="51" font-size="10" fill="#4b5563">平台支撑</text>
+  <rect x="120" y="40" width="12" height="12" rx="2" fill="#f59e0b"/>
+  <text x="138" y="51" font-size="10" fill="#4b5563">安全保障</text>
+  <rect x="196" y="40" width="12" height="12" rx="2" fill="#6b7280"/>
+  <text x="214" y="51" font-size="10" fill="#4b5563">制度规则</text>
+  <rect x="272" y="40" width="12" height="12" rx="2" fill="#ef4444"/>
+  <text x="290" y="51" font-size="10" fill="#4b5563">数据资源</text>
+  <rect x="352" y="40" width="12" height="12" rx="2" fill="#60a5fa"/>
+  <text x="370" y="51" font-size="10" fill="#4b5563">履职能力</text>
+</svg>
+</div>
+
+<h3>2.2 发展现状：数据告诉你进度如何</h3>
+<p>2025 年底发布的<strong>《第七届（2025）数字政府建设风向指数评估报告》</strong>（国脉研究院联合北京大学公共政策研究中心），对全国 32 个省级单位、46 个推荐城市及 20 个中西部城市进行了系统评估。</p>
+
+<h4>2.2.1 整体成绩</h4>
+<p>全国数字政府<strong>应用成效达成度达 76.41%</strong>，省级层面<strong>总得分率为 72.35%</strong>。五大一级指标维度各领域发展并不均衡：</p>
+
+<table class="data-table">
+<thead><tr><th>一级指标</th><th>得分率</th><th>解读</th></tr></thead>
+<tbody>
+<tr><td>应用成效</td><td>78.21%</td><td>公众能感知到的服务改善最为明显</td></tr>
+<tr><td>数字履职</td><td>76.27%</td><td>政府内部数字化能力稳步提升</td></tr>
+<tr><td>运营环境</td><td>70.67%</td><td>安全和运维保障处于中等水平</td></tr>
+<tr><td>数智底座</td><td>65.64%</td><td>平台和数据基础有待夯实</td></tr>
+<tr><td>统筹管理</td><td>65.07%</td><td>顶层协调和制度配套是相对短板</td></tr>
+</tbody>
+</table>
+
+<!-- ===== 图表3：省级评估排名柱状图 ===== -->
+<div class="chart-container">
+<h4>2025年省级数字政府评估得分率（Top 6）</h4>
+<canvas id="barChart" width="720" height="360" style="max-width:100%;height:auto;"></canvas>
+</div>
+
+<h4>2.2.2 省域格局：浙沪京领跑，浙江七年蝉联榜首</h4>
+<p>在省级层面，<strong>浙江省、上海市、北京市</strong>的总体得分率均超过 85%，在全国数字政府建设中起到引领作用。其中，<strong>浙江省以 91.4% 的得分率位居全国首位，并且连续七年蝉联榜首</strong>——这一成绩的含金量极高，七年领跑意味着浙江的数字政府建设不是"一次性冲刺"，而是建立了持续领先的体制机制。</p>
+<p>紧随其后的是<strong>上海市</strong>和<strong>北京市</strong>，两者在"一网通办"和"接诉即办"等品牌服务上各自形成了独特优势。此外，南开大学 2025 年发布的"数智赋能政府治理评价指数"也印证了这一格局——北京、上海、杭州位列全国前三，长三角和珠三角城市群的协同优势显著。</p>
+
+<!-- ===== 图表4：五大一级指标得分率雷达图 ===== -->
+<div class="chart-container">
+<h4>五大一级指标得分率对比</h4>
+<canvas id="radarChart" width="560" height="460" style="max-width:100%;height:auto;"></canvas>
+</div>
+
+<h4>2.2.3 城市标杆</h4>
+<p>在市级层面，<strong>杭州、苏州、广州、深圳</strong>四大城市的得分率均超过 85%，形成了全国数字政府建设的"第一梯队"。评估报告指出，17.39% 的参评城市得分率超过 80%，82.61% 的城市得分率处于 60% 至 80% 之间，整体呈现"少数领跑、多数跟进"的态势。</p>
+<p>值得关注的是，<strong>西部城市正在加速追赶</strong>。成都和重庆分别位居南开大学"数智赋能政府治理指数"的第四和第六位，展现西部成渝双城经济圈的强劲势头。</p>
+
+<h4>2.2.4 服务能力：从"能办"到"好办"</h4>
+<p>在具体服务层面，全国一体化政务服务平台已基本建成，政务服务事项网上可办率大幅提升。以<strong>贵州省</strong>为例，其网上政务服务标准事项全程网办率已达<strong>100%</strong>，个人事项移动办率达<strong>90%</strong>，电子证照与纸质证照制发比例达<strong>90%</strong>。</p>
+
+<h4>2.2.5 不容回避的挑战</h4>
+<div class="card warm">
+<div class="card-title">当前面临的四大挑战</div>
+<ul style="list-style:none;padding:0;margin:0;font-size:14px;">
+<li style="padding:6px 0;">▸ <strong>数据孤岛尚未根除</strong>——垂直管理系统与地方平台之间的数据共享仍是最大难点</li>
+<li style="padding:6px 0;">▸ <strong>AI 应用层次尚浅</strong>——大模型在政务领域的应用主要集中在智能问答等浅层场景</li>
+<li style="padding:6px 0;">▸ <strong>安全与隐私新考验</strong>——数据越集中、系统越智能，安全风险敞口越大</li>
+<li style="padding:6px 0;">▸ <strong>区域数字鸿沟明显</strong>——东西部在数智底座、人才储备、财政投入等方面差距依然客观存在</li>
+</ul>
+</div>
+
+<h3>2.3 典型案例：标杆是怎样炼成的</h3>
+<div class="steps">
+  <div class="step">
+    <div class="step-num">01</div>
+    <div class="step-title">浙江</div>
+    <div class="step-desc">连续七年蝉联榜首（91.4%），"最多跑一次"→ 全省统一公共数据平台 → 城市大脑 → AI 辅助审批</div>
+  </div>
+  <div class="step">
+    <div class="step-num">02</div>
+    <div class="step-title">上海</div>
+    <div class="step-desc">"一网通办"接入3500+事项，日均办件40万+，从"能不能办"到"好不好办"</div>
+  </div>
+  <div class="step">
+    <div class="step-num">03</div>
+    <div class="step-title">北京</div>
+    <div class="step-desc">"接诉即办"→"未诉先办"，数据驱动超大城市精细化治理</div>
+  </div>
+  <div class="step">
+    <div class="step-num">04</div>
+    <div class="step-title">广东·广州</div>
+    <div class="step-desc">全国首个省级政务AI公共底座 + 政务AI智能体超市，抢占"AI+政务"制高点</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 第三章 ========== -->
+<div class="section">
+<div class="container">
+
+<h2 class="section-title">第三章：走向何方——"十五五"展望</h2>
+<p class="section-subtitle">"十五五"期间，数字政府建设将从"互联互通"向"数字赋能"跃升，从"政务服务"向"全域治理"拓展，从"数据管理"向"数据运营"转变，从"技术驱动"向"规则引领"深化。</p>
+
+<h3>3.1 AI 深度融合：大模型从"尝鲜"走向"标配"</h3>
+<p>如果要选出"十五五"期间数字政府建设中最大的变量，人工智能大模型当之无愧。2025 年 10 月，中央网信办、国家发展改革委联合印发了<strong>《政务领域人工智能大模型部署应用指引》</strong>，系统规划了四大领域<strong>12 个应用场景</strong>：</p>
+
+<table class="data-table">
+<thead><tr><th>领域</th><th>场景1</th><th>场景2</th><th>场景3</th><th>场景4</th></tr></thead>
+<tbody>
+<tr><td><strong>政务服务</strong></td><td>智能问答</td><td>辅助办理</td><td>政策直达快享</td><td>—</td></tr>
+<tr><td><strong>社会治理</strong></td><td>智能监测巡检</td><td>辅助执法监管</td><td>市场风险预测</td><td>—</td></tr>
+<tr><td><strong>机关办公</strong></td><td>辅助文书起草</td><td>资料检索</td><td>智能分办</td><td>—</td></tr>
+<tr><td><strong>辅助决策</strong></td><td>灾害预警</td><td>应急处置</td><td>政策评估</td><td>智能辅助评审</td></tr>
+</tbody>
+</table>
+
+<blockquote>
+<strong>"辅助型"定位</strong>：人工智能大模型在政务领域的角色是"副驾驶"而非"主驾驶"——它帮助人做出更明智的判断，但不替代人做最终决定。<strong>"集约化"部署</strong>：核心原则是"一地建设、多地多部门复用"，防止各地各部门一哄而上形成新的"模型孤岛"。
+</blockquote>
+
+<h3>3.2 数据要素驱动：让数据从"资源"变成"资产"</h3>
+<p>2024 年 9 月，中共中央办公厅、国务院办公厅印发<strong>《关于加快公共数据资源开发利用的意见》</strong>，这是中央层面首次专门针对公共数据开发利用出台的政策文件。随后，一系列配套文件相继出台，标志着公共数据资源开发利用<strong>"1+3"政策体系初步形成</strong>。</p>
+
+<div class="card">
+<div class="card-title">"1+3"公共数据政策体系</div>
+<ul style="list-style:none;padding:0;margin:0;">
+<li style="padding:6px 0;">▸ <strong>核心文件</strong>：《关于加快公共数据资源开发利用的意见》</li>
+<li style="padding:6px 0;">▸ <strong>配套一</strong>：《公共数据资源登记管理暂行办法》——解决"谁的数据"</li>
+<li style="padding:6px 0;">▸ <strong>配套二</strong>：《公共数据资源授权运营实施规范》——解决"怎么用"</li>
+<li style="padding:6px 0;">▸ <strong>配套三</strong>：《关于建立公共数据资源授权运营价格形成机制的通知》——解决"怎么分钱"</li>
+</ul>
+</div>
+
+<p>国家数据局局长刘烈宏在 2025 年 12 月的署名文章中明确了方向：要"深化数据要素市场化配置改革"，"深入实施'数据要素×'行动，以应用场景牵引，营造全社会'供数、用数'良好氛围"。公共数据授权运营将推动数据从<strong>"资源"变成"资产"</strong>——不只是政府自己用，而是成为全社会可以合规开发利用的新型生产要素。</p>
+
+<h3>3.3 制度与治理范式重构：从"能做"到"该怎么做"</h3>
+<p>在经历了以"能不能"（技术能力）为核心的快速发展之后，"十五五"期间数字政府建设将面临一个更艰难的命题：<strong>"该不该"和"怎么管"</strong>——也就是从"技术驱动"到"制度驱动"的范式跃迁。</p>
+
+<!-- ===== 图表5：未来"十五五"三维展望图 ===== -->
+<div class="chart-container">
+<h4>"十五五"数字政府建设三维展望</h4>
+<svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aiGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1e3a5f"/></linearGradient>
+    <linearGradient id="dataGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#78350f"/></linearGradient>
+    <linearGradient id="instGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#064e3b"/></linearGradient>
+  </defs>
+
+  <!-- 三个柱子 -->
+  <!-- AI 融合 -->
+  <rect x="72" y="120" width="160" height="240" rx="12" fill="url(#aiGrad)" opacity="0.92"/>
+  <text x="152" y="110" text-anchor="middle" font-size="18" font-weight="800" fill="#1e3a5f">AI 深度融合</text>
+  <text x="152" y="170" text-anchor="middle" font-size="12" fill="#fff">12大应用场景</text>
+  <text x="152" y="195" text-anchor="middle" font-size="12" fill="#dbeafe">政务服务 · 社会治理</text>
+  <text x="152" y="218" text-anchor="middle" font-size="12" fill="#dbeafe">机关办公 · 辅助决策</text>
+  <line x1="100" y1="240" x2="204" y2="240" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="152" y="268" text-anchor="middle" font-size="11" fill="#93c5fd">"辅助型"定位</text>
+  <text x="152" y="290" text-anchor="middle" font-size="11" fill="#93c5fd">集约化部署</text>
+  <text x="152" y="312" text-anchor="middle" font-size="11" fill="#93c5fd">广东AI公共底座</text>
+  <text x="152" y="334" text-anchor="middle" font-size="11" fill="#93c5fd">广州AI智能体超市</text>
+
+  <!-- 数据要素 -->
+  <rect x="280" y="160" width="160" height="200" rx="12" fill="url(#dataGrad)" opacity="0.92"/>
+  <text x="360" y="150" text-anchor="middle" font-size="18" font-weight="800" fill="#78350f">数据要素驱动</text>
+  <text x="360" y="210" text-anchor="middle" font-size="12" fill="#fff">"1+3"政策体系</text>
+  <text x="360" y="235" text-anchor="middle" font-size="12" fill="#fef3c7">公共数据授权运营</text>
+  <line x1="308" y1="258" x2="412" y2="258" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="360" y="286" text-anchor="middle" font-size="11" fill="#fcd34d">数据资源 → 数据资产</text>
+  <text x="360" y="308" text-anchor="middle" font-size="11" fill="#fcd34d">"数据要素×"行动</text>
+  <text x="360" y="330" text-anchor="middle" font-size="11" fill="#fcd34d">可信数据空间</text>
+
+  <!-- 制度重构 -->
+  <rect x="488" y="80" width="160" height="280" rx="12" fill="url(#instGrad)" opacity="0.92"/>
+  <text x="568" y="70" text-anchor="middle" font-size="18" font-weight="800" fill="#064e3b">制度范式重构</text>
+  <text x="568" y="130" text-anchor="middle" font-size="12" fill="#fff">技术驱动 → 制度驱动</text>
+  <text x="568" y="155" text-anchor="middle" font-size="12" fill="#d1fae5">责任归属 · 算法公平</text>
+  <text x="568" y="178" text-anchor="middle" font-size="12" fill="#d1fae5">数字鸿沟 · 数字权利</text>
+  <line x1="516" y1="200" x2="620" y2="200" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="568" y="228" text-anchor="middle" font-size="11" fill="#6ee7b7">防范"数字形式主义"</text>
+  <text x="568" y="250" text-anchor="middle" font-size="11" fill="#6ee7b7">算法透明与问责</text>
+  <text x="568" y="272" text-anchor="middle" font-size="11" fill="#6ee7b7">AI决策合法性</text>
+  <text x="568" y="294" text-anchor="middle" font-size="11" fill="#6ee7b7">公民数字权利保障</text>
+  <text x="568" y="316" text-anchor="middle" font-size="11" fill="#6ee7b7">政企新型合作规范</text>
+
+  <!-- 底部标签 -->
+  <text x="152" y="385" text-anchor="middle" font-size="12" fill="#1e3a5f" font-weight="600">效率引擎</text>
+  <text x="360" y="385" text-anchor="middle" font-size="12" fill="#78350f" font-weight="600">要素市场</text>
+  <text x="568" y="385" text-anchor="middle" font-size="12" fill="#064e3b" font-weight="600">治理基石</text>
+
+  <!-- 箭头连接 -->
+  <line x1="232" y1="300" x2="280" y2="300" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <line x1="440" y1="300" x2="488" y2="300" stroke="#d1d5db" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <defs><marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#d1d5db"/></marker></defs>
+</svg>
+</div>
+
+<p>全国数据工作会议明确提出，"十五五"期间要"推动数据安全由静态防护向流通保障、由分散建设向集约服务、由被动安全向主动合规转变"。当 AI 开始辅助执法监管、参与政策评估、甚至影响资源分配决策时，一系列此前只在学术讨论中出现的问题变成了现实挑战：责任归属、算法公平、数字鸿沟、"数字形式主义"。</p>
+
+<p>归根结底，数字政府建设的最大挑战从来不是技术本身——中国在 5G、云计算、人工智能等领域的技术能力已经位居全球前列。真正的难点在于：<strong>如何建立一套与数字时代相匹配的治理制度和治理伦理</strong>。</p>
+
+</div>
+</div>
+
+<!-- ========== 结语 ========== -->
+<div class="section">
+<div class="container">
+
+<h2 class="section-title">结语</h2>
+<p>回望中国数字政府建设三十余年的历程，从 1993 年"三金工程"的蹒跚起步，到 2025 年人工智能大模型在政务领域的全面布局，我们看到的不仅是一连串技术迭代和政策演进，更是一场从"工具理性"到"治理理性"的深层转型。</p>
+
+<p>这场转型的核心线索可以概括为<strong>三个"绝不是"</strong>：</p>
+
+<div class="card" style="margin-bottom:16px;">
+<strong>数字政府绝不是"加强版的电子政务"</strong>——电子政务的底层逻辑是"让既有流程跑得更快"，而数字政府的底层逻辑是"让治理本身变得更好"。
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+<strong>数字政府绝不是"技术的独角戏"</strong>——没有制度规则兜底，技术跑得越快，风险可能越大。
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+<strong>数字政府绝不是"做完就了事"的阶段性工程</strong>——它是一场没有终点的演进，解决了一批问题，新的问题又会浮现，而解决问题的过程本身，就是治理能力现代化的过程。
+</div>
+
+<p>展望 2030 年，按照国家顶层设计的构想，中国将<strong>基本建成整体协同、敏捷高效、智能精准、开放透明、公平普惠的数字政府</strong>。这 20 个字，每一个都有分量。"整体协同"意味着彻底打破数据孤岛；"敏捷高效"意味着政府对公众需求的响应从"天"缩短到"秒"；"智能精准"意味着 AI 辅助决策将成为常态；"开放透明"意味着政府数据、算法和决策过程接受社会监督；"公平普惠"则是最难也最重要的一项——它要求数字政府不是只服务"会上网的人"。</p>
+
+<p>从电子政务到数字政府，再到数智治理——这三个关键词，标记的不仅是中国政府信息化建设的三级跳，更是国家治理理念和治理能力的一场深刻革命。</p>
+
+<h4 style="margin-top:48px;">主要参考文献</h4>
+<ol style="color:var(--gray-500);font-size:13px;line-height:2.2;">
+<li>国务院，《关于加强数字政府建设的指导意见》（国发〔2022〕14 号），2022 年 6 月。</li>
+<li>中央网信办、国家发展改革委，《政务领域人工智能大模型部署应用指引》，2025 年 10 月。</li>
+<li>国务院，《关于积极推进"互联网+"行动的指导意见》（国发〔2015〕40 号），2015 年 7 月。</li>
+<li>国务院，《关于深入实施"人工智能+"行动的意见》（国发〔2025〕11 号），2025 年 5 月。</li>
+<li>中共中央办公厅、国务院办公厅，《关于加快公共数据资源开发利用的意见》，2024 年 9 月。</li>
+<li>国脉研究院、北京大学公共政策研究中心，《第七届（2025）数字政府建设风向指数评估报告》，2025 年 12 月。</li>
+<li>南开大学中国式现代化发展研究院，《2025 数智赋能政府治理评价指数》，2025 年 11 月。</li>
+<li>刘烈宏，《奋力谱写"十五五"数字中国建设新篇章》，国家数据局网站，2025 年 12 月 25 日。</li>
+<li>国家信息化领导小组，《关于我国电子政务建设指导意见》（中办发〔2002〕17 号），2002 年 8 月。</li>
+<li>党的十九届四中全会决定，2019 年 10 月。</li>
+<li>党的二十届四中全会建议，2025 年 10 月。</li>
+<li>国家发展改革委、国家数据局，公共数据资源开发利用三项配套文件，2025 年 1 月。</li>
+</ol>
+
+</div>
+</div>
+
+<!-- ========== Footer ========== -->
+<div class="footer">
+<p>本报告内容由 AI 生成，仅供参考。数据来源详见文末参考文献。</p>
+<p style="margin-top:8px;">生成日期：<strong>2026-07-06</strong></p>
+</div>
+
+<!-- ========== Canvas 图表脚本 ========== -->
+<script>
+(function(){
+  // ===== 柱状图：省级评估排名 =====
+  (function(){
+    var canvas = document.getElementById('barChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var pad = {top:40, right:40, bottom:60, left:60};
+    var pw = W - pad.left - pad.right;
+    var ph = H - pad.top - pad.bottom;
+
+    var labels = ['浙江','上海','北京','杭州','苏州','广州'];
+    var values = [91.4, 88.5, 87.2, 86.8, 85.5, 85.3];
+    var colors = ['#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe'];
+    var barW = pw / labels.length * 0.55;
+    var gap = pw / labels.length * 0.45;
+
+    // 背景网格
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    for(var i=0;i<=5;i++){
+      var y = pad.top + ph * (1 - i/5);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W-pad.right, y); ctx.stroke();
+      ctx.fillStyle = '#6b7280'; ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right'; ctx.fillText((i*20).toFixed(0)+'%', pad.left-10, y+4);
+    }
+
+    // 柱子和值
+    for(var i=0;i<labels.length;i++){
+      var x = pad.left + (pw/labels.length)*i + gap/2;
+      var bh = ph * (values[i]/100);
+      var y = pad.top + ph - bh;
+
+      // 渐变柱
+      var grad = ctx.createLinearGradient(x, y, x, pad.top+ph);
+      grad.addColorStop(0, colors[i]);
+      grad.addColorStop(1, colors[i].replace('fd','ee').replace('fb','f8'));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, bh, [6,6,0,0]);
+      ctx.fill();
+
+      // 值标签
+      ctx.fillStyle = '#1e3a5f'; ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(values[i].toFixed(1)+'%', x+barW/2, y-10);
+
+      // 底部标签
+      ctx.fillStyle = '#374151'; ctx.font = '13px sans-serif';
+      ctx.fillText(labels[i], x+barW/2, pad.top+ph+20);
+    }
+
+    // 轴线
+    ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top+ph); ctx.lineTo(W-pad.right, pad.top+ph); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top+ph); ctx.stroke();
+  })();
+
+  // ===== 雷达图：五大指标 =====
+  (function(){
+    var canvas = document.getElementById('radarChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var cx = W/2, cy = H/2 + 10, r = 170;
+
+    var labels = ['应用成效','数字履职','运营环境','数智底座','统筹管理'];
+    var values = [78.21, 76.27, 70.67, 65.64, 65.07];
+    var N = labels.length;
+
+    // 五边形网格
+    for(var level=1; level<=5; level++){
+      ctx.beginPath();
+      for(var i=0;i<N;i++){
+        var angle = Math.PI/2 + (2*Math.PI/N)*i;
+        var lr = r * (level/5);
+        var x = cx + lr * Math.cos(angle);
+        var y = cy - lr * Math.sin(angle);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = level===5 ? '#93c5fd' : '#e5e7eb';
+      ctx.lineWidth = level===5 ? 2 : 1;
+      ctx.fillStyle = level===1 ? '#eff6ff' : 'transparent';
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 轴线
+    for(var i=0;i<N;i++){
+      var angle = Math.PI/2 + (2*Math.PI/N)*i;
+      var ex = cx + (r+14) * Math.cos(angle);
+      var ey = cy - (r+14) * Math.sin(angle);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+r*Math.cos(angle), cy-r*Math.sin(angle));
+      ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1; ctx.stroke();
+
+      // 标签
+      ctx.fillStyle = '#1e3a5f'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(labels[i], ex, ey-4);
+
+      // 百分比标注
+      var vx = cx + (r+10) * Math.cos(angle);
+      var vy = cy - (r+10) * Math.sin(angle) + 22;
+      ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(values[i].toFixed(1)+'%', vx, vy);
+    }
+
+    // 数据区域
+    ctx.beginPath();
+    for(var i=0;i<N;i++){
+      var angle = Math.PI/2 + (2*Math.PI/N)*i;
+      var vr = r * (values[i]/100);
+      var x = cx + vr * Math.cos(angle);
+      var y = cy - vr * Math.sin(angle);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(37,99,235,0.18)';
+    ctx.fill();
+    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // 数据点
+    for(var i=0;i<N;i++){
+      var angle = Math.PI/2 + (2*Math.PI/N)*i;
+      var vr = r * (values[i]/100);
+      var x = cx + vr * Math.cos(angle);
+      var y = cy - vr * Math.sin(angle);
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, 2*Math.PI);
+      ctx.fillStyle = '#2563eb'; ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    }
+  })();
+})();
+</script>
+</body>
+</html>
