@@ -12,8 +12,11 @@ export async function getStaticPaths() {
     try {
       const htmlPath = path.join(process.cwd(), 'public', 'daily', `${entry.slug}.html`);
       const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
+      // 提取 <head> 中的 <style> 块（报告自带样式），与 <body> 一并注入
+      const styles = (fullHtml.match(/<style[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
       const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      htmlContent = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+      const body = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+      htmlContent = (styles ? styles + '\n' : '') + body;
     } catch (e) {
       // 无同名 HTML，走 Markdown 渲染
     }
@@ -41,7 +44,9 @@ const { title, description, pubDate, source, fullImage, tags, Content, htmlConte
   <DetailLayout title={title} description={description} fullImage={fullImage} />
 ) : htmlContent ? (
   <DetailLayout title={title} description={description}>
-    <div class="prose-kyzz daily-html-report" set:html={htmlContent} />
+    {/* ECharts 等外部依赖：用 is:inline 保证原样注入，先于报告内联脚本加载 */}
+    <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <div class="prose-kyzz daily-html-report px-4 sm:px-6" set:html={htmlContent} />
     <footer class="mt-12 pt-8 border-t border-space-500/50">
       <div class="flex justify-center">
         <a
