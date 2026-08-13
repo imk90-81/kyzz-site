@@ -1,12 +1,23 @@
 ---
 import { getCollection, render } from 'astro:content';
+import fs from 'fs';
+import path from 'path';
 import DailyLayout from '../../layouts/DailyLayout.astro';
 import DetailLayout from '../../layouts/DetailLayout.astro';
 
 export async function getStaticPaths() {
   const dailyEntries = await getCollection('daily', ({ data }) => !data.draft);
   return Promise.all(dailyEntries.map(async entry => {
-    const { Content } = await render(entry);
+    let htmlContent = '';
+    try {
+      const htmlPath = path.join(process.cwd(), 'public', 'daily', `${entry.slug}.html`);
+      const fullHtml = fs.readFileSync(htmlPath, 'utf-8');
+      const bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      htmlContent = bodyMatch ? bodyMatch[1].trim() : fullHtml.trim();
+    } catch (e) {
+      // 无同名 HTML，走 Markdown 渲染
+    }
+    const { Content } = htmlContent ? { Content: null } : await render(entry);
     return {
       params: { slug: entry.slug },
       props: {
@@ -15,19 +26,38 @@ export async function getStaticPaths() {
         pubDate: entry.data.pubDate,
         source: entry.data.source,
         fullImage: entry.data.fullImage || undefined,
+        tags: entry.data.tags || [],
         Content,
+        htmlContent,
       },
     };
   }));
 }
 
-const { title, description, pubDate, source, fullImage, Content } = Astro.props;
+const { title, description, pubDate, source, fullImage, tags, Content, htmlContent } = Astro.props;
 ---
 
 {fullImage ? (
   <DetailLayout title={title} description={description} fullImage={fullImage} />
+) : htmlContent ? (
+  <DetailLayout title={title} description={description}>
+    <div class="prose-kyzz daily-html-report" set:html={htmlContent} />
+    <footer class="mt-12 pt-8 border-t border-space-500/50">
+      <div class="flex justify-center">
+        <a
+          href="/daily"
+          class="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-cyber-400 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          返回每日动态列表
+        </a>
+      </div>
+    </footer>
+  </DetailLayout>
 ) : (
-  <DailyLayout title={title} description={description} pubDate={pubDate} source={source}>
+  <DailyLayout title={title} description={description} pubDate={pubDate} source={source} tags={tags}>
     <Content />
   </DailyLayout>
 )}

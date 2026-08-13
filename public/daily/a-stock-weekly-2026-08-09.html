@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A股每周动态 · 2026-08-10</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --line:#30363d; --txt:#e6edf3; --sub:#8b949e;
+    --up:#f0616d; --down:#3fb950; --accent:#58a6ff; --gold:#e3b341;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--txt);line-height:1.6;padding:24px}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{text-align:center;padding:18px 0 26px;border-bottom:1px solid var(--line);margin-bottom:26px}
+  header h1{font-size:26px;letter-spacing:1px}
+  header p{color:var(--sub);font-size:13px;margin-top:8px}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
+  .summary .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .summary .box h3{font-size:13px;color:var(--accent);margin-bottom:8px}
+  .summary .box p{font-size:13px;color:var(--sub)}
+  .section-title{font-size:18px;margin:30px 0 16px;padding-left:10px;border-left:4px solid var(--accent)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .tag{display:inline-block;background:rgba(88,166,255,.15);color:var(--accent);
+    font-size:11px;padding:2px 8px;border-radius:6px;margin-bottom:8px}
+  .card h4{font-size:15px;margin-bottom:6px}
+  .card .ev{font-size:13px;color:var(--txt);margin-bottom:6px}
+  .card .why{font-size:12.5px;color:var(--sub)}
+  .chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .chart h4{font-size:14px;margin:2px 4px 10px;color:var(--sub)}
+  .chart .ec{width:100%;height:320px}
+  .full{grid-column:1 / -1}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--sub);font-size:12px;text-align:center}
+  @media(max-width:820px){.summary,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📈 A股每周动态</h1>
+    <p>覆盖区间 2026-08-03 ~ 2026-08-09 ｜ 编制 autoRobo ｜ 数据截至 2026-08-10 08:00</p>
+  </header>
+
+  <div class="summary">
+    <div class="box">
+      <h3>🟢 A股情绪</h3>
+      <p>全A周涨 <b style="color:var(--up)">+5.37%</b>，小盘成长领涨，沪指收复3900。超跌反弹 + 风格再平衡，但个股分化明显。</p>
+    </div>
+    <div class="box">
+      <h3>🌍 全球风向</h3>
+      <p>美7月非农转负，<b style="color:var(--gold)">9月降息预期</b>升温，标普500创历史新高，黄金站上4400美元。</p>
+    </div>
+    <div class="box">
+      <h3>🤖 结构主线</h3>
+      <p>硬科技IPO加速（宇树/长鑫），中报验证期开启，AI / 半导体 / 创新药三条景气主线受关注。</p>
+    </div>
+  </div>
+
+  <div class="section-title">当周重点新闻（10条）</div>
+  <div class="grid">
+    <div class="card"><span class="tag">A股</span><h4>1. 周度放量反弹，小盘成长领涨</h4>
+      <div class="ev">全A +5.37%，中证1000 +8.54%、中证2000 +9.83%、创业板指 +6.55%，沪指 +2.81%。</div>
+      <div class="why">超跌修复 + 风格再平衡；"指数回来了、账户未必回来"，分化待验证。</div></div>
+    <div class="card"><span class="tag">IPO</span><h4>2. 宇树科技8/10申购</h4>
+      <div class="ev">发行价150.80元，PE 219倍，市值约610亿，受理到申购不到5个月，年内最快IPO。</div>
+      <div class="why">"人形机器人第一股"；长鑫/燧原/蓝箭/DeepSeek排队，硬科技投融资提速。</div></div>
+    <div class="card"><span class="tag">半导体</span><h4>3. 长鑫科技纳入MSCI</h4>
+      <div class="ev">8/10正式纳入 MSCI 中国全股票指数。</div>
+      <div class="why">存储芯片自主化标杆获国际认可，半导体产业链关注度提升。</div></div>
+    <div class="card"><span class="tag">宏观</span><h4>4. 美国非农转负，降息升温</h4>
+      <div class="ev">7月非农为负；标普500收盘创历史新高 7757.64（+0.62%），纳指 +1.30%。</div>
+      <div class="why">全球流动性拐点定价，美股光模块龙头业绩将披露。</div></div>
+    <div class="card"><span class="tag">商品</span><h4>5. 黄金站上4400美元</h4>
+      <div class="ev">COMEX黄金 +2.37% 报4401.30，白银 +3.56% 报63.80。</div>
+      <div class="why">避险 + 降息双驱动，金/铜等有色价格修复逻辑强化。</div></div>
+    <div class="card"><span class="tag">地缘</span><h4>6. 美伊处"博弈中段"</h4>
+      <div class="ev">特朗普称"低调处理"伊朗；WTI 78.18（+1.15%）、布伦特 83.55（+1.29%）。</div>
+      <div class="why">霍尔木兹风险溢价仍在，能源与通胀传导需跟踪。</div></div>
+    <div class="card"><span class="tag">国内</span><h4>7. 7月CPI +0.5%</h4>
+      <div class="ev">CPI同比 +0.5%；7月金融数据本周公布。</div>
+      <div class="why">通胀温和打开政策空间，金融数据验证信用扩张成色。</div></div>
+    <div class="card"><span class="tag">地产</span><h4>8. 北京优化楼市政策</h4>
+      <div class="ev">非京籍家庭购房社保/个税缴纳年限下调至1年。</div>
+      <div class="why">核心城市需求端松动信号，地产链修复预期升温。</div></div>
+    <div class="card"><span class="tag">策略</span><h4>9. 券商：中报验证期</h4>
+      <div class="ev">十大券商看降波筑底，AI"四步走"重拾强势，关注创新药/CXO、电力设备、有色。</div>
+      <div class="why">第二波行情取决于中报业绩兑现 + 流动性配合。</div></div>
+    <div class="card"><span class="tag">财报</span><h4>10. 财报密集 + 13F截止</h4>
+      <div class="ev">腾讯/京东/茅台/中移动/中芯国际发中报；SEC 13F 8/14截止披露。</div>
+      <div class="why">权重股业绩定调指数，机构持仓揭示下一阶段风向。</div></div>
+  </div>
+
+  <div class="section-title">数据可视化</div>
+  <div class="grid">
+    <div class="chart"><h4>A股主要宽基周涨跌幅（%）</h4><div id="c1" class="ec"></div></div>
+    <div class="chart"><h4>全球股指（8/7收盘 & 周涨跌 %）</h4><div id="c2" class="ec"></div></div>
+    <div class="chart"><h4>大宗商品周涨跌幅（%）</h4><div id="c3" class="ec"></div></div>
+    <div class="chart"><h4>当周关注主线热度</h4><div id="c4" class="ec"></div></div>
+  </div>
+
+  <footer>
+    本报告为公开市场资讯的自动整理与学习笔记，不构成任何投资建议或荐股服务。市场有风险，决策需独立判断并自行承担后果。
+  </footer>
+</div>
+
+<script>
+const up='#f0616d', down='#3fb950', accent='#58a6ff', gold='#e3b341';
+function bar(id, cat, val, color, unit){
+  const c=echarts.init(document.getElementById(id),'dark');
+  c.setOption({
+    backgroundColor:'transparent',
+    grid:{left:60,right:24,top:20,bottom:40},
+    tooltip:{trigger:'axis',valueFormatter:v=>v+unit},
+    xAxis:{type:'value',axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}},
+    yAxis:{type:'category',data:cat,axisLabel:{color:'#c9d1d9'},axisLine:{lineStyle:{color:'#30363d'}}},
+    series:[{type:'bar',data:val.map(v=>({value:v,itemStyle:{color:v>=0?up:'#3fb950'}})),
+      label:{show:true,position:'right',color:'#c9d1d9',formatter:p=>p.value+unit},
+      barWidth:'55%'}]
+  });
+  window.addEventListener('resize',()=>c.resize());
+}
+bar('c1',['中证2000','中证1000','创业板指','全A','深证成指','上证综指','科创50'],
+            [9.83,8.54,6.55,5.37,5.39,2.81,6.0], up,'%');
+bar('c2',['纳指','标普500','道指'],[1.30,0.62,0.28], up,'%');
+
+const c3=echarts.init(document.getElementById('c3'),'dark');
+c3.setOption({
+  backgroundColor:'transparent',
+  grid:{left:60,right:24,top:20,bottom:40},
+  tooltip:{trigger:'axis',valueFormatter:v=>v+'%'},
+  xAxis:{type:'value',axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}},
+  yAxis:{type:'category',data:['白银','黄金','布伦特','WTI'],axisLabel:{color:'#c9d1d9'}},
+  series:[{type:'bar',data:[{value:3.56,itemStyle:{color:gold}},{value:2.37,itemStyle:{color:gold}},
+    {value:1.29,itemStyle:{color:down}},{value:1.15,itemStyle:{color:down}}],
+    label:{show:true,position:'right',color:'#c9d1d9',formatter:p=>p.value+'%'},barWidth:'55%'}]
+});
+window.addEventListener('resize',()=>c3.resize());
+
+const c4=echarts.init(document.getElementById('c4'),'dark');
+c4.setOption({
+  backgroundColor:'transparent',
+  tooltip:{},
+  radar:{indicator:[
+    {name:'AI/半导体',max:100},{name:'创新药/CXO',max:100},{name:'电力设备出海',max:100},
+    {name:'有色金属',max:100},{name:'机器人',max:100},{name:'地产链',max:100}],
+    axisName:{color:'#c9d1d9'},splitLine:{lineStyle:{color:'#30363d'}},
+    splitArea:{areaStyle:{color:['#161b22','#0d1117']}}},
+  series:[{type:'radar',data:[{value:[95,80,75,78,85,60],
+    areaStyle:{color:'rgba(88,166,255,.25)'},lineStyle:{color:accent},itemStyle:{color:accent}}]}]
+});
+window.addEventListener('resize',()=>c4.resize());
+</script>
+</body>
+</html>
