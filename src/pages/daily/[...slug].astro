@@ -44,8 +44,9 @@ const { title, description, pubDate, source, fullImage, tags, Content, htmlConte
   <DetailLayout title={title} description={description} fullImage={fullImage} />
 ) : htmlContent ? (
   <DetailLayout title={title} description={description}>
-    {/* ECharts 等外部依赖：用 is:inline 保证原样注入，先于报告内联脚本加载 */}
+    {/* 外部图表库依赖：用 is:inline 保证原样注入，先于报告内联脚本加载 */}
     <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <div class="prose-kyzz daily-html-report px-4 sm:px-6" set:html={htmlContent} />
     <footer class="mt-12 pt-8 border-t border-space-500/50">
       <div class="flex justify-center">

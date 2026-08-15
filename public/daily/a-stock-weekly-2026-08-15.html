@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每周A股动态 · 2026-08-15</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --card2:#1c2330; --line:#2a3340;
+    --txt:#e6edf3; --sub:#9aa7b4; --up:#ef4d4d; --down:#21ba72;
+    --accent:#4f8cff; --gold:#e0a82e; --purple:#9b6dff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;padding:24px}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+  h1{font-size:26px;letter-spacing:1px}
+  .meta{color:var(--sub);font-size:13px;margin-top:6px}
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:20px 0}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 12px;text-align:center}
+  .kpi .v{font-size:20px;font-weight:700}
+  .kpi .l{font-size:11px;color:var(--sub);margin-top:4px}
+  .up{color:var(--up)} .down{color:var(--down)}
+  section{margin:26px 0}
+  h2{font-size:18px;border-left:4px solid var(--accent);padding-left:10px;margin-bottom:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .chartbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .chartbox h3{font-size:14px;margin-bottom:10px;color:var(--sub);font-weight:600}
+  .news{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative}
+  .item .num{position:absolute;top:10px;right:14px;font-size:34px;font-weight:800;color:#21262d}
+  .item h4{font-size:15px;margin-bottom:6px;padding-right:40px;color:var(--accent)}
+  .item .tag{display:inline-block;font-size:11px;background:var(--card2);color:var(--sub);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+  .item p{font-size:13px;color:var(--txt)}
+  .item .why{font-size:12.5px;color:var(--sub);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .item .why b{color:var(--gold)}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border-radius:12px;overflow:hidden}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{background:var(--card2);color:var(--sub);font-weight:600}
+  .foot{color:var(--sub);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2,.news{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>📈 每周A股动态</h1>
+  <div class="meta">报告周期：2026-08-10（周一）～ 2026-08-14（周五） ｜ 生成时间：2026-08-15 ｜ 共筛选 10 条核心要闻</div>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">3927.18</div><div class="l">上证指数 (周 -1.0%)</div></div>
+  <div class="kpi"><div class="v">14354.31</div><div class="l">深证成指 (+0.26%)</div></div>
+  <div class="kpi"><div class="v">6.7456</div><div class="l">在岸人民币/美元</div></div>
+  <div class="kpi"><div class="v">99.67</div><div class="l">美元指数 (-0.3%)</div></div>
+  <div class="kpi"><div class="v">2.63万亿</div><div class="l">A股融资余额</div></div>
+  <div class="kpi"><div class="v">3.54万亿</div><div class="l">长鑫科技市值</div></div>
+</div>
+
+<section>
+  <h2>一、本周关键数据概览</h2>
+  <div class="grid2">
+    <div class="chartbox"><h3>① 长鑫科技登顶中国市值第一（亿元 RMB）</h3><canvas id="c1"></canvas></div>
+    <div class="chartbox"><h3>② AI算力龙头中报业绩增速（同比 %）</h3><canvas id="c2"></canvas></div>
+  </div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="chartbox"><h3>③ 人民币兑美元重回"6区间"</h3><canvas id="c3"></canvas></div>
+    <div class="chartbox"><h3>④ 全球资产一周方向（示意）</h3><canvas id="c4"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <h2>二、本周核心要闻（8-10条）</h2>
+  <div class="news">
+
+    <div class="item"><span class="num">1</span>
+      <span class="tag">半导体 / 存储</span>
+      <h4>长鑫科技登顶中国市值第一</h4>
+      <p>8/13 长鑫科技（688825）收跌1.2%报52.88元，但总市值约3.54万亿元，超越腾讯控股（约3.45万亿RMB）成中国最大上市公司。7/27登陆科创板，发行价8.66元，首日+465%，单日成交1412亿创A股纪录，募资579亿为科创板最大IPO。</p>
+      <div class="why"><b>关注：</b>国产存储+AI算力需求主线确立，为科技板块提供新估值锚；DRAM国产化进入兑现期。</div>
+    </div>
+
+    <div class="item"><span class="num">2</span>
+      <span class="tag">AI算力 / 中报</span>
+      <h4>AI算力产业链中报集中爆发</h4>
+      <p>海光信息H1营收90.99亿(+66.5%)、净利17.98亿(+49.7%)；寒武纪营收+108%、净利+122.6%、毛利率>55%；中芯国际Q2营收破30亿美元、净利近4倍；华虹Q2净利+386%。AI算力链预喜率近70%。</p>
+      <div class="why"><b>关注：</b>业绩兑现验证AI叙事，"科技成长+周期修复"双轮驱动，中报期"业绩为王"。</div>
+    </div>
+
+    <div class="item"><span class="num">3</span>
+      <span class="tag">宏观 / 流动性</span>
+      <h4>央行万亿买断式逆回购等额续作</h4>
+      <p>8/14 央行开展1万亿元6个月期买断式逆回购，等额续作当日到期1万亿；连续三日7天逆回购"零操作"净回笼，分析指隔夜逆回购或逐步替代7天品种成核心短端工具。</p>
+      <div class="why"><b>关注：</b>流动性总量呵护但边际收敛，关注短端政策工具框架切换对资金利率的影响。</div>
+    </div>
+
+    <div class="item"><span class="num">4</span>
+      <span class="tag">汇率 / 海外</span>
+      <h4>人民币重回6区间，美元走弱</h4>
+      <p>8/13 在岸人民币收6.7456、离岸6.7464，中间价6.7888；美元指数8/14跌0.3%至99.667。美联储9月降息预期升温，美元降息周期预期推动非美货币走强。</p>
+      <div class="why"><b>关注：</b>人民币资产吸引力提升，利好北向资金与外资风险偏好，进口/出行成本下降。</div>
+    </div>
+
+    <div class="item"><span class="num">5</span>
+      <span class="tag">消费 / 白酒</span>
+      <h4>贵州茅台上调飞天等零售价</h4>
+      <p>8/8 茅台宣布上调线下自营店飞天/五星/马年生肖(经典版)/精品零售价至1753/1743/1951/2410元/瓶，并同步放开散客购酒权限。</p>
+      <div class="why"><b>关注：</b>高端白酒龙头主动挺价，释放消费企稳与渠道管控信号，观察批价传导。</div>
+    </div>
+
+    <div class="item"><span class="num">6</span>
+      <span class="tag">医药 / 创新药</span>
+      <h4>医药·CRO·创新药全线爆发</h4>
+      <p>8/7 医药ETF涨超3.6%、生物科技ETF+4.5%，百济神州上调营收预测，凯莱英涨停；CRO百花医药6连板。港股医药同步走强，港股医药ETF平安涨近5%。</p>
+      <div class="why"><b>关注：</b>业绩兑现+估值修复共振，CXO/创新药板块或延续修复，关注出海订单。</div>
+    </div>
+
+    <div class="item"><span class="num">7</span>
+      <span class="tag">资金面 / 杠杆</span>
+      <h4>A股两融站上2.6万亿，成交高位</h4>
+      <p>截至8/11 两市融资余额26295.92亿(+12.99亿)；全市场单日成交额多次超2万亿，杠杆资金温和入场，中小盘风格延续修复（中证1000增强ETF连续净申购）。</p>
+      <div class="why"><b>关注：</b>情绪活跃但需警惕集中度与获利盘；成交"新常态"支撑板块轮动。</div>
+    </div>
+
+    <div class="item"><span class="num">8</span>
+      <span class="tag">商品 / 能源</span>
+      <h4>成品油年内第五次下调</h4>
+      <p>8/14 24时调价窗口开启，因国际原油震荡下行，预计国内成品油下调约0.15元/升，为年内第五次下调。</p>
+      <div class="why"><b>关注：</b>原油供需偏弱+美元走弱，利好航空/化工下游，压制油气开采上游利润。</div>
+    </div>
+
+    <div class="item"><span class="num">9</span>
+      <span class="tag">政策 / 新质生产力</span>
+      <h4>安全应急装备"十五五"规划</h4>
+      <p>安全应急装备产业发展"十五五"规划发布，目标到2030年产业规模、技术水平、产品质量、应用深度显著提升，重点领域产业规模达1.4万亿元。</p>
+      <div class="why"><b>关注：</b>政策催化新质生产力细分赛道，关注专用设备、传感器、应急信息化标的。</div>
+    </div>
+
+    <div class="item"><span class="num">10</span>
+      <span class="tag">全球 / 风险偏好</span>
+      <h4>全球Risk-On延续，降息交易主导</h4>
+      <p>连续第二周Risk-On：弱于预期的美就业数据+美联储偏鸽表态推动美股上涨、黄金债券走高、原油回落；苹果8/11被曝测试长鑫(CXMT)内存芯片应对AI供应短缺。</p>
+      <div class="why"><b>关注：</b>全球流动性预期转向宽松，支撑新兴市场与科技股；半导体国产链获国际背书。</div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>三、本周要闻主题分布</h2>
+  <div class="grid2">
+    <div class="chartbox"><h3>⑤ 要闻按主题分类</h3><canvas id="c5"></canvas></div>
+    <div class="chartbox"><h3>⑥ A股融资余额与成交热度</h3><canvas id="c6"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <h2>四、本周关键数据表</h2>
+  <table>
+    <tr><th>指标</th><th>最新值</th><th>变动 / 说明</th></tr>
+    <tr><td>上证指数</td><td>3927.18</td><td>8/14 收盘 +0.01%；周环比约 -1.0%</td></tr>
+    <tr><td>深证成指</td><td>14354.31</td><td>8/14 收盘 +0.45%；周环比 +0.26%</td></tr>
+    <tr><td>创业板指</td><td>≈3537</td><td>8/10 收3537.21（-0.73%），周中震荡</td></tr>
+    <tr><td>在岸人民币/美元</td><td>6.7456</td><td>8/13 收盘，重回"6区间"</td></tr>
+    <tr><td>美元指数</td><td>99.667</td><td>8/14 -0.3%，降息预期压制</td></tr>
+    <tr><td>A股融资余额</td><td>26295.92亿</td><td>8/11，周增约13亿</td></tr>
+    <tr><td>长鑫科技市值</td><td>35367亿</td><td>超腾讯成中国第一（8/13）</td></tr>
+    <tr><td>6个月买断式逆回购</td><td>10000亿</td><td>8/14 等额续作</td></tr>
+    <tr><td>社会融资存量(7月末)</td><td>463.27万亿</td><td>同比 +7.4%（央行8/14）</td></tr>
+  </table>
+</section>
+
+<div class="foot">
+  数据来源：东方财富、腾讯财经、央视财经、财联社、央行、中国外汇交易中心、Decision Moose 等公开资讯整理。
+  本报告为公开市场资讯自动整理，不构成任何投资建议。市场有风险，决策需独立判断。
+</div>
+</div>
+
+<script>
+const C={up:'#ef4d4d',down:'#21ba72',accent:'#4f8cff',gold:'#e0a82e',purple:'#9b6dff',txt:'#9aa7b4'};
+Chart.defaults.color=C.txt; Chart.defaults.borderColor='#2a3340'; Chart.defaults.font.family='PingFang SC, Microsoft YaHei, sans-serif';
+
+new Chart(c1,{type:'bar',data:{labels:['长鑫科技','腾讯控股(折算RMB)'],datasets:[{label:'总市值(亿元)',data:[35367,34450],backgroundColor:[C.accent,'#6b7785'],borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>(v/10000).toFixed(1)+'万亿'}}}}});
+
+new Chart(c2,{type:'bar',data:{labels:['海光信息(净利)','寒武纪(净利)','中芯国际(单季净利)','华虹(单季净利)'],datasets:[{label:'同比增速 %',data:[49.7,122.6,390,386],backgroundColor:[C.purple,C.accent,C.gold,C.down],borderRadius:6}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+
+new Chart(c3,{type:'line',data:{labels:['8/1','8/7','8/13(中间价)','8/13(在岸)'],datasets:[
+  {label:'人民币/美元(数值越低越强)',data:[6.80,6.7904,6.7888,6.7456],borderColor:C.accent,backgroundColor:'rgba(79,140,255,.15)',fill:true,tension:.3,pointRadius:5}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{reverse:true,ticks:{callback:v=>v.toFixed(3)}},x:{grid:{display:false}}}}});
+
+new Chart(c4,{type:'bar',data:{labels:['美股','黄金','美债','新兴市场','原油','美元'],datasets:[{label:'周方向(示意)',data:[1.2,0.8,0.5,0.9,-2.5,-0.3],backgroundColor:[C.down,C.gold,C.accent,C.purple,C.up,'#6b7785'],borderRadius:6}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+
+new Chart(c5,{type:'doughnut',data:{labels:['科技/半导体','宏观流动性','汇率/海外','消费','医药','商品/能源','政策','全球'],datasets:[{data:[2,1,1,1,1,1,1,1],backgroundColor:[C.accent,C.gold,C.purple,C.down,C.up,'#6b7785',C.gold,'#8893a0'],borderColor:'#161b22',borderWidth:2}]},options:{plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}}}}});
+
+new Chart(c6,{type:'bar',data:{labels:['融资余额(万亿)','单日成交(万亿,峰值)'],datasets:[{label:'万亿',data:[2.63,2.3],backgroundColor:[C.accent,C.gold],borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'万亿'}}}}});
+</script>
+</body>
+</html>
