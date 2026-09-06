@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>每周 A 股动态｜2026-08-31 ~ 2026-09-04</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1420; --card:#171e2e; --card2:#1d2638; --line:#2a3548;
+    --txt:#e8edf6; --sub:#9aa7bd; --up:#ef4d56; --down:#1fb87a;
+    --acc:#4d8dff; --warn:#f5a623; --gold:#d4af37;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;padding:24px 16px 60px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{text-align:center;padding:20px 0 8px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  header h1{font-size:26px;font-weight:700;letter-spacing:.5px}
+  header .meta{color:var(--sub);font-size:13px;margin-top:6px}
+  h2{font-size:19px;margin:30px 0 14px;padding-left:10px;border-left:4px solid var(--acc)}
+  .grid{display:grid;gap:14px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .l{color:var(--sub);font-size:12px}
+  .kpi .v{font-size:22px;font-weight:700;margin-top:4px}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .chart-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .chart-box h3{font-size:15px;margin-bottom:10px;color:var(--txt)}
+  .chart-box .note{color:var(--sub);font-size:12px;margin-top:8px}
+  .two{grid-template-columns:1fr 1fr}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  .news{display:grid;gap:12px}
+  .item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:14px 16px}
+  .item.dom{border-left-color:var(--acc)}
+  .item.glb{border-left-color:var(--gold)}
+  .item .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-right:8px;vertical-align:middle}
+  .tag-dom{background:rgba(77,141,255,.16);color:#7fb0ff}
+  .tag-glb{background:rgba(212,175,55,.16);color:#e6c558}
+  .item h4{font-size:15px;display:inline;vertical-align:middle}
+  .item p{font-size:13.5px;color:var(--sub);margin-top:8px}
+  .item p b{color:var(--txt)}
+  .why{margin-top:8px;font-size:13px;color:#c7d2e6;background:rgba(77,141,255,.07);border-radius:8px;padding:8px 10px}
+  .why::before{content:"关注原因：";color:var(--acc);font-weight:600}
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);color:var(--sub);font-size:12px;text-align:center}
+  .legend{display:flex;gap:18px;justify-content:center;margin:6px 0 14px;font-size:12px;color:var(--sub)}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>每周 A 股动态</h1>
+  <div class="meta">报告区间：2026-08-31 ~ 2026-09-04（当周交易日）｜生成于 2026-09-06 10:06（Asia/Shanghai）</div>
+  <div class="meta">A 股全景 + 全球市场要闻 · 10 条高价值信息 · 图表可视化</div>
+</header>
+
+<!-- KPI -->
+<div class="grid cards">
+  <div class="kpi"><div class="l">上证指数</div><div class="v down">-0.56%</div></div>
+  <div class="kpi"><div class="l">深证成指</div><div class="v down">-3.13%</div></div>
+  <div class="kpi"><div class="l">创业板指</div><div class="v down">-4.03%</div></div>
+  <div class="kpi"><div class="l">科创 50</div><div class="v down">-5.10%</div></div>
+  <div class="kpi"><div class="l">北证 50</div><div class="v up">+2.24%</div></div>
+  <div class="kpi"><div class="l">日均成交</div><div class="v">1.97 万亿</div></div>
+  <div class="kpi"><div class="l">主力净流出</div><div class="v down">1055 亿</div></div>
+  <div class="kpi"><div class="l">恒生指数</div><div class="v up">+0.26%</div></div>
+</div>
+
+<h2>一、A 股市场全景</h2>
+<div class="legend"><span><span class="dot" style="background:var(--up)"></span>上涨（红）</span><span><span class="dot" style="background:var(--down)"></span>下跌（绿）</span></div>
+
+<div class="chart-box">
+  <h3>主要指数周涨跌幅（%）</h3>
+  <canvas id="idxChart" height="150"></canvas>
+  <div class="note">主板抗跌、成长杀跌：创业板指连跌三周，科创 50 领跌；北证 50 逆势收红。</div>
+</div>
+
+<div class="chart-box">
+  <h3>当周单日 A 股成交额（万亿元）</h3>
+  <canvas id="volChart" height="120"></canvas>
+  <div class="note">成交在 1.75–2.21 万亿间波动，周五放量至 2.00 万亿但仍处近四周偏低水平，存量博弈特征明显。</div>
+</div>
+
+<h2>二、行业与资金流向</h2>
+<div class="grid two">
+  <div class="chart-box">
+    <h3>领涨 / 领跌行业（%）</h3>
+    <canvas id="indChart" height="170"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>主力资金行业净流入（亿元）</h3>
+    <canvas id="flowChart" height="170"></canvas>
+    <div class="note">传媒、国防军工获资金青睐；电子单周净流出超 576 亿，有色金属近 199 亿。</div>
+  </div>
+</div>
+
+<h2>三、重点新闻动态（10 条）</h2>
+<div class="news">
+  <div class="item dom"><span class="tag tag-dom">A股</span><h4>A 股周线集体收跌，主板抗跌、成长杀跌</h4>
+    <p><b>事件：</b>上证 -0.56%、深成 -3.13%、创业板 -4.03%（连跌三周）、科创 50 -5.10%；北证 50 逆势 +2.24%。日均成交 1.97 万亿，连续四周缩量；主力净流出 1055 亿，上涨个股仅占 44%。</p>
+    <div class="why">成交量能否温和放大并稳定在 2.5 万亿，是判断上攻持续性的关键；当前承接不足，磨底行情延续。</div>
+  </div>
+
+  <div class="item dom"><span class="tag tag-dom">A股</span><h4>传媒板块领涨 +6.03%，AIGC 内容商业化落地</h4>
+    <p><b>事件：</b>国内首部全流程 AIGC 长剧《后西游记》登陆湖南卫视 / 芒果 TV 黄金档，首播收视同时段省级卫视第一；芒果超媒两日涨 20%，短剧 / IP 出海获政策加码。</p>
+    <div class="why">AI 内容从"讲故事"进入"算利润"阶段，商业模式获验证，关注 AI 应用端行情扩散。</div>
+  </div>
+
+  <div class="item dom"><span class="tag tag-dom">政策</span><h4>证监会就《私募募集监管办法》征求意见（严打拼单、代持）</h4>
+    <p><b>事件：</b>9/4 证监会起草《募集办法（征求意见稿）》公开征求意见至 10/4，细化合格投资者标准、强化穿透监管、严禁保本保收益与诱导宣传；叠加 9/1《信息披露办法》（第 233 号令）已施行。</p>
+    <div class="why">私募全链条监管体系加速完善，夯实基础制度，长期利于增量资金规范入市。</div>
+  </div>
+
+  <div class="item dom"><span class="tag tag-dom">政策</span><h4>央行 5000 亿买断式逆回购呵护流动性</h4>
+    <p><b>事件：</b>央行公告 9/7 以固定数量、利率招标、多重价位中标开展 5000 亿元买断式逆回购，期限 3 个月（89 天）。</p>
+    <div class="why">外部扰动下维护流动性充裕，政策底进一步夯实，对冲全球利率上行压力。</div>
+  </div>
+
+  <div class="item dom"><span class="tag tag-dom">政策</span><h4>商品消费扩容升级 + 数字化绿色化协同转型方案落地</h4>
+    <p><b>事件：</b>商务部等七部门《推动商品消费扩容升级实施意见》提出 2030 年社零达 60 万亿，培育绿色 / 智能 / 健康十万亿级市场；七部门印发《数字化绿色化协同转型方案（2026—2030）》。</p>
+    <div class="why">内需政策加码，利好消费复苏与"双碳"主线，支撑下半年盈利驱动。</div>
+  </div>
+
+  <div class="item dom"><span class="tag tag-dom">风格</span><h4>防御风格占优：银行 +4.03%、红利抗跌</h4>
+    <p><b>事件：</b>银行（+4.03%）、国防军工（+2.41%）、农林牧渔（生物育种产业化提速）走强；电子（-5.36%）、有色金属（-5.01%）领跌。</p>
+    <div class="why">海外不确定性下资金向低估值高股息迁徙，哑铃配置（红利底仓 + 科技核心）占优。</div>
+  </div>
+
+  <div class="item glb"><span class="tag tag-glb">全球</span><h4>美伊冲突升级，油价创近期最大单周涨幅</h4>
+    <p><b>事件：</b>美军打击霍尔木兹海峡拉拉克岛，伊朗导弹报复，海峡通行船只骤降；WTI 周涨 +9.38% 至 90.22 美元，布伦特周涨 +8.80% 逼近 97 美元。</p>
+    <div class="why">霍尔木兹承担全球约 1/5 海运原油，地缘溢价推升通胀预期，压制全球风险偏好并传导 A 股。</div>
+  </div>
+
+  <div class="item glb"><span class="tag tag-glb">全球</span><h4>美联储加息预期反复，全球长端利率齐升</h4>
+    <p><b>事件：</b>沃什 Jackson Hole 偏鹰，9 月加息概率一度升至 62%–66%；沃勒放鸽后回落至约 50%。10 年美债 4.80%–4.85%（2025.1 以来高），日本 10 年债 30 年首触 3%，德 3.36%，英 5.23%（2008 来高）。</p>
+    <div class="why">"地缘→油价→通胀→鹰派→利率→压估值"链条主导全球定价，9/16 FOMC 为关键节点。</div>
+  </div>
+
+  <div class="item glb"><span class="tag tag-glb">全球</span><h4>全球股市分化，美国 8 月非农强于预期</h4>
+    <p><b>事件：</b>巴西 IBOVESPA +5.40% 领涨，纳指 +0.40%、标普 +0.09%；日经 -2.09%、DAX -1.97%、韩国 -1.50%。美国 8 月非农 +16.2 万（远超预期），失业率 4.1%。</p>
+    <div class="why">强非农巩固加息路径，沃勒鸽派缓和情绪；关注 9/11 CPI 与 9/16 FOMC。</div>
+  </div>
+
+  <div class="item glb"><span class="tag tag-glb">产业</span><h4>AI 产业链景气延续：英伟达营收翻倍、收购 Hugging Face</h4>
+    <p><b>事件：</b>英伟达 4–6 月营收翻倍至约 960 亿美元，并同意 129 亿美元收购 AI 平台 Hugging Face；A 股算力硬件短期回调但趋势未改。</p>
+    <div class="why">AI 投资从基建向部署变现扩散，中长期核心主线，短期估值消化提供布局窗口。</div>
+  </div>
+</div>
+
+<h2>四、全球市场对比</h2>
+<div class="grid two">
+  <div class="chart-box">
+    <h3>全球主要股指周涨跌幅（%）</h3>
+    <canvas id="gloChart" height="170"></canvas>
+    <div class="note">巴西领涨，亚太 / 欧洲普遍回落；美股在鸽派言论下小幅收红。</div>
+  </div>
+  <div class="chart-box">
+    <h3>全球长端利率（10 年国债，%）</h3>
+    <canvas id="rateChart" height="170"></canvas>
+    <div class="note">多国长端利率同步攀升至多年高位，全球"债券 walls of worry"压制估值。</div>
+  </div>
+</div>
+<div class="chart-box">
+  <h3>原油周涨跌幅（%）</h3>
+  <canvas id="oilChart" height="90"></canvas>
+  <div class="note">美伊冲突推升地缘溢价，WTI / 布伦特均创近期最大单周涨幅。</div>
+</div>
+
+<footer>
+  数据来源：上交所 / 深交所、Wind、证券时报、腾讯证券、雪球、网易财经、证监会、央行、MFS、CNA、Fidelity 等公开资讯整理。<br/>
+  本报告仅供研究参考，不构成任何投资建议。市场有风险，投资需谨慎。
+</footer>
+</div>
+
+<script>
+const UP='#ef4d56', DOWN='#1fb87a', ACC='#4d8dff', GOLD='#d4af37';
+const neg=(v)=>v<0?DOWN:UP;
+function bar(ctx, labels, data, opts={}){
+  new Chart(ctx, {type:'bar',
+    data:{labels, datasets:[{data, backgroundColor:data.map(neg), borderRadius:4, ...(opts.extra||{})}]},
+    options:{plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>(c.raw>0?'+':'')+c.raw+'%'}}},
+      scales:{y:{grid:{color:'#2a3548'}, ticks:{color:'#9aa7bd', callback:v=>v+'%'}}, x:{grid:{display:false}, ticks:{color:'#cdd6e6'}}}, ...(opts.opt||{})}}});
+}
+// 指数
+bar('idxChart', ['上证','上证50','沪深300','中证500','中证1000','万得全A','创业板','科创50','北证50','恒生'],
+  [-0.56,0.02,-1.33,-3.07,-2.56,-1.79,-4.03,-5.10,2.24,0.26]);
+// 成交额
+new Chart('volChart',{type:'line',
+  data:{labels:['周一','周二','周三','周四','周五'],
+    datasets:[{label:'成交额(万亿)', data:[2.21,2.00,1.78,1.75,2.00],
+      borderColor:ACC, backgroundColor:'rgba(77,141,255,.15)', fill:true, tension:.35, pointBackgroundColor:ACC, pointRadius:4}]},
+  options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#2a3548'}, ticks:{color:'#9aa7bd'}}, x:{grid:{display:false}, ticks:{color:'#cdd6e6'}}}}});
+// 行业涨跌
+bar('indChart', ['传媒','银行','国防军工','电子','有色金属'],
+  [6.03,4.03,2.41,-5.36,-5.01]);
+// 资金流向
+bar('flowChart', ['传媒','国防军工','通信','电力设备','有色金属','电子'],
+  [77.15,41.77,0,-120,-198.87,-576.71]);
+// 全球股指
+bar('gloChart', ['巴西','胡志明','纳指','标普500','恒生','韩国','日经','DAX'],
+  [5.40,1.14,0.40,0.09,0.26,-1.50,-2.09,-1.97]);
+// 利率
+new Chart('rateChart',{type:'bar',
+  data:{labels:['美国10Y','英国10Y','德国10Y','全球主权债','日本10Y'],
+    datasets:[{data:[4.85,5.23,3.36,3.78,3.00], backgroundColor:ACC, borderRadius:4}]},
+  options:{plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+'%'}}},
+    scales:{y:{grid:{color:'#2a3548'}, ticks:{color:'#9aa7bd', callback:v=>v+'%'}}, x:{grid:{display:false}, ticks:{color:'#cdd6e6'}}}}});
+// 原油
+bar('oilChart', ['WTI 原油','布伦特原油'], [9.38,8.80]);
+</script>
+</body>
+</html>
